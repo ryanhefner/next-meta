@@ -45,7 +45,7 @@
     "babel-plugin-dev-expression": "^0.2.2",
     "babel-polyfill": "^6.26.0",
     "dtslint": "^4.0.6",
-    "gzip-size": "^6.0.0",
+    "gzip-size": "^7.0.0",
     "jest": "^27.0.6",
     "pretty-bytes": "^5.5.0",
     "regenerator-runtime": "^0.13.7",
