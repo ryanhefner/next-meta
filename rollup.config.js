@@ -1,7 +1,7 @@
-import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import resolve from 'rollup-plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
@@ -19,8 +19,7 @@ const config = {
   plugins: [
     babel({
       exclude: 'node_modules/**',
-      externalHelpers: process.env.BABEL_ENV === 'umd',
-      runtimeHelpers: true,
+      babelHelpers: 'runtime',
     }),
     resolve(),
     commonjs({
