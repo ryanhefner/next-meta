@@ -10,6 +10,7 @@ const config = {
   output: {
     name: pkg.name,
     file: './index.cjs',
+    exports: 'named',
     format: 'umd',
     globals: {
       next: 'next',
