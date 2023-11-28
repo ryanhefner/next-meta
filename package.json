@@ -25,7 +25,7 @@
   "jsnext:main": "src/index.js",
   "types": "types",
   "scripts": {
-    "clean": "rimraf index.cjs es TestComponent umd",
+    "clean": "rimraf index.cjs es umd SiteMeta",
     "prebuild": "npm run clean",
     "build": "node ./tools/build.mjs",
     "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
