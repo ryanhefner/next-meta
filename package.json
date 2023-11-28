@@ -12,10 +12,12 @@
   "files": [
     "es",
     "src",
-    "SiteMeta",
     "types",
     "umd",
-    "index.cjs"
+    "index.cjs",
+    "MetaContext",
+    "MetaProvider",
+    "SiteMeta"
   ],
   "directories": {
     "lib": "/src"
@@ -25,7 +27,7 @@
   "jsnext:main": "src/index.js",
   "types": "types",
   "scripts": {
-    "clean": "rimraf index.cjs es umd SiteMeta",
+    "clean": "rimraf index.cjs es umd MetaContext MetaProvider SiteMeta",
     "prebuild": "npm run clean",
     "build": "node ./tools/build.mjs",
     "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
@@ -39,6 +41,7 @@
     "types": "tsc"
   },
   "peerDependencies": {
+    "next": ">=10.0.0",
     "react": ">=16.8",
     "react-dom": ">=16.8"
   },
@@ -71,6 +74,7 @@
     "global-jsdom": "^9.1.0",
     "gzip-size": "^7.0.0",
     "jsdom": "^23.0.0",
+    "next": "^14.0.3",
     "prettier": "^3.0.3",
     "pretty-bytes": "^6.0.0",
     "react": "^18.2.0",
