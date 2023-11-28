@@ -51,4 +51,15 @@ describe('MetaProvider', () => {
     )
     expect(getByText('Test Title Override | Test Site Name')).toBeTruthy()
   })
+
+  test('renders - absolute urls w/ baseUrl + url override', () => {
+    const { container } = render(
+      <MetaProvider baseUrl="https://test.com" url="/test">
+        <SiteMeta url="/test-override" />
+      </MetaProvider>,
+    )
+    expect(
+      container.querySelector('[content="https://test.com/test-override"]'),
+    ).toHaveProperty('content', 'https://test.com/test-override')
+  })
 })
