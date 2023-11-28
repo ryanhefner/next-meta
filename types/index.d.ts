@@ -3,6 +3,7 @@ import { PropsWithChildren } from 'react'
 interface SiteMetaProps {
   audioUrl?: string
   audioType?: string
+  baseUrl?: string
   debug?: boolean
   description?: string
   determiner?: string
@@ -20,14 +21,12 @@ interface SiteMetaProps {
   videoUrl?: string
   videoType?: string
 }
-
 declare module "MetaContext" {
   export const MetaContext: React.Context<Partial<SiteMetaProps>>
 }
 
 declare module "MetaProvider" {
   interface MetaProviderProps extends PropsWithChildren<SiteMetaProps> {
-    baseUrl?: string
     skipDefaultsRender?: boolean
   }
 
