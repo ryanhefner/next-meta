@@ -12,11 +12,11 @@ if (process.env.NODE_ENV === 'production') {
   plugins.push('babel-plugin-dev-expression')
 }
 
-export default function () {
+module.exports = function () {
   return {
     env: {
       test: {
-        presets: ['@babel/preset-env'],
+        presets: ['@babel/preset-env', '@babel/preset-react'],
       },
     },
     presets: [
@@ -26,6 +26,7 @@ export default function () {
           modules: building ? false : 'commonjs',
         },
       ],
+      '@babel/preset-react',
     ],
     plugins: plugins,
   }
