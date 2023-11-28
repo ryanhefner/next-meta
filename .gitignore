@@ -5,7 +5,11 @@ node_modules
 coverage
 es
 umd
-/*.js
+/*.cjs
+
+# Lib files
+SiteMeta
+!src/SiteMeta
 
 # Include Rollup config
 !rollup.config.js

@@ -1,3 +1,1 @@
-const yourCode = () => {}
-
-export default yourCode
+export * from './SiteMeta'
