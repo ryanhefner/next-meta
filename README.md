@@ -9,7 +9,7 @@
 ![Known Vulnerabilities](https://snyk.io/test/github/ryanhefner/next-meta/badge.svg)
 ![Twitter Follow](https://img.shields.io/twitter/follow/ryanhefner)
 
-Easily compose and manage your site’s metadata and open graph tags in your Next.js app/site.
+Easily compose and manage meta and open graph tags in your Next.js app/site.
 
 **NOTE:** This package is for use with Next.js’ Pages Router. Some App Router
 helpers are in the works and will live here in the future as well.
