@@ -19,7 +19,7 @@ describe('SiteMeta', () => {
       const { getByText } = render(
         <SiteMeta title="Test Title" siteName="Test Site Name" />,
       )
-      expect(getByText('Test Title - Test Site Name')).toBeTruthy()
+      expect(getByText('Test Title | Test Site Name')).toBeTruthy()
     })
 
     test('renders - title + siteName w/ delimiter', () => {
@@ -27,10 +27,10 @@ describe('SiteMeta', () => {
         <SiteMeta
           title="Test Title"
           siteName="Test Site Name"
-          siteNameDelimiter="|"
+          siteNameDelimiter="-"
         />,
       )
-      expect(getByText('Test Title | Test Site Name')).toBeTruthy()
+      expect(getByText('Test Title - Test Site Name')).toBeTruthy()
     })
   })
 

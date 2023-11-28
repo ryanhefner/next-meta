@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { MetaContext } from '../MetaContext'
 
 const SiteMeta = ({
   audioUrl,
   audioType,
   debug,
-  determiner,
-  title,
   description,
+  determiner,
   imageUrl,
   imageAlt,
   imageWidth,
@@ -14,7 +14,8 @@ const SiteMeta = ({
   locale,
   localeAlternates = [],
   siteName,
-  siteNameDelimiter = '-',
+  siteNameDelimiter = '|',
+  title,
   type,
   twitterSite,
   twitterCreator,
@@ -23,51 +24,103 @@ const SiteMeta = ({
   videoUrl,
   videoType,
 }) => {
+  const {
+    audioUrl: audioUrlContext,
+    audioType: audioTypeContext,
+    debug: debugContext,
+    description: descriptionContext,
+    determiner: determinerContext,
+    imageUrl: imageUrlContext,
+    imageAlt: imageAltContext,
+    imageWidth: imageWidthContext,
+    imageHeight: imageHeightContext,
+    locale: localeContext,
+    localeAlternates: localeAlternatesContext,
+    siteName: siteNameContext,
+    siteNameDelimiter: siteNameDelimiterContext,
+    title: titleContext,
+    type: typeContext,
+    twitterSite: twitterSiteContext,
+    twitterCreator: twitterCreatorContext,
+    twitterCardType: twitterCardTypeContext,
+    url: urlContext,
+    videoUrl: videoUrlContext,
+    videoType: videoTypeContext,
+  } = useContext(MetaContext)
+
+  const audioUrlRef = audioUrl ?? audioUrlContext
+  const audioTypeRef = audioType ?? audioTypeContext
+  const debugRef = debug ?? debugContext
+  const descriptionRef = description ?? descriptionContext
+  const determinerRef = determiner ?? determinerContext
+  const imageUrlRef = imageUrl ?? imageUrlContext
+  const imageAltRef = imageAlt ?? imageAltContext
+  const imageWidthRef = imageWidth ?? imageWidthContext
+  const imageHeightRef = imageHeight ?? imageHeightContext
+  const localeRef = locale ?? localeContext
+  const localeAlternatesRef = localeAlternates ?? localeAlternatesContext
+  const siteNameRef = siteName ?? siteNameContext
+  const siteNameDelimiterRef = siteNameDelimiter ?? siteNameDelimiterContext
+  const titleRef = title ?? titleContext
+  const typeRef = type ?? typeContext
+  const twitterSiteRef = twitterSite ?? twitterSiteContext
+  const twitterCreatorRef = twitterCreator ?? twitterCreatorContext
+  const twitterCardTypeRef = twitterCardType ?? twitterCardTypeContext
+  const urlRef = url ?? urlContext
+  const videoUrlRef = videoUrl ?? videoUrlContext
+  const videoTypeRef = videoType ?? videoTypeContext
+
   return (
     <>
       {/* Title */}
-      {title && (
+      {titleRef && (
         <>
-          <title key="meta-title">{`${title}${
-            siteName ? ` ${siteNameDelimiter} ${siteName}` : ''
+          <title key="meta-title">{`${titleRef}${
+            siteNameRef
+              ? ` ${siteNameDelimiterRef} ${siteNameRef ?? siteNameContextRef}`
+              : ''
           }`}</title>
-          <meta key="meta-og-title" property="og:title" content={title} />
-          <meta key="meta-twitter-title" name="twitter:title" content={title} />
+          <meta key="meta-og-title" property="og:title" content={titleRef} />
+          <meta
+            key="meta-twitter-title"
+            name="twitter:title"
+            content={titleRef}
+          />
         </>
       )}
 
       {/* Description */}
-      {description && (
+      {descriptionRef && (
         <>
           <meta
             key="meta-description"
             name="description"
-            content={description}
+            content={descriptionRef}
           />
           <meta
             key="meta-og-description"
             property="og:description"
-            content={description}
+            content={descriptionRef}
           />
           <meta
             key="meta-twitter-description"
             name="twitter:description"
-            content={description}
+            content={descriptionRef}
           />
         </>
       )}
 
       {/* Locale */}
-      {locale && (
+      {!!localeRef && (
         <>
-          <meta key="meta-og-locale" property="og:locale" content={locale} />
+          <meta key="meta-og-locale" property="og:locale" content={localeRef} />
         </>
       )}
 
       {/* Locale Alternates */}
-      {localeAlternates &&
-        localeAlternates.length > 0 &&
-        localeAlternates.map((localeAlternate) => (
+      {localeAlternatesRef &&
+        localeAlternatesRef.length > 0 &&
+        localeAlternatesRef.map((localeAlternate) => (
           <meta
             key={`meta-og-locale-alternate-${localeAlternate}`}
             property="og:locale:alternate"
@@ -76,135 +129,137 @@ const SiteMeta = ({
         ))}
 
       {/* Image */}
-      {imageUrl && (
+      {imageUrlRef && (
         <>
-          <meta key="meta-og-image" property="og:image" content={imageUrl} />
+          <meta key="meta-og-image" property="og:image" content={imageUrlRef} />
           <meta
             key="meta-twitter-image"
             name="twitter:image"
-            content={imageUrl}
+            content={imageUrlRef}
           />
 
           {/* Image - Alt */}
-          {imageAlt && (
+          {imageAltRef && (
             <>
               <meta
                 key="meta-og-image-alt"
                 property="og:image:alt"
-                content={imageAlt}
+                content={imageAltRef}
               />
               <meta
                 key="meta-twitter-image-alt"
                 name="twitter:image:alt"
-                content={imageAlt}
+                content={imageAltRef}
               />
             </>
           )}
 
           {/* Image - Width */}
-          {imageWidth && (
+          {imageWidthRef && (
             <meta
               key="meta-og-image-width"
               property="og:image:width"
-              content={imageWidth}
+              content={imageWidthRef}
             />
           )}
 
           {/* Image - Height */}
-          {imageHeight && (
+          {imageHeightRef && (
             <meta
               key="meta-og-image-height"
               property="og:image:height"
-              content={imageHeight}
+              content={imageHeightRef}
             />
           )}
         </>
       )}
 
       {/* Determiner */}
-      {determiner && (
+      {determinerRef && (
         <meta
           key="meta-og-determiner"
           property="og:determiner"
-          content={determiner}
+          content={determinerRef}
         />
       )}
 
       {/* Site Name */}
-      {siteName && (
+      {siteNameRef && (
         <>
           <meta
             key="meta-og-site-name"
             property="og:site_name"
-            content={siteName}
+            content={siteNameRef}
           />
         </>
       )}
 
       {/* Twitter */}
-      {twitterCardType && (
+      {twitterCardTypeRef && (
         <meta
           key="meta-twitter-card"
           name="twitter:card"
-          content={twitterCardType}
+          content={twitterCardTypeRef}
         />
       )}
 
       {/* Twitter - Site */}
-      {twitterSite && (
+      {twitterSiteRef && (
         <>
           <meta
             key="meta-twitter-site"
             name="twitter:site"
-            content={twitterSite}
+            content={twitterSiteRef}
           />
         </>
       )}
 
       {/* Twitter - Creator */}
-      {twitterCreator && (
+      {twitterCreatorRef && (
         <>
           <meta
             key="meta-twitter-creator"
             name="twitter:creator"
-            content={twitterCreator}
+            content={twitterCreatorRef}
           />
         </>
       )}
 
       {/* Type */}
-      {type && <meta key="meta-og-type" property="og:type" content={type} />}
+      {typeRef && (
+        <meta key="meta-og-type" property="og:type" content={typeRef} />
+      )}
 
       {/* URL */}
-      {url && <meta key="meta-og-url" property="og:url" content={url} />}
+      {urlRef && <meta key="meta-og-url" property="og:url" content={urlRef} />}
 
       {/* Audio */}
-      {audioUrl && (
+      {audioUrlRef && (
         <>
-          <meta key="meta-og-audio" property="og:audio" content={audioUrl} />
+          <meta key="meta-og-audio" property="og:audio" content={audioUrlRef} />
 
           {/* Audio - Type */}
-          {audioType && (
+          {audioTypeRef && (
             <meta
               key="meta-og-audio-type"
               property="og:audio:type"
-              content={audioType}
+              content={audioTypeRef}
             />
           )}
         </>
       )}
 
       {/* Video */}
-      {videoUrl && (
+      {videoUrlRef && (
         <>
-          <meta key="meta-og-video" property="og:video" content={videoUrl} />
+          <meta key="meta-og-video" property="og:video" content={videoUrlRef} />
 
           {/* Video - Type */}
-          {videoType && (
+          {videoTypeRef && (
             <meta
               key="meta-og-video-type"
               property="og:video:type"
-              content={videoType}
+              content={videoTypeRef}
             />
           )}
         </>
