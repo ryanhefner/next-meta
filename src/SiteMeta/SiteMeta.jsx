@@ -1,9 +1,18 @@
 import React, { useContext } from 'react'
 import { MetaContext } from '../MetaContext'
 
+const getAbsoluteUrl = (url, baseUrl) => {
+  if (baseUrl && url && url.indexOf('http') === -1) {
+    return `${baseUrl}${url}`
+  }
+
+  return url
+}
+
 const SiteMeta = ({
   audioUrl,
   audioType,
+  baseUrl,
   debug,
   description,
   determiner,
@@ -27,6 +36,7 @@ const SiteMeta = ({
   const {
     audioUrl: audioUrlContext,
     audioType: audioTypeContext,
+    baseUrl: baseUrlContext,
     debug: debugContext,
     description: descriptionContext,
     determiner: determinerContext,
@@ -50,6 +60,7 @@ const SiteMeta = ({
 
   const audioUrlRef = audioUrl ?? audioUrlContext
   const audioTypeRef = audioType ?? audioTypeContext
+  const baseUrlRef = baseUrl ?? baseUrlContext
   const debugRef = debug ?? debugContext
   const descriptionRef = description ?? descriptionContext
   const determinerRef = determiner ?? determinerContext
@@ -69,6 +80,11 @@ const SiteMeta = ({
   const urlRef = url ?? urlContext
   const videoUrlRef = videoUrl ?? videoUrlContext
   const videoTypeRef = videoType ?? videoTypeContext
+
+  const absoluteAudioUrlRef = getAbsoluteUrl(audioUrlRef, baseUrlRef)
+  const absoluteImageUrlRef = getAbsoluteUrl(imageUrlRef, baseUrlRef)
+  const absoluteVideoUrlRef = getAbsoluteUrl(videoUrlRef, baseUrlRef)
+  const absoluteUrlRef = getAbsoluteUrl(urlRef, baseUrlRef)
 
   return (
     <>
@@ -129,13 +145,17 @@ const SiteMeta = ({
         ))}
 
       {/* Image */}
-      {imageUrlRef && (
+      {absoluteImageUrlRef && (
         <>
-          <meta key="meta-og-image" property="og:image" content={imageUrlRef} />
+          <meta
+            key="meta-og-image"
+            property="og:image"
+            content={absoluteImageUrlRef}
+          />
           <meta
             key="meta-twitter-image"
             name="twitter:image"
-            content={imageUrlRef}
+            content={absoluteImageUrlRef}
           />
 
           {/* Image - Alt */}
@@ -231,12 +251,18 @@ const SiteMeta = ({
       )}
 
       {/* URL */}
-      {urlRef && <meta key="meta-og-url" property="og:url" content={urlRef} />}
+      {absoluteUrlRef && (
+        <meta key="meta-og-url" property="og:url" content={absoluteUrlRef} />
+      )}
 
       {/* Audio */}
-      {audioUrlRef && (
+      {absoluteAudioUrlRef && (
         <>
-          <meta key="meta-og-audio" property="og:audio" content={audioUrlRef} />
+          <meta
+            key="meta-og-audio"
+            property="og:audio"
+            content={absoluteAudioUrlRef}
+          />
 
           {/* Audio - Type */}
           {audioTypeRef && (
@@ -250,9 +276,13 @@ const SiteMeta = ({
       )}
 
       {/* Video */}
-      {videoUrlRef && (
+      {absoluteVideoUrlRef && (
         <>
-          <meta key="meta-og-video" property="og:video" content={videoUrlRef} />
+          <meta
+            key="meta-og-video"
+            property="og:video"
+            content={absoluteVideoUrlRef}
+          />
 
           {/* Video - Type */}
           {videoTypeRef && (

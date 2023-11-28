@@ -171,5 +171,14 @@ describe('SiteMeta', () => {
       const { container } = render(<SiteMeta url="https://test.com" />)
       expect(container.querySelector('[property="og:url"]')).toBeTruthy()
     })
+
+    test('renders - absoluteUrl', () => {
+      const { container } = render(
+        <SiteMeta baseUrl="https://test.com" url="/about" />,
+      )
+      expect(
+        container.querySelector('[content="https://test.com/about"]'),
+      ).toBeTruthy()
+    })
   })
 })
