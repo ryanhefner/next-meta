@@ -8,7 +8,11 @@ umd
 /*.cjs
 
 # Lib files
+MetaContext
+MetaProvider
 SiteMeta
+!src/MetaContext
+!src/MetaProvider
 !src/SiteMeta
 
 # Include Rollup config
