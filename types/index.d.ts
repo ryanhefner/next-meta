@@ -21,18 +21,11 @@ interface SiteMetaProps {
   videoUrl?: string
   videoType?: string
 }
-declare module "MetaContext" {
-  export const MetaContext: React.Context<Partial<SiteMetaProps>>
+
+interface MetaProviderProps extends PropsWithChildren<SiteMetaProps> {
+  skipDefaultsRender?: boolean
 }
 
-declare module "MetaProvider" {
-  interface MetaProviderProps extends PropsWithChildren<SiteMetaProps> {
-    skipDefaultsRender?: boolean
-  }
-
-  export const MetaProvider: (props: MetaProviderProps) => JSX.Element
-}
-
-declare module "SiteMeta" {
-  export const SiteMeta: (props: SiteMetaProps) => JSX.Element
-}
+export const MetaContext: React.Context<Partial<SiteMetaProps>>
+export const MetaProvider: (props: MetaProviderProps) => JSX.Element
+export const SiteMeta: (props: SiteMetaProps) => JSX.Element
