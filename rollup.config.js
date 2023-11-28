@@ -12,12 +12,14 @@ const config = {
     file: './index.cjs',
     format: 'umd',
     globals: {
+      next: 'next',
       react: 'React',
     },
     banner: `/*! ${pkg.name} - ${pkg.version} !*/`,
     footer: `/* Copyright ${(new Date()).getFullYear()} - ${pkg.author} */`,
   },
   external: [
+    'next',
     'react',
   ],
   plugins: [
