@@ -1,3 +1,5 @@
+import { PropsWithChildren } from 'react'
+
 interface SiteMetaProps {
   audioUrl?: string
   audioType?: string
@@ -19,6 +21,19 @@ interface SiteMetaProps {
   videoType?: string
 }
 
-declare const SiteMeta: SiteMetaProps
+declare module "MetaContext" {
+  export const MetaContext: React.Context<Partial<SiteMetaProps>>
+}
 
-export default SiteMeta
+declare module "MetaProvider" {
+  interface MetaProviderProps extends PropsWithChildren<SiteMetaProps> {
+    baseUrl?: string
+    skipDefaultsRender?: boolean
+  }
+
+  export const MetaProvider: (props: MetaProviderProps) => JSX.Element
+}
+
+declare module "SiteMeta" {
+  export const SiteMeta: (props: SiteMetaProps) => JSX.Element
+}
