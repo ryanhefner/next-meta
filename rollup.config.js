@@ -24,14 +24,12 @@ const config = {
     'react',
   ],
   plugins: [
+    resolve({ extensions: ['.js', '.jsx'] }),
     babel({
       exclude: 'node_modules/**',
       babelHelpers: 'runtime',
     }),
-    resolve(),
-    commonjs({
-      include: /node_modules/,
-    }),
+    commonjs(),
     json(),
   ],
 }

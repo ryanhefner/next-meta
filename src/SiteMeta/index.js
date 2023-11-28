@@ -1,1 +1,1 @@
-export { default as SiteMeta } from './SiteMeta.jsx'
+export { default as SiteMeta } from './SiteMeta'

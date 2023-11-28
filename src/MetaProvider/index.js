@@ -1,1 +1,1 @@
-export { default as MetaProvider } from './MetaProvider.jsx'
+export { default as MetaProvider } from './MetaProvider'
