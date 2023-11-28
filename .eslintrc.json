@@ -5,7 +5,11 @@
     "node": true
   },
   "plugins": ["prettier"],
-  "extends": ["plugin:prettier/recommended"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
+  ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -13,6 +17,10 @@
       "rules": {
         "semi": ["error", "never"],
         "no-prototype-builtins": "off",
+        "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "react/prop-types": "off",
         "prettier/prettier": [
           "error",
           {
@@ -20,10 +28,6 @@
           }
         ]
       }
-    },
-    {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
     }
   ],
   "parserOptions": {

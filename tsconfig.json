@@ -1,7 +1,9 @@
 {
   "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.js"],
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": false,
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "types",

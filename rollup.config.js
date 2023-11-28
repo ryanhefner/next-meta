@@ -9,13 +9,17 @@ const config = {
   input: 'src/index.js',
   output: {
     name: pkg.name,
-    file: './index.js',
+    file: './index.cjs',
     format: 'umd',
-    globals: {},
-    banner: `/*! [banner info] !*/`,
-    footer: '/* [footer info] */',
+    globals: {
+      react: 'React',
+    },
+    banner: `/*! ${pkg.name} - ${pkg.version} !*/`,
+    footer: `/* Copyright ${(new Date()).getFullYear()} - ${pkg.author} */`,
   },
-  external: [],
+  external: [
+    'react',
+  ],
   plugins: [
     babel({
       exclude: 'node_modules/**',
