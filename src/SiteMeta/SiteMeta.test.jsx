@@ -1,7 +1,16 @@
 import React from 'react'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import SiteMeta from './SiteMeta'
+
+vi.mock('next/head', () => {
+  return {
+    __esModule: true,
+    default: ({ children }) => {
+      return <>{children}</>
+    },
+  }
+})
 
 describe('SiteMeta', () => {
   describe('title', () => {
