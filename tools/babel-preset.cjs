@@ -12,6 +12,10 @@ if (process.env.NODE_ENV === 'production') {
   plugins.push('babel-plugin-dev-expression')
 }
 
+if (!building) {
+  plugins.push(['babel-plugin-add-import-extension', { extension: 'cjs' }])
+}
+
 module.exports = function () {
   return {
     env: {
