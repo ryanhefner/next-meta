@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import Head from 'next/head'
 import { MetaContext } from '../MetaContext'
 
 const getAbsoluteUrl = (url, baseUrl) => {
@@ -16,6 +17,7 @@ const SiteMeta = ({
   debug,
   description,
   determiner,
+  headComponent,
   imageUrl,
   imageAlt,
   imageWidth,
@@ -40,6 +42,7 @@ const SiteMeta = ({
     debug: debugContext,
     description: descriptionContext,
     determiner: determinerContext,
+    headComponent: headComponentContext,
     imageUrl: imageUrlContext,
     imageAlt: imageAltContext,
     imageWidth: imageWidthContext,
@@ -57,6 +60,8 @@ const SiteMeta = ({
     videoUrl: videoUrlContext,
     videoType: videoTypeContext,
   } = useContext(MetaContext)
+
+  const HeadComponent = headComponent ?? headComponentContext ?? Head
 
   const audioUrlRef = audioUrl ?? audioUrlContext
   const audioTypeRef = audioType ?? audioTypeContext
@@ -87,50 +92,52 @@ const SiteMeta = ({
   const absoluteUrlRef = getAbsoluteUrl(urlRef, baseUrlRef)
 
   return (
-    <>
+    <HeadComponent>
       {/* Title */}
       {titleRef && (
-        <>
-          <title key="meta-title">{`${titleRef}${
-            siteNameRef
-              ? ` ${siteNameDelimiterRef} ${siteNameRef ?? siteNameContextRef}`
-              : ''
-          }`}</title>
-          <meta key="meta-og-title" property="og:title" content={titleRef} />
-          <meta
-            key="meta-twitter-title"
-            name="twitter:title"
-            content={titleRef}
-          />
-        </>
+        <title key="meta-title">{`${titleRef}${
+          siteNameRef
+            ? ` ${siteNameDelimiterRef} ${siteNameRef ?? siteNameContextRef}`
+            : ''
+        }`}</title>
+      )}
+      {titleRef && (
+        <meta key="meta-og-title" property="og:title" content={titleRef} />
+      )}
+      {titleRef && (
+        <meta
+          key="meta-twitter-title"
+          name="twitter:title"
+          content={titleRef}
+        />
       )}
 
       {/* Description */}
       {descriptionRef && (
-        <>
-          <meta
-            key="meta-description"
-            name="description"
-            content={descriptionRef}
-          />
-          <meta
-            key="meta-og-description"
-            property="og:description"
-            content={descriptionRef}
-          />
-          <meta
-            key="meta-twitter-description"
-            name="twitter:description"
-            content={descriptionRef}
-          />
-        </>
+        <meta
+          key="meta-description"
+          name="description"
+          content={descriptionRef}
+        />
+      )}
+      {descriptionRef && (
+        <meta
+          key="meta-og-description"
+          property="og:description"
+          content={descriptionRef}
+        />
+      )}
+      {descriptionRef && (
+        <meta
+          key="meta-twitter-description"
+          name="twitter:description"
+          content={descriptionRef}
+        />
       )}
 
       {/* Locale */}
       {!!localeRef && (
-        <>
-          <meta key="meta-og-locale" property="og:locale" content={localeRef} />
-        </>
+        <meta key="meta-og-locale" property="og:locale" content={localeRef} />
       )}
 
       {/* Locale Alternates */}
@@ -146,52 +153,52 @@ const SiteMeta = ({
 
       {/* Image */}
       {absoluteImageUrlRef && (
-        <>
-          <meta
-            key="meta-og-image"
-            property="og:image"
-            content={absoluteImageUrlRef}
-          />
-          <meta
-            key="meta-twitter-image"
-            name="twitter:image"
-            content={absoluteImageUrlRef}
-          />
+        <meta
+          key="meta-og-image"
+          property="og:image"
+          content={absoluteImageUrlRef}
+        />
+      )}
+      {absoluteImageUrlRef && (
+        <meta
+          key="meta-twitter-image"
+          name="twitter:image"
+          content={absoluteImageUrlRef}
+        />
+      )}
 
-          {/* Image - Alt */}
-          {imageAltRef && (
-            <>
-              <meta
-                key="meta-og-image-alt"
-                property="og:image:alt"
-                content={imageAltRef}
-              />
-              <meta
-                key="meta-twitter-image-alt"
-                name="twitter:image:alt"
-                content={imageAltRef}
-              />
-            </>
-          )}
+      {/* Image - Alt */}
+      {absoluteImageUrlRef && imageAltRef && (
+        <meta
+          key="meta-og-image-alt"
+          property="og:image:alt"
+          content={imageAltRef}
+        />
+      )}
+      {absoluteImageUrlRef && imageAltRef && (
+        <meta
+          key="meta-twitter-image-alt"
+          name="twitter:image:alt"
+          content={imageAltRef}
+        />
+      )}
 
-          {/* Image - Width */}
-          {imageWidthRef && (
-            <meta
-              key="meta-og-image-width"
-              property="og:image:width"
-              content={imageWidthRef}
-            />
-          )}
+      {/* Image - Width */}
+      {absoluteImageUrlRef && imageWidthRef && (
+        <meta
+          key="meta-og-image-width"
+          property="og:image:width"
+          content={imageWidthRef}
+        />
+      )}
 
-          {/* Image - Height */}
-          {imageHeightRef && (
-            <meta
-              key="meta-og-image-height"
-              property="og:image:height"
-              content={imageHeightRef}
-            />
-          )}
-        </>
+      {/* Image - Height */}
+      {absoluteImageUrlRef && imageHeightRef && (
+        <meta
+          key="meta-og-image-height"
+          property="og:image:height"
+          content={imageHeightRef}
+        />
       )}
 
       {/* Determiner */}
@@ -205,13 +212,11 @@ const SiteMeta = ({
 
       {/* Site Name */}
       {siteNameRef && (
-        <>
-          <meta
-            key="meta-og-site-name"
-            property="og:site_name"
-            content={siteNameRef}
-          />
-        </>
+        <meta
+          key="meta-og-site-name"
+          property="og:site_name"
+          content={siteNameRef}
+        />
       )}
 
       {/* Twitter */}
@@ -225,24 +230,20 @@ const SiteMeta = ({
 
       {/* Twitter - Site */}
       {twitterSiteRef && (
-        <>
-          <meta
-            key="meta-twitter-site"
-            name="twitter:site"
-            content={twitterSiteRef}
-          />
-        </>
+        <meta
+          key="meta-twitter-site"
+          name="twitter:site"
+          content={twitterSiteRef}
+        />
       )}
 
       {/* Twitter - Creator */}
       {twitterCreatorRef && (
-        <>
-          <meta
-            key="meta-twitter-creator"
-            name="twitter:creator"
-            content={twitterCreatorRef}
-          />
-        </>
+        <meta
+          key="meta-twitter-creator"
+          name="twitter:creator"
+          content={twitterCreatorRef}
+        />
       )}
 
       {/* Type */}
@@ -257,44 +258,40 @@ const SiteMeta = ({
 
       {/* Audio */}
       {absoluteAudioUrlRef && (
-        <>
-          <meta
-            key="meta-og-audio"
-            property="og:audio"
-            content={absoluteAudioUrlRef}
-          />
+        <meta
+          key="meta-og-audio"
+          property="og:audio"
+          content={absoluteAudioUrlRef}
+        />
+      )}
 
-          {/* Audio - Type */}
-          {audioTypeRef && (
-            <meta
-              key="meta-og-audio-type"
-              property="og:audio:type"
-              content={audioTypeRef}
-            />
-          )}
-        </>
+      {/* Audio - Type */}
+      {absoluteAudioUrlRef && audioTypeRef && (
+        <meta
+          key="meta-og-audio-type"
+          property="og:audio:type"
+          content={audioTypeRef}
+        />
       )}
 
       {/* Video */}
       {absoluteVideoUrlRef && (
-        <>
-          <meta
-            key="meta-og-video"
-            property="og:video"
-            content={absoluteVideoUrlRef}
-          />
-
-          {/* Video - Type */}
-          {videoTypeRef && (
-            <meta
-              key="meta-og-video-type"
-              property="og:video:type"
-              content={videoTypeRef}
-            />
-          )}
-        </>
+        <meta
+          key="meta-og-video"
+          property="og:video"
+          content={absoluteVideoUrlRef}
+        />
       )}
-    </>
+
+      {/* Video - Type */}
+      {absoluteVideoUrlRef && videoTypeRef && (
+        <meta
+          key="meta-og-video-type"
+          property="og:video:type"
+          content={videoTypeRef}
+        />
+      )}
+    </HeadComponent>
   )
 }
 
