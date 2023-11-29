@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 
 interface SiteMetaProps {
   audioUrl?: string
@@ -7,6 +7,7 @@ interface SiteMetaProps {
   debug?: boolean
   description?: string
   determiner?: string
+  headComponent?: ({ children }: { children: ReactNode; }) => JSX.Element
   imageUrl?: string
   imageAlt?: string
   imageWidth?: number
@@ -22,7 +23,7 @@ interface SiteMetaProps {
   videoType?: string
 }
 
-interface MetaProviderProps extends PropsWithChildren<SiteMetaProps> {
+interface MetaProviderProps extends PropsWithChildren, SiteMetaProps {
   skipDefaultsRender?: boolean
 }
 
