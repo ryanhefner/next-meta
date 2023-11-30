@@ -74,7 +74,7 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
         imageHeight={630}
         siteName={SITE_NAME}
         title={DEFAULT_TITLE}
-        twitterCardType="summary_large_image"
+        twitterCard="summary_large_image"
         twitterSite="@exampleSite"
         url={metaUrl}
       >
