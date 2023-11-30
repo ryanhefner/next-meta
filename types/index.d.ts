@@ -14,9 +14,9 @@ interface SiteMetaProps {
   locale?: string
   siteName?: string
   title?: string
-  twitterSite?: string
-  twitterCreator?: string
   twitterCard?: string
+  twitterCreator?: string
+  twitterSite?: string
   url?: string
   videoUrl?: string
   videoType?: string
