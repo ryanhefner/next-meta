@@ -113,7 +113,7 @@ const ExamplePage = () => (
 
 ## Properties
 
-| Props                           | Description                                   |
+| Prop                            | Description                                   |
 |---------------------------------|-----------------------------------------------|
 | `audioUrl?: string`             | URL to audio file.                            |
 | `audioType?: string`            | Mimetype of audio file.                       |
@@ -121,8 +121,8 @@ const ExamplePage = () => (
 | `description?: string`          | You know, `<meta name="description" content="You know, a description" />`                                             |
 | `determiner?: string`           | The word that appears before this object's title in a sentence.An enum of (a, an, the, "", auto). If `auto` is chosen, the consumer of your data should chose between "a" or "an". Default is "" (blank).    |
 | `imageUrl?: string`             | URL to image.                                 |
-| `imageWidth?: number | string`  | Width of the image. (Typically: `1200px`)     |
-| `imageHeight?: number | string` | Height of the image. (Typically: `630px`)     |
+| `imageWidth?: number \| string`  | Width of the image. (Typically: `1200px`)     |
+| `imageHeight?: number \| string` | Height of the image. (Typically: `630px`)     |
 | `locale?: string`               | Locale of site/page                           |
 | `siteName?: string`             | Use for `og:site_name` and appended to `<title>` |
 | `title?: string`                | Title of page. Generates: `<title>` + `og:title` + `twitter:title` tags |
