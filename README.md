@@ -111,6 +111,28 @@ const ExamplePage = () => (
 )
 ```
 
+## Properties
+
+| Props                           | Description                                   |
+|---------------------------------|-----------------------------------------------|
+| `audioUrl?: string`             | URL to audio file.                            |
+| `audioType?: string`            | Mimetype of audio file.                       |
+| `baseUrl?: string`              | Used specify base url to use for all `xUrl` props, allowing you to simply pass in `url="/about"` vs. `url="https://yourdomain.com/about"`.                                                                          | `debug?: boolean`               | Currently not used, but things are in the works.|
+| `description?: string`          | You know, `<meta name="description" content="You know, a description" />`                                             |
+| `determiner?: string`           | The word that appears before this object's title in a sentence.An enum of (a, an, the, "", auto). If `auto` is chosen, the consumer of your data should chose between "a" or "an". Default is "" (blank).    |
+| `imageUrl?: string`             | URL to image.                                 |
+| `imageWidth?: number | string`  | Width of the image. (Typically: `1200px`)     |
+| `imageHeight?: number | string` | Height of the image. (Typically: `630px`)     |
+| `locale?: string`               | Locale of site/page                           |
+| `siteName?: string`             | Use for `og:site_name` and appended to `<title>` |
+| `title?: string`                | Title of page. Generates: `<title>` + `og:title` + `twitter:title` tags |
+| `twitterCard?: string`          | Twitter card display type.                    |
+| `twitterCreator?: string`       | Username to associate with a page/post.       |
+| `twitterSite?: string`          | Username to associate with the site/app.      |
+| `url?: string`                  | URL of page/site.                             |
+| `videoUrl?: string`             | URL to video file.                            |
+| `videoType?: string`            | Mimetype of the video file.                   |
+
 ## License
 
 [MIT](LICENSE) © [Ryan Hefner](https://www.ryanhefner.com)
