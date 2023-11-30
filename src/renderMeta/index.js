@@ -1,1 +1,1 @@
-export { default as renderMeta } from './renderMeta.jsx'
+export { default as renderMeta } from './renderMeta'
