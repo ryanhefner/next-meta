@@ -1,6 +1,6 @@
 import React from 'react'
-import { describe, expect, test, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+import { cleanup, render } from '@testing-library/react'
 import SiteMeta from './SiteMeta'
 
 vi.mock('next/head', () => {
@@ -12,15 +12,34 @@ vi.mock('next/head', () => {
   }
 })
 
+const htmlContainer = document.createElement('html')
+const headContainer = document.createElement('head')
+htmlContainer.appendChild(headContainer)
+
+const renderOptions = {
+  baseElement: htmlContainer,
+  container: headContainer,
+  wrapper: ({ children }) => <>{children}</>,
+  // hydrate: true,
+}
+
 describe('SiteMeta', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   describe('title', () => {
     test('renders - title', () => {
-      const { getByText } = render(<SiteMeta title="Test Title" />)
+      const { getByText } = render(
+        <SiteMeta title="Test Title" />,
+        renderOptions,
+      )
       expect(getByText('Test Title')).toBeTruthy()
     })
 
     test('renders - og:title', () => {
-      const { container } = render(<SiteMeta title="Test Title" />)
+      const { container, debug } = render(<SiteMeta title="Test Title" />)
+      // debug()
       expect(container.querySelector('[property="og:title"]')).toBeTruthy()
     })
 
@@ -66,21 +85,23 @@ describe('SiteMeta', () => {
 
   describe('image', () => {
     test('renders - imageUrl', () => {
-      const { container } = render(<SiteMeta imageUrl="test.jpg" />)
+      const { container } = render(<SiteMeta imageUrl="/test.jpg" />)
       expect(container.querySelector('[property="og:image"]')).toBeTruthy()
     })
 
     test('renders - imageAlt', () => {
       const { container } = render(
-        <SiteMeta imageUrl="test.jpg" imageAlt="Test Image" />,
+        <SiteMeta imageUrl="/test.jpg" imageAlt="Test Image" />,
       )
       expect(container.querySelector('[property="og:image:alt"]')).toBeTruthy()
     })
 
     test('renders - imageWidth', () => {
       const { container } = render(
-        <SiteMeta imageUrl="test.jpg" imageWidth="100" />,
+        <SiteMeta imageUrl="/test.jpg" imageWidth="100" />,
+        renderOptions,
       )
+
       expect(
         container.querySelector('[property="og:image:width"]'),
       ).toBeTruthy()
@@ -88,7 +109,8 @@ describe('SiteMeta', () => {
 
     test('renders - imageHeight', () => {
       const { container } = render(
-        <SiteMeta imageUrl="test.jpg" imageHeight="100" />,
+        <SiteMeta imageUrl="/test.jpg" imageHeight="100" />,
+        renderOptions,
       )
       expect(
         container.querySelector('[property="og:image:height"]'),
@@ -142,7 +164,7 @@ describe('SiteMeta', () => {
     })
 
     test('renders - twitter:card', () => {
-      const { container } = render(<SiteMeta twitterCardType="summary" />)
+      const { container } = render(<SiteMeta twitterCard="summary" />)
       expect(container.querySelector('[name="twitter:card"]')).toBeTruthy()
     })
   })
@@ -163,13 +185,13 @@ describe('SiteMeta', () => {
 
   describe('video', () => {
     test('renders - videoUrl', () => {
-      const { container } = render(<SiteMeta videoUrl="test.mp4" />)
+      const { container } = render(<SiteMeta videoUrl="/test.mp4" />)
       expect(container.querySelector('[property="og:video"]')).toBeTruthy()
     })
 
     test('renders - videoType', () => {
       const { container } = render(
-        <SiteMeta videoUrl="test.mp4" videoType="video/mp4" />,
+        <SiteMeta videoUrl="/test.mp4" videoType="video/mp4" />,
       )
       expect(container.querySelector('[property="og:video:type"]')).toBeTruthy()
     })

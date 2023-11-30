@@ -10,9 +10,11 @@ umd
 # Lib files
 MetaContext
 MetaProvider
+renderMeta
 SiteMeta
 !src/MetaContext
 !src/MetaProvider
+!src/renderMeta
 !src/SiteMeta
 
 # Include Rollup config

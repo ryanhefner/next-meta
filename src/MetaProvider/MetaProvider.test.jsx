@@ -1,6 +1,6 @@
 import React from 'react'
-import { describe, expect, test, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+import { cleanup, render } from '@testing-library/react'
 import MetaProvider from './MetaProvider'
 import { SiteMeta } from '../SiteMeta'
 
@@ -13,9 +13,19 @@ vi.mock('next/head', () => {
   }
 })
 
+const renderOptions = {
+  baseElement: document.createElement('html'),
+  // hydrate: true,
+}
+
 describe('MetaProvider', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   test('renders', () => {
-    const { container } = render(<MetaProvider />)
+    const { container, debug } = render(<MetaProvider />, renderOptions)
+    // debug()
     expect(container).toBeTruthy()
   })
 
@@ -24,17 +34,25 @@ describe('MetaProvider', () => {
       <MetaProvider>
         <div>Test</div>
       </MetaProvider>,
+      renderOptions,
     )
     expect(container.querySelector('div')).toBeTruthy()
   })
 
   test('renders - skipDefaultsRender', () => {
-    const { container } = render(<MetaProvider skipDefaultsRender />)
+    const { container } = render(
+      <MetaProvider skipDefaultsRender />,
+      renderOptions,
+    )
     expect(container.querySelector('title')).toBeFalsy()
   })
 
   test('renders - title', () => {
-    const { getByText } = render(<MetaProvider title="Test Title" />)
+    const { debug, getByText } = render(
+      <MetaProvider title="Test Title" />,
+      renderOptions,
+    )
+    // debug()
     expect(getByText('Test Title')).toBeTruthy()
   })
 

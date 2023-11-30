@@ -17,6 +17,7 @@
     "index.cjs",
     "MetaContext",
     "MetaProvider",
+    "renderMeta",
     "SiteMeta"
   ],
   "directories": {
