@@ -70,7 +70,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "global-jsdom": "^9.1.0",
+    "global-jsdom": "^24.0.0",
     "gzip-size": "^7.0.0",
     "jsdom": "^23.0.0",
     "next": "^14.0.3",
