@@ -1,5 +1,12 @@
 import { PropsWithChildren } from 'react'
 
+export enum TwitterCard {
+  APP = 'app',
+  PLAYER = 'player',
+  SUMMARY = 'summary',
+  SUMMARY_LARGE_IMAGE = 'summary_large_image',
+}
+
 interface SiteMetaProps {
   audioUrl?: string
   audioType?: string
@@ -14,9 +21,24 @@ interface SiteMetaProps {
   locale?: string
   siteName?: string
   title?: string
-  twitterCard?: string
+  twitterAppCountry?: string
+  twitterAppNameGooglePlay?: string
+  twitterAppIdGooglePlay?: string
+  twitterAppUrlGooglePlay?: string
+  twitterAppNameIPad?: string
+  twitterAppIdIPad?: string
+  twitterAppUrlIPad?: string
+  twitterAppNameIPhone?: string
+  twitterAppIdIPhone?: string
+  twitterAppUrlIPhone?: string
+  twitterCard?: 'app' | 'player' | 'summary' | 'summary_image_large' | TwitterCard
   twitterCreator?: string
+  twitterPlayer?: string
+  twitterPlayerWidth?: number | string
+  twitterPlayerHeight?: number | string
+  twitterPlayerStream?: string
   twitterSite?: string
+  type?: string
   url?: string
   videoUrl?: string
   videoType?: string
