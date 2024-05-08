@@ -2,7 +2,8 @@ import fs from 'fs'
 import { execSync } from 'child_process'
 import prettyBytes from 'pretty-bytes'
 import { gzipSizeSync } from 'gzip-size'
-import pkg from '../package.json' assert { type: 'json' }
+// @ts-expect-error
+import pkg from '../package.json' with { type: 'json' }
 
 const exec = (command, extraEnv) => {
   execSync(command, {
