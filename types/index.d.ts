@@ -31,12 +31,13 @@ interface SiteMetaProps {
   twitterAppNameIPhone?: string
   twitterAppIdIPhone?: string
   twitterAppUrlIPhone?: string
-  twitterCard?: 'app' | 'player' | 'summary' | 'summary_image_large' | TwitterCard
+  twitterCard?: 'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
   twitterCreator?: string
   twitterPlayer?: string
   twitterPlayerWidth?: number | string
   twitterPlayerHeight?: number | string
   twitterPlayerStream?: string
+  twitterPlayerStreamContentType?: string
   twitterSite?: string
   type?: string
   url?: string
