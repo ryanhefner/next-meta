@@ -63,11 +63,11 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       <Head>
-        <link rel="canonical" href={`${BASE_URL}${metaUrl}`} />
         <link rel="icon" type="image/png" href="/favicon.ico" />
       </Head>
       <MetaProvider
         baseUrl={BASE_URL}
+        canonical={metaUrl}
         description={DEFAULT_DESCRIPTION}
         imageUrl={DEFAULT_IMAGE_URL}
         imageWidth={1200}
