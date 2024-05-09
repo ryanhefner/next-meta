@@ -29,7 +29,6 @@ const renderMeta = (props, context) => {
     siteName,
     siteNameDelimiter,
     title,
-    type,
     twitterAppCountry,
     twitterAppNameGooglePlay,
     twitterAppIdGooglePlay,
@@ -46,7 +45,9 @@ const renderMeta = (props, context) => {
     twitterPlayerWidth,
     twitterPlayerHeight,
     twitterPlayerStream,
+    twitterPlayerStreamContentType,
     twitterSite,
+    type,
     url,
     videoUrl,
     videoType,
@@ -192,174 +193,171 @@ const renderMeta = (props, context) => {
         content={twitterCard}
       />,
     )
+  }
 
-    // Twitter Card - App
-    if (twitterCard === 'app') {
-      // Twitter - App: Country
-      if (twitterAppCountry) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-country"
-            name="twitter:app:country"
-            content={twitterAppCountry}
-          />,
-        )
-      }
+  // Twitter Card - App
+  // Twitter Card - App: Country
+  if (twitterAppCountry) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-country"
+        name="twitter:app:country"
+        content={twitterAppCountry}
+      />,
+    )
+  }
 
-      // Twitter - App: Name: Google Play
-      if (twitterAppNameGooglePlay) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-name-googleplay"
-            name="twitter:app:name:googleplay"
-            content={twitterAppNameGooglePlay}
-          />,
-        )
-      }
+  // Twitter Card - App: Name: Google Play
+  if (twitterAppNameGooglePlay) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-name-googleplay"
+        name="twitter:app:name:googleplay"
+        content={twitterAppNameGooglePlay}
+      />,
+    )
+  }
 
-      // Twitter - App: Id: Google Play
-      if (twitterAppIdGooglePlay) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-id-googleplay"
-            name="twitter:app:id:googleplay"
-            content={twitterAppIdGooglePlay}
-          />,
-        )
-      }
+  // Twitter Card - App: Id: Google Play
+  if (twitterAppIdGooglePlay) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-id-googleplay"
+        name="twitter:app:id:googleplay"
+        content={twitterAppIdGooglePlay}
+      />,
+    )
+  }
 
-      // Twitter - App: Url: Google Play
-      if (twitterAppIdGooglePlay) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-url-googleplay"
-            name="twitter:app:url:googleplay"
-            content={twitterAppUrlGooglePlay}
-          />,
-        )
-      }
+  // Twitter Card - App: Url: Google Play
+  if (twitterAppIdGooglePlay) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-url-googleplay"
+        name="twitter:app:url:googleplay"
+        content={twitterAppUrlGooglePlay}
+      />,
+    )
+  }
 
-      // Twitter - App: Name: iPad
-      if (twitterAppNameIPad) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-name-ipad"
-            name="twitter:app:name:ipad"
-            content={twitterAppNameIPad}
-          />,
-        )
-      }
+  // Twitter Card - App: Name: iPad
+  if (twitterAppNameIPad) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-name-ipad"
+        name="twitter:app:name:ipad"
+        content={twitterAppNameIPad}
+      />,
+    )
+  }
 
-      // Twitter - App: Id: iPad
-      if (twitterAppIdIPad) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-id-ipad"
-            name="twitter:app:id:ipad"
-            content={twitterAppIdIPad}
-          />,
-        )
-      }
+  // Twitter Card - App: Id: iPad
+  if (twitterAppIdIPad) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-id-ipad"
+        name="twitter:app:id:ipad"
+        content={twitterAppIdIPad}
+      />,
+    )
+  }
 
-      // Twitter - App: Url: iPad
-      if (twitterAppNameIPad) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-url-ipad"
-            name="twitter:app:url:ipad"
-            content={twitterAppUrlIPad}
-          />,
-        )
-      }
+  // Twitter Card - App: Url: iPad
+  if (twitterAppNameIPad) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-url-ipad"
+        name="twitter:app:url:ipad"
+        content={twitterAppUrlIPad}
+      />,
+    )
+  }
 
-      // Twitter - App: Name: iPhone
-      if (twitterAppNameIPhone) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-name-iphone"
-            name="twitter:app:name:iphone"
-            content={twitterAppNameIPhone}
-          />,
-        )
-      }
+  // Twitter Card - App: Name: iPhone
+  if (twitterAppNameIPhone) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-name-iphone"
+        name="twitter:app:name:iphone"
+        content={twitterAppNameIPhone}
+      />,
+    )
+  }
 
-      // Twitter - App: Id: iPhone
-      if (twitterAppIdIPhone) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-id-iphone"
-            name="twitter:app:id:iphone"
-            content={twitterAppIdIPhone}
-          />,
-        )
-      }
+  // Twitter Card - App: Id: iPhone
+  if (twitterAppIdIPhone) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-id-iphone"
+        name="twitter:app:id:iphone"
+        content={twitterAppIdIPhone}
+      />,
+    )
+  }
 
-      // Twitter - App: Url: iPhone
-      if (twitterAppUrlIPhone) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-app-url-iphone"
-            name="twitter:app:url:iphone"
-            content={twitterAppUrlIPhone}
-          />,
-        )
-      }
-    }
+  // Twitter Card - App: Url: iPhone
+  if (twitterAppUrlIPhone) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-app-url-iphone"
+        name="twitter:app:url:iphone"
+        content={twitterAppUrlIPhone}
+      />,
+    )
+  }
 
-    // Twitter Card - App
-    if (twitterCard === 'player') {
-      tagsToRender.push(
-        <meta
-          key="meta-twitter-card"
-          name="twitter:card"
-          content={twitterCard}
-        />,
-      )
+  // Twitter Card - Player
+  if (twitterPlayer) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-player"
+        name="twitter:player"
+        content={twitterPlayer}
+      />,
+    )
+  }
 
-      // Twitter - Player
-      if (twitterPlayer) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player"
-            name="twitter:player"
-            content={twitterPlayer}
-          />,
-        )
-      }
+  // Twitter Card - Player: Width
+  if (twitterPlayerWidth) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-player-width"
+        name="twitter:player:width"
+        content={twitterPlayerWidth}
+      />,
+    )
+  }
 
-      // Twitter - Player: Width
-      if (twitterPlayerWidth) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player-width"
-            name="twitter:player:width"
-            content={twitterPlayerWidth}
-          />,
-        )
-      }
+  // Twitter Card - Player: Height
+  if (twitterPlayerHeight) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-player-height"
+        name="twitter:player:height"
+        content={twitterPlayerHeight}
+      />,
+    )
+  }
 
-      // Twitter - Player: Height
-      if (twitterPlayerHeight) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player-height"
-            name="twitter:player:height"
-            content={twitterPlayerHeight}
-          />,
-        )
-      }
+  // Twitter Card - Player: Stream
+  if (twitterPlayerStream) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-player-stream"
+        name="twitter:player:stream"
+        content={twitterPlayerStream}
+      />,
+    )
+  }
 
-      // Twitter - Player: Stream
-      if (twitterPlayerStream) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player-stream"
-            name="twitter:player:stream"
-            content={twitterPlayerStream}
-          />,
-        )
-      }
-    }
+  if (twitterPlayerStreamContentType) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-player-stream-content-type"
+        name="twitter:player:stream:content_type"
+        content={twitterPlayerStreamContentType}
+      />,
+    )
   }
 
   // twitterCreator
