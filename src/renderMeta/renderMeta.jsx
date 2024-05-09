@@ -17,6 +17,7 @@ const renderMeta = (props, context) => {
     audioUrl,
     audioType,
     baseUrl,
+    canonical,
     debug,
     description,
     determiner,
@@ -57,8 +58,14 @@ const renderMeta = (props, context) => {
   const absoluteImageUrl = getAbsoluteUrl(imageUrl, baseUrl)
   const absoluteVideoUrl = getAbsoluteUrl(videoUrl, baseUrl)
   const absoluteUrl = getAbsoluteUrl(url, baseUrl)
+  const absoluteCanonicalUrl = getAbsoluteUrl(canonical, baseUrl)
 
   const tagsToRender = []
+
+  // canonical
+  if (absoluteCanonicalUrl) {
+    tagsToRender.push(<link rel="canonical" href={absoluteCanonicalUrl} />)
+  }
 
   // title
   if (title) {

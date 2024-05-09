@@ -11,6 +11,7 @@ interface SiteMetaProps {
   audioUrl?: string
   audioType?: string
   baseUrl?: string
+  canonical?: string
   debug?: boolean
   description?: string
   determiner?: string
