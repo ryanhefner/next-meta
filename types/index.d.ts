@@ -35,7 +35,7 @@ type Twitter = {
   site?: string
 }
 
-interface SiteMetaProps {
+interface SiteMetaProps extends PropsWithChildren {
   audioUrl?: string
   audioType?: string
   baseUrl?: string
