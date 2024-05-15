@@ -1,6 +1,6 @@
 {
   "name": "next-meta",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Easily compose and manage meta and open graph tags in your Next.js app/site.",
   "repository": "ryanhefner/next-meta",
   "author": "Ryan Hefner <hi@ryanhefner.com> (https://www.ryanhefner.com)",
