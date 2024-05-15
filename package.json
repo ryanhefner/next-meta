@@ -43,6 +43,9 @@
     "react": ">=16.8",
     "react-dom": ">=16.8"
   },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
