@@ -1,4 +1,5 @@
 import React from 'react'
+import merge from 'lodash/merge'
 
 const getAbsoluteUrl = (url, baseUrl) => {
   if (baseUrl && url && url.indexOf('http') === -1) {
@@ -12,7 +13,7 @@ const DEFAULTS = {
   siteNameDelimiter: '|',
 }
 
-const renderMeta = (props, context) => {
+const renderMeta = (props = {}, context = {}) => {
   const {
     audioUrl,
     audioType,
@@ -38,7 +39,7 @@ const renderMeta = (props, context) => {
     url,
     videoUrl,
     videoType,
-  } = { ...DEFAULTS, ...(context || {}), ...(props || {}) }
+  } = merge({}, DEFAULTS, context, props)
 
   const absoluteAudioUrl = getAbsoluteUrl(audioUrl, baseUrl)
   const absoluteImageUrl = getAbsoluteUrl(imageUrl, baseUrl)
@@ -50,7 +51,9 @@ const renderMeta = (props, context) => {
 
   // canonical
   if (absoluteCanonicalUrl) {
-    tagsToRender.push(<link rel="canonical" href={absoluteCanonicalUrl} />)
+    tagsToRender.push(
+      <link key="canonical" rel="canonical" href={absoluteCanonicalUrl} />
+    )
   }
 
   // title
@@ -224,9 +227,9 @@ const renderMeta = (props, context) => {
     }
 
     // Twitter - App
-    if (twitter?.app) {
+    if (twitter.app) {
       // Twitter - App: Country
-      if (twitter?.app?.country) {
+      if (twitter.app.country) {
         tagsToRender.push(
           <meta
             key="meta-twitter-app-country"
@@ -237,7 +240,7 @@ const renderMeta = (props, context) => {
       }
 
       // Twitter - App: Google Play
-      if (twitter.app?.googlePlay) {
+      if (twitter.app.googlePlay) {
         // Twitter - App: Name
         if (twitter.app.googlePlay.name || twitter.app.name) {
           tagsToRender.push(
@@ -273,7 +276,7 @@ const renderMeta = (props, context) => {
       }
 
       // Twitter - App: iPad
-      if (twitter.app?.iPad) {
+      if (twitter.app.iPad) {
         // Twitter - App: Name
         if (twitter.app.iPad.name || twitter.app.name) {
           tagsToRender.push(
@@ -309,7 +312,7 @@ const renderMeta = (props, context) => {
       }
 
       // Twitter - App: iPhone
-      if (twitter.app?.iPhone) {
+      if (twitter.app.iPhone) {
         // Twitter - App: Name
         if (twitter.app.iPhone.name || twitter.app.name) {
           tagsToRender.push(
@@ -381,25 +384,28 @@ const renderMeta = (props, context) => {
       }
 
       // Twitter - Player: Stream
-      if (twitter.player.stream?.url) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player-stream"
-            name="twitter:player:stream"
-            content={twitter.player.stream.url}
-          />,
-        )
-      }
+      if (twitter.player.stream) {
+        // Twitter - Player: Stream: Url
+        if (twitter.player.stream.url) {
+          tagsToRender.push(
+            <meta
+              key="meta-twitter-player-stream"
+              name="twitter:player:stream"
+              content={twitter.player.stream.url}
+            />,
+          )
+        }
 
-      // Twitter - Player: Stream: Content Type
-      if (twitter.player.stream?.contentType) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-player-stream-content-type"
-            name="twitter:player:stream:content_type"
-            content={twitter.player.stream?.contentType}
-          />,
-        )
+        // Twitter - Player: Stream: Content Type
+        if (twitter.player.stream.contentType) {
+          tagsToRender.push(
+            <meta
+              key="meta-twitter-player-stream-content-type"
+              name="twitter:player:stream:content_type"
+              content={twitter.player.stream?.contentType}
+            />,
+          )
+        }
       }
     }
   }
@@ -454,7 +460,7 @@ const renderMeta = (props, context) => {
     if (absoluteAudioUrl.startsWith('https://')) {
       tagsToRender.push(
         <meta
-          key="meta-og-audio"
+          key="meta-og-audio-secure-url"
           property="og:audio:secure_url"
           content={absoluteAudioUrl}
         />,
@@ -487,7 +493,7 @@ const renderMeta = (props, context) => {
     if (absoluteVideoUrl.startsWith('https://')) {
       tagsToRender.push(
         <meta
-          key="meta-og-video"
+          key="meta-og-video-secure-url"
           property="og:video:secure_url"
           content={absoluteVideoUrl}
         />,
