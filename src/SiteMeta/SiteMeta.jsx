@@ -3,10 +3,15 @@ import Head from 'next/head'
 import { MetaContext } from '../MetaContext'
 import { renderMeta } from '../renderMeta'
 
-const SiteMeta = (props) => {
+const SiteMeta = ({ children, ...props }) => {
   const context = useContext(MetaContext)
 
-  return <Head>{renderMeta(props, context)}</Head>
+  return (
+    <Head>
+      {renderMeta(props, context)}
+      {children}
+    </Head>
+  )
 }
 
 export default SiteMeta

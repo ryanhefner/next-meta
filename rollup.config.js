@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
+// @ts-expect-error
 import pkg from './package.json' assert { type: 'json' }
 
 const config = {
