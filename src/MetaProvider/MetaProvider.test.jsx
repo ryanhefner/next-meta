@@ -4,7 +4,7 @@ import { cleanup, render } from '@testing-library/react'
 import MetaProvider from './MetaProvider'
 import { SiteMeta } from '../SiteMeta'
 
-vi.mock('next/head', () => {
+vi.mock('next/head.js', () => {
   return {
     __esModule: true,
     default: ({ children }) => {
@@ -14,64 +14,63 @@ vi.mock('next/head', () => {
 })
 
 const renderOptions = {
-  baseElement: document.createElement('html'),
-  // hydrate: true,
+  baseElement: document.documentElement,
+  container: document.head,
+  wrapper: ({ children }) => <>{children}</>,
 }
 
 describe('MetaProvider', () => {
   afterEach(() => {
     cleanup()
+    document.head.innerHTML = ''
   })
 
   test('renders', () => {
-    const { container, debug } = render(<MetaProvider />, renderOptions)
-    // debug()
-    expect(container).toBeTruthy()
+    render(<MetaProvider />, renderOptions)
+    expect(document.head).toBeTruthy()
   })
 
   test('renders - children', () => {
-    const { container } = render(
+    render(
       <MetaProvider>
         <div>Test</div>
       </MetaProvider>,
-      renderOptions,
+      { baseElement: document.documentElement, container: document.body },
     )
-    expect(container.querySelector('div')).toBeTruthy()
+    expect(document.body.querySelector('div')).toBeTruthy()
   })
 
   test('renders - skipDefaultsRender', () => {
-    const { container } = render(
-      <MetaProvider skipDefaultsRender />,
-      renderOptions,
+    render(
+      <MetaProvider skipDefaultsRender />, renderOptions,
     )
-    expect(container.querySelector('title')).toBeFalsy()
+    expect(document.head.querySelector('title')).toBeFalsy()
   })
 
   test('renders - title', () => {
-    const { debug, getByText } = render(
-      <MetaProvider title="Test Title" />,
-      renderOptions,
+    render(
+      <MetaProvider title="Test Title" />, renderOptions,
     )
-    // debug()
-    expect(getByText('Test Title')).toBeTruthy()
+    expect(document.head.querySelector('title').textContent).toBe('Test Title')
   })
 
   test('renders - og:title', () => {
-    const { container } = render(<MetaProvider title="Test Title" />)
-    expect(container.querySelector('[property="og:title"]')).toBeTruthy()
+    render(<MetaProvider title="Test Title" />, renderOptions)
+    expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
   })
 
   test('renders defaults and SiteMeta overrides', () => {
-    const { getByText } = render(
+    render(
       <MetaProvider title="Test Title" siteName="Test Site Name">
         <SiteMeta title="Test Title Override" />
       </MetaProvider>,
+      renderOptions,
     )
-    expect(getByText('Test Title Override | Test Site Name')).toBeTruthy()
+    expect(document.head.querySelector('title').textContent).toBe('Test Title Override | Test Site Name')
   })
 
   test('renders - defaults w/ SiteMeta additions', () => {
-    const { container } = render(
+    render(
       <MetaProvider title="Test Title" twitter={{ card: 'summary_large_image', creator: '@ryanhefner' }}>
         <SiteMeta
           description="Test Description"
@@ -84,29 +83,31 @@ describe('MetaProvider', () => {
           }}
         />
       </MetaProvider>,
+      renderOptions,
     )
-    expect(container.querySelector('[property="og:title"]')).toBeTruthy()
-    expect(container.querySelector('[property="og:description"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:card"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:creator"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:player"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:player:width"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:player:height"]')).toBeTruthy()
+    expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
+    expect(document.head.querySelector('[property="og:description"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:card"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:creator"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:player"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:player:width"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:player:height"]')).toBeTruthy()
   })
 
   test('renders - absolute urls w/ baseUrl + url override', () => {
-    const { container } = render(
+    render(
       <MetaProvider baseUrl="https://test.com" url="/test">
         <SiteMeta url="/test-override" />
       </MetaProvider>,
+      renderOptions,
     )
     expect(
-      container.querySelectorAll('[property="og:url"]')[1],
+      document.head.querySelectorAll('[property="og:url"]')[1],
     ).toHaveProperty('content', 'https://test.com/test-override')
   })
 
   test('children rendered via SiteMeta', () => {
-    const { container } = render(
+    render(
       <MetaProvider twitter={{ card: 'summary_large_image' }}>
         <SiteMeta
           title={`Episode: 001 - Podcast`}
@@ -140,21 +141,23 @@ describe('MetaProvider', () => {
           />
         </SiteMeta>
       </MetaProvider>,
+      renderOptions,
     )
+    const rssLink = document.head.querySelector('link[type="application/rss+xml"]')
+    const oembedLink = document.head.querySelector('link[type="application/json+oembed"]')
+
+    expect(rssLink).toBeTruthy()
+    expect(rssLink).toHaveProperty('href', 'https://feeds.transistor.fm/allplay')
+    expect(oembedLink).toBeTruthy()
+    expect(oembedLink).toHaveProperty('href', 'https://share.transistor.fm/oembed?url=https://test.com/episode/001')
     expect(
-      container.querySelector('[type="application/rss+xml"]')
-    ).toHaveProperty('href', 'https://feeds.transistor.fm/allplay')
-    expect(
-      container.querySelector('[type="application/json+oembed"]')
-    ).toHaveProperty('href', 'https://share.transistor.fm/oembed?url=https://test.com/episode/001')
-    expect(
-      container.querySelector('[property="og:audio"]')
+      document.head.querySelector('[property="og:audio"]')
     ).toHaveProperty('content', 'https://test.com?src=allplay.fm')
     expect(
-      container.querySelector('[property="og:audio:type"]')
+      document.head.querySelector('[property="og:audio:type"]')
     ).toHaveProperty('content', 'audio/mpeg')
     expect(
-      container.querySelectorAll('[name="twitter:card"]')[1]
+      document.head.querySelectorAll('[name="twitter:card"]')[1]
     ).toHaveProperty('content', 'player')
   })
 })
