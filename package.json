@@ -1,6 +1,6 @@
 {
   "name": "next-meta",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A composable React component for managing meta tags, Open Graph, and Twitter cards in Next.js applications.",
   "repository": {
     "type": "git",
