@@ -174,21 +174,86 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 | `audioUrl?: string`             | URL to audio file.                            | `"/podcast/episode1.mp3"` |
 | `audioType?: string`            | Mimetype of audio file.                       | `"audio/mpeg"` |
 | `baseUrl?: string`              | Base URL for all `xUrl` props.                | `"https://example.com"` |
+| `canonical?: string`            | Canonical URL for the page.                   | `"/blog/post-1"` |
 | `debug?: boolean`               | Enable debug mode (in development).           | `true` |
 | `description?: string`          | Page description for meta tags.               | `"Learn about our company"` |
 | `determiner?: string`           | Word before object's title in a sentence.     | `"the"` |
-| `imageUrl?: string`             | URL to image for social sharing.              | `"/images/share.png"` |
-| `imageWidth?: number \| string`  | Width of the image.                           | `1200` |
-| `imageHeight?: number \| string` | Height of the image.                          | `630` |
+| `image?: Image`                 | Image object for social sharing.              | `{ url: "/images/share.png", alt: "Description", width: 1200, height: 630 }` |
 | `locale?: string`               | Locale of site/page.                          | `"en_US"` |
+| `localeAlternates?: string[]`   | Alternate locales for the page.               | `["en_CA", "fr_CA"]` |
 | `siteName?: string`             | Site name for meta tags.                      | `"My Blog"` |
+| `siteNameDelimiter?: string`    | Delimiter between title and site name.        | `"|"` |
 | `title?: string`                | Page title.                                   | `"About Us"` |
-| `twitterCard?: string`          | Twitter card display type.                    | `"summary_large_image"` |
-| `twitterCreator?: string`       | Twitter username for content creator.         | `"@author"` |
-| `twitterSite?: string`          | Twitter username for site.                    | `"@site"` |
+| `twitter?: Twitter`             | Twitter card configuration object.            | `{ card: "summary_large_image", site: "@site", creator: "@author" }` |
+| `type?: string`                 | Open Graph type of the page.                  | `"website"` |
 | `url?: string`                  | URL of page.                                  | `"/about"` |
 | `videoUrl?: string`             | URL to video file.                            | `"/videos/tutorial.mp4"` |
 | `videoType?: string`            | Mimetype of video file.                       | `"video/mp4"` |
+
+### Deprecated Properties
+
+The following properties are deprecated and should be replaced with their new counterparts:
+
+| Deprecated Prop      | New Prop                |
+|---------------------|------------------------|
+| `imageUrl`          | `image.url`            |
+| `imageAlt`          | `image.alt`            |
+| `imageWidth`        | `image.width`          |
+| `imageHeight`       | `image.height`         |
+| `twitterCard`       | `twitter.card`         |
+| `twitterCreator`    | `twitter.creator`      |
+| `twitterSite`       | `twitter.site`         |
+
+### Twitter Card Types
+
+When using the `twitter.card` property, you can use one of the following values:
+
+- `"summary"` - Default card type
+- `"summary_large_image"` - Large image card type
+- `"app"` - App card type
+- `"player"` - Player card type
+
+### Image Object
+
+The `image` object supports the following properties:
+
+| Property  | Type                | Description                |
+|-----------|---------------------|----------------------------|
+| `url`     | `string`            | URL of the image           |
+| `alt`     | `string`            | Alt text for the image     |
+| `width`   | `number \| string`  | Width of the image         |
+| `height`  | `number \| string`  | Height of the image        |
+
+### Twitter Object
+
+The `twitter` object supports the following properties:
+
+| Property  | Type                | Description                |
+|-----------|---------------------|----------------------------|
+| `card`    | `string`            | Twitter card type          |
+| `site`    | `string`            | Twitter username for site  |
+| `creator` | `string`            | Twitter username for author|
+| `player`  | `Player`            | Player card configuration  |
+
+### Player Object
+
+The `player` object supports the following properties:
+
+| Property      | Type                | Description                |
+|---------------|---------------------|----------------------------|
+| `url`         | `string`            | URL of the player          |
+| `width`       | `number \| string`  | Width of the player        |
+| `height`      | `number \| string`  | Height of the player       |
+| `stream`      | `Stream`            | Stream configuration       |
+
+### Stream Object
+
+The `stream` object supports the following properties:
+
+| Property      | Type     | Description                |
+|---------------|----------|----------------------------|
+| `url`         | `string` | URL of the stream          |
+| `contentType` | `string` | Content type of the stream |
 
 ## License
 
