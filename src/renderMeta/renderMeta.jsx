@@ -22,6 +22,7 @@ const renderMeta = (props = {}, context = {}) => {
     debug,
     description,
     determiner,
+    image,
     imageUrl,
     imageAlt,
     imageWidth,
