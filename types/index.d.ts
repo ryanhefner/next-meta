@@ -1,4 +1,11 @@
-import { PropsWithChildren } from 'react'
+import { Context, PropsWithChildren, ReactNode } from 'react'
+
+type Image = {
+  alt?: string
+  height?: number | string
+  url?: string
+  width?: number | string
+}
 
 export enum TwitterCard {
   APP = 'app',
@@ -23,6 +30,7 @@ type Twitter = {
   }
   card?: 'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
   creator?: string
+  image?: Image
   player?: {
     height?: string
     stream?: {
@@ -43,12 +51,19 @@ interface SiteMetaProps extends PropsWithChildren {
   debug?: boolean
   description?: string
   determiner?: string
+  image?: Image
+  // @deprecated - Use image.url instead
   imageUrl?: string
+  // @deprecated - Use image.alt instead
   imageAlt?: string
+  // @deprecated - Use image.width instead
   imageWidth?: number | string
+  // @deprecated - Use image.height instead
   imageHeight?: number | string
   locale?: string
+  localeAlternates?: string[]
   siteName?: string
+  siteNameDelimiter?: string
   title?: string
   twitter?: Twitter
   // @deprecated - Use twitter.card instead
@@ -67,7 +82,7 @@ interface MetaProviderProps extends PropsWithChildren, SiteMetaProps {
   skipDefaultsRender?: boolean
 }
 
-export const MetaContext: React.Context<Partial<SiteMetaProps>>
-export const MetaProvider: (props: MetaProviderProps) => JSX.Element
-export const renderMeta: (props?: SiteMetaProps, context?: SiteMetaProps) => JSX.Element
-export const SiteMeta: (props: SiteMetaProps) => JSX.Element
+export const MetaContext: Context<Partial<SiteMetaProps>>
+export const MetaProvider: (props: MetaProviderProps) => ReactNode
+export const renderMeta: (props?: SiteMetaProps, context?: SiteMetaProps) => ReactNode
+export const SiteMeta: (props: SiteMetaProps) => ReactNode

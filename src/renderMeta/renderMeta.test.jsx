@@ -3,39 +3,33 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import renderMeta from './renderMeta'
 
-const htmlContainer = document.createElement('html')
-const headContainer = document.createElement('head')
-htmlContainer.appendChild(headContainer)
-
 const renderOptions = {
-  baseElement: htmlContainer,
-  container: headContainer,
+  baseElement: document.documentElement,
+  container: document.head,
   wrapper: ({ children }) => <>{children}</>,
-  // hydrate: true,
 }
 
 describe('renderMeta', () => {
   afterEach(() => {
     cleanup()
+    document.head.innerHTML = ''
   })
 
   test('renders - title', () => {
-    const { container, getByText } = render(
-      renderMeta({ title: 'Test Title' }),
+    render(
+      <>{renderMeta({ title: 'Test Title' })}</>,
       renderOptions,
     )
-
-    expect(getByText('Test Title')).toBeTruthy()
-    expect(container.querySelector('[property="og:title"]')).toBeTruthy()
-    expect(container.querySelector('[name="twitter:title"]')).toBeTruthy()
+    expect(document.head.querySelector('title').textContent).toBe('Test Title')
+    expect(document.head.querySelector('[property="og:title"]').getAttribute('content')).toBe('Test Title')
+    expect(document.head.querySelector('[name="twitter:title"]').getAttribute('content')).toBe('Test Title')
   })
 
   test('renders - description', () => {
-    const { container, getByText } = render(
-      renderMeta({ description: 'Test Description' }),
+    render(
+      <>{renderMeta({ description: 'Test Description' })}</>,
       renderOptions,
     )
-
-    expect(container.querySelector('[name="description"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="description"]').getAttribute('content')).toBe('Test Description')
   })
 })

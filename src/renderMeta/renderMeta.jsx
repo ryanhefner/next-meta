@@ -1,7 +1,7 @@
 import React from 'react'
 import merge from 'lodash/merge'
 
-const getAbsoluteUrl = (url, baseUrl) => {
+export const getAbsoluteUrl = (url, baseUrl) => {
   if (baseUrl && url && url.indexOf('http') === -1) {
     return `${baseUrl}${url}`
   }
@@ -22,6 +22,7 @@ const renderMeta = (props = {}, context = {}) => {
     debug,
     description,
     determiner,
+    image,
     imageUrl,
     imageAlt,
     imageWidth,

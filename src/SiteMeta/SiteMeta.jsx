@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import Head from 'next/head'
+import Head from 'next/head.js'
 import { MetaContext } from '../MetaContext'
 import { renderMeta } from '../renderMeta'
 

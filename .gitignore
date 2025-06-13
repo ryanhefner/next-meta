@@ -3,9 +3,7 @@ node_modules
 
 # Build / Test files
 coverage
-es
-umd
-/*.cjs
+dist
 
 # Lib files
 MetaContext
