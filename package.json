@@ -1,7 +1,7 @@
 {
   "name": "next-meta",
   "version": "0.2.0",
-  "description": "Easily compose and manage meta and open graph tags in your Next.js app/site.",
+  "description": "A composable React component for managing meta tags, Open Graph, and Twitter cards in Next.js applications.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ryanhefner/next-meta.git"
