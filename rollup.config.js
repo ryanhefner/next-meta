@@ -41,8 +41,10 @@ const defaultPlugins = [
   }),
 ]
 
+const schemaInput = 'src/schema/index.ts'
+
 export default [
-  // UMD - Minified
+  // Main package - UMD - Minified
   {
     input,
     output: [
@@ -54,7 +56,7 @@ export default [
     ],
     plugins: [...defaultPlugins, terser()],
   },
-  // UMD
+  // Main package - UMD
   {
     input,
     output: [
@@ -66,7 +68,7 @@ export default [
     ],
     plugins: [...defaultPlugins],
   },
-  // ES
+  // Main package - ES
   {
     input,
     output: [
@@ -78,7 +80,7 @@ export default [
     ],
     plugins: [...defaultPlugins],
   },
-  // CJS
+  // Main package - CJS
   {
     input,
     output: [
@@ -87,6 +89,31 @@ export default [
         file: 'dist/cjs/index.cjs',
         format: 'cjs',
         exports: 'auto',
+      },
+    ],
+    plugins: [...defaultPlugins],
+  },
+  // Schema module - ES
+  {
+    input: schemaInput,
+    output: [
+      {
+        file: 'dist/esm/schema/index.mjs',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+    plugins: [...defaultPlugins],
+  },
+  // Schema module - CJS
+  {
+    input: schemaInput,
+    output: [
+      {
+        file: 'dist/cjs/schema/index.cjs',
+        format: 'cjs',
+        exports: 'auto',
+        sourcemap: true,
       },
     ],
     plugins: [...defaultPlugins],
