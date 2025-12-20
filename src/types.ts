@@ -43,7 +43,7 @@ export type Twitter = {
   site?: string
 }
 
-export interface SiteMetaProps {
+export interface PageMetaProps {
   audioUrl?: string
   audioType?: string
   baseUrl?: string
@@ -84,6 +84,20 @@ export interface SiteMetaProps {
   videoType?: string
 }
 
-export interface MetaProviderProps extends SiteMetaProps {
+export interface MetaProviderProps extends PageMetaProps {
   skipDefaultsRender?: boolean
 }
+
+/**
+ * @deprecated SiteMetaProps is deprecated and will be removed in a future version.
+ * Please use `PageMetaProps` instead. The API is identical, simply replace:
+ *
+ * ```tsx
+ * // Old (deprecated)
+ * import type { SiteMetaProps } from './types'
+ *
+ * // New (recommended)
+ * import type { PageMetaProps } from './types'
+ * ```
+ */
+export type SiteMetaProps = PageMetaProps

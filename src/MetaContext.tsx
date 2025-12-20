@@ -1,4 +1,4 @@
 import { createContext } from 'react'
-import type { SiteMetaProps } from './types'
+import type { PageMetaProps } from './types'
 
-export const MetaContext = createContext<Partial<SiteMetaProps>>({})
+export const MetaContext = createContext<Partial<PageMetaProps>>({})

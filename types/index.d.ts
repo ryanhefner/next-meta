@@ -43,6 +43,18 @@ export type Twitter = {
   site?: string
 }
 
+/**
+ * @deprecated SiteMetaProps is deprecated and will be removed in a future version.
+ * Please use `PageMetaProps` instead. The API is identical, simply replace:
+ *
+ * ```tsx
+ * // Old (deprecated)
+ * import type { SiteMetaProps } from 'next-meta'
+ *
+ * // New (recommended)
+ * import type { PageMetaProps } from 'next-meta'
+ * ```
+ */
 export interface SiteMetaProps {
   audioUrl?: string
   audioType?: string
@@ -68,7 +80,12 @@ export interface SiteMetaProps {
   title?: string
   twitter?: Twitter
   // @deprecated - Use twitter.card instead
-  twitterCard?: 'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
+  twitterCard?:
+    | 'app'
+    | 'player'
+    | 'summary'
+    | 'summary_large_image'
+    | TwitterCard
   // @deprecated - Use twitter.creator instead
   twitterCreator?: string
   // @deprecated - Use twitter.site instead
@@ -86,6 +103,26 @@ export interface MetaProviderProps extends SiteMetaProps {
 export const MetaContext: Context<Partial<SiteMetaProps>>
 export const MetaProvider: React.FC<MetaProviderProps>
 export const PageMeta: React.FC<SiteMetaProps>
-export const renderMeta: (props?: SiteMetaProps, context?: SiteMetaProps) => ReactNode[]
-export const getAbsoluteUrl: (url: string | undefined, baseUrl?: string) => string | undefined
+export const renderMeta: (
+  props?: SiteMetaProps,
+  context?: SiteMetaProps,
+) => ReactNode[]
+export const getAbsoluteUrl: (
+  url: string | undefined,
+  baseUrl?: string,
+) => string | undefined
+/**
+ * @deprecated SiteMeta is deprecated and will be removed in a future version.
+ * Please use `PageMeta` instead. The API is identical, simply replace:
+ *
+ * ```tsx
+ * // Old (deprecated)
+ * import { SiteMeta } from 'next-meta'
+ * <SiteMeta title="My Page" />
+ *
+ * // New (recommended)
+ * import { PageMeta } from 'next-meta'
+ * <PageMeta title="My Page" />
+ * ```
+ */
 export const SiteMeta: React.FC<SiteMetaProps>

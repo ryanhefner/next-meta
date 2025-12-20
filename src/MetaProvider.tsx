@@ -1,6 +1,6 @@
 import React from 'react'
 import { MetaContext } from './MetaContext'
-import { SiteMeta } from './SiteMeta'
+import { PageMeta } from './PageMeta'
 import type { MetaProviderProps } from './types'
 
 export const MetaProvider: React.FC<MetaProviderProps> = ({
@@ -9,7 +9,7 @@ export const MetaProvider: React.FC<MetaProviderProps> = ({
   ...props
 }) => (
   <MetaContext.Provider value={props}>
-    {!skipDefaultsRender && <SiteMeta />}
+    {!skipDefaultsRender && <PageMeta />}
     {children}
   </MetaContext.Provider>
 )
