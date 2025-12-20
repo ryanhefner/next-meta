@@ -4,6 +4,9 @@ import { MetaContext } from './MetaContext'
 import { renderMeta } from './renderMeta'
 import type { SiteMetaProps } from './types'
 
+/**
+ * @deprecated Use `PageMeta` instead
+ */
 export const SiteMeta: React.FC<SiteMetaProps> = ({ children, ...props }) => {
   const context = useContext(MetaContext)
 
