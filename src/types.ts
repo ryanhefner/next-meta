@@ -53,6 +53,7 @@ export interface PageMetaProps {
   description?: string
   determiner?: string
   image?: Image
+  images?: Image[]
   // @deprecated - Use image.url instead
   imageUrl?: string
   // @deprecated - Use image.alt instead

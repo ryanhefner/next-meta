@@ -30,6 +30,7 @@ export const renderMeta = (
     description,
     determiner,
     image,
+    images,
     imageUrl,
     imageAlt,
     imageWidth,
@@ -112,8 +113,94 @@ export const renderMeta = (
     )
   }
 
-  // image
-  if (absoluteImageUrl) {
+  // Collect all images to render
+  // Priority: imageUrl (legacy) > images array > single image
+  const allImages: Image[] = []
+
+  // Legacy imageUrl takes priority for backward compatibility
+  const hasLegacyImageUrl = absoluteImageUrl
+
+  if (!hasLegacyImageUrl) {
+    // If images array is provided, use it; otherwise fall back to single image
+    if (images && images.length > 0) {
+      allImages.push(...images)
+    } else if (image) {
+      allImages.push(image)
+    }
+  }
+
+  // Render images array (Open Graph supports multiple images)
+  if (allImages.length > 0) {
+    allImages.forEach((img, index) => {
+      const absoluteImgUrl = getAbsoluteUrl(img.url, baseUrl)
+      if (absoluteImgUrl) {
+        tagsToRender.push(
+          <meta
+            key={`meta-og-image-${index}`}
+            property="og:image"
+            content={absoluteImgUrl}
+          />,
+        )
+
+        // For Twitter, only use the first image
+        if (index === 0) {
+          tagsToRender.push(
+            <meta
+              key="meta-twitter-image"
+              name="twitter:image"
+              content={absoluteImgUrl}
+            />,
+          )
+        }
+
+        // imageAlt
+        if (img.alt) {
+          tagsToRender.push(
+            <meta
+              key={`meta-og-image-alt-${index}`}
+              property="og:image:alt"
+              content={img.alt}
+            />,
+          )
+          // For Twitter, only use the first image alt
+          if (index === 0) {
+            tagsToRender.push(
+              <meta
+                key="meta-twitter-image-alt"
+                name="twitter:image:alt"
+                content={img.alt}
+              />,
+            )
+          }
+        }
+
+        // imageWidth
+        if (img.width !== undefined) {
+          tagsToRender.push(
+            <meta
+              key={`meta-og-image-width-${index}`}
+              property="og:image:width"
+              content={String(img.width)}
+            />,
+          )
+        }
+
+        // imageHeight
+        if (img.height !== undefined) {
+          tagsToRender.push(
+            <meta
+              key={`meta-og-image-height-${index}`}
+              property="og:image:height"
+              content={String(img.height)}
+            />,
+          )
+        }
+      }
+    })
+  }
+
+  // Legacy image handling (for backward compatibility with imageUrl prop)
+  if (hasLegacyImageUrl) {
     tagsToRender.push(
       <meta
         key="meta-og-image"
