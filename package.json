@@ -106,7 +106,8 @@
     "react-dom": ">=16.8"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "schema-dts": "^1.1.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",

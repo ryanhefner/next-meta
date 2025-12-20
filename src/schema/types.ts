@@ -1,9 +1,55 @@
 /**
- * Schema.org type definitions
- * Based on https://schema.org/
+ * Schema.org type definitions using schema-dts
+ * Provides exhaustive TypeScript definitions for all Schema.org types
+ *
+ * Based on https://schema.org/ and https://github.com/google/schema-dts
  */
 
-export type SchemaType =
+import type {
+  Thing,
+  WithContext,
+  Article,
+  BlogPosting,
+  BreadcrumbList,
+  Event,
+  FAQPage,
+  LocalBusiness,
+  Organization,
+  Person,
+  Product,
+  Recipe,
+  Review,
+  VideoObject,
+  WebPage,
+  WebSite,
+} from 'schema-dts'
+
+// Re-export commonly used types from schema-dts
+export type {
+  Thing,
+  WithContext,
+  Article,
+  BlogPosting,
+  BreadcrumbList,
+  Event,
+  FAQPage,
+  LocalBusiness,
+  Organization,
+  Person,
+  Product,
+  Recipe,
+  Review,
+  VideoObject,
+  WebPage,
+  WebSite,
+}
+
+/**
+ * Union type of all predefined Schema.org types with full TypeScript support.
+ * This includes the most commonly used types. For other types, import them
+ * directly from 'schema-dts'.
+ */
+export type PredefinedSchemaType =
   | 'Article'
   | 'BlogPosting'
   | 'BreadcrumbList'
@@ -19,270 +65,59 @@ export type SchemaType =
   | 'WebPage'
   | 'WebSite'
 
-export interface BaseSchema {
-  '@context'?: 'https://schema.org'
-  '@type'?: string
-}
+/**
+ * Type mapping for predefined schemas
+ */
+export type PredefinedSchemaData =
+  | Article
+  | BlogPosting
+  | BreadcrumbList
+  | Event
+  | FAQPage
+  | LocalBusiness
+  | Organization
+  | Person
+  | Product
+  | Recipe
+  | Review
+  | VideoObject
+  | WebPage
+  | WebSite
 
-export interface ArticleSchema extends BaseSchema {
-  '@type': 'Article'
-  headline: string
-  description?: string
-  image?: string | string[]
-  datePublished?: string
-  dateModified?: string
-  author?: PersonSchema | OrganizationSchema
-  publisher?: OrganizationSchema
-}
+/**
+ * Helper type to extract the schema type from a schema-dts type
+ */
+export type ExtractSchemaType<T> = T extends { '@type': infer U } ? U : never
 
-export interface BlogPostingSchema extends BaseSchema {
-  '@type': 'BlogPosting'
-  headline: string
-  description?: string
-  image?: string | string[]
-  datePublished?: string
-  dateModified?: string
-  author?: PersonSchema | OrganizationSchema
-  publisher?: OrganizationSchema
-}
-
-export interface BreadcrumbListSchema extends BaseSchema {
-  '@type': 'BreadcrumbList'
-  itemListElement: BreadcrumbListItem[]
-}
-
-export interface BreadcrumbListItem {
-  '@type': 'ListItem'
-  position: number
-  name: string
-  item?: string
-}
-
-export interface EventSchema extends BaseSchema {
-  '@type': 'Event'
-  name: string
-  description?: string
-  image?: string | string[]
-  startDate: string
-  endDate?: string
-  location?: LocationSchema | string
-  organizer?: PersonSchema | OrganizationSchema
-  eventStatus?: string
-  eventAttendanceMode?: string
-}
-
-export interface LocationSchema {
-  '@type': 'Place'
-  name?: string
-  address?: PostalAddressSchema | string
-}
-
-export interface PostalAddressSchema {
-  '@type': 'PostalAddress'
-  streetAddress?: string
-  addressLocality?: string
-  addressRegion?: string
-  postalCode?: string
-  addressCountry?: string
-}
-
-export interface FAQPageSchema extends BaseSchema {
-  '@type': 'FAQPage'
-  mainEntity: FAQItem[]
-}
-
-export interface FAQItem {
-  '@type': 'Question'
-  name: string
-  acceptedAnswer: {
-    '@type': 'Answer'
-    text: string
-  }
-}
-
-export interface LocalBusinessSchema extends BaseSchema {
-  '@type': 'LocalBusiness'
-  name: string
-  description?: string
-  image?: string | string[]
-  address?: PostalAddressSchema | string
-  telephone?: string
-  priceRange?: string
-  openingHours?: string | string[]
-  servesCuisine?: string
-  aggregateRating?: AggregateRatingSchema
-}
-
-export interface OrganizationSchema extends BaseSchema {
-  '@type': 'Organization'
-  name: string
-  description?: string
-  url?: string
-  logo?: string | ImageObjectSchema
-  sameAs?: string[]
-  contactPoint?: ContactPointSchema[]
-}
-
-export interface PersonSchema extends BaseSchema {
-  '@type': 'Person'
-  name: string
-  description?: string
-  image?: string | string[]
-  url?: string
-  sameAs?: string[]
-  jobTitle?: string
-  worksFor?: OrganizationSchema
-}
-
-export interface ProductSchema extends BaseSchema {
-  '@type': 'Product'
-  name: string
-  description?: string
-  image?: string | string[]
-  sku?: string
-  brand?: BrandSchema | OrganizationSchema
-  offers?: OfferSchema | AggregateOfferSchema
-  aggregateRating?: AggregateRatingSchema
-  review?: ReviewSchema[]
-}
-
-export interface BrandSchema {
-  '@type': 'Brand'
-  name: string
-}
-
-export interface OfferSchema {
-  '@type': 'Offer'
-  price: string
-  priceCurrency: string
-  availability?: string
-  url?: string
-  priceValidUntil?: string
-}
-
-export interface AggregateOfferSchema {
-  '@type': 'AggregateOffer'
-  lowPrice?: string
-  highPrice?: string
-  priceCurrency: string
-  offerCount?: number
-}
-
-export interface RecipeSchema extends BaseSchema {
-  '@type': 'Recipe'
-  name: string
-  description?: string
-  image?: string | string[]
-  author?: PersonSchema | OrganizationSchema
-  datePublished?: string
-  prepTime?: string
-  cookTime?: string
-  totalTime?: string
-  recipeYield?: string | number
-  recipeIngredient?: string[]
-  recipeInstructions?: HowToStepSchema[]
-  aggregateRating?: AggregateRatingSchema
-}
-
-export interface HowToStepSchema {
-  '@type': 'HowToStep'
-  text: string
-  name?: string
-  image?: string
-  url?: string
-}
-
-export interface ReviewSchema extends BaseSchema {
-  '@type': 'Review'
-  itemReviewed?: ProductSchema | OrganizationSchema | string
-  reviewRating?: RatingSchema
-  author?: PersonSchema | OrganizationSchema
-  reviewBody?: string
-  datePublished?: string
-}
-
-export interface RatingSchema {
-  '@type': 'Rating'
-  ratingValue: number
-  bestRating?: number
-  worstRating?: number
-}
-
-export interface AggregateRatingSchema {
-  '@type': 'AggregateRating'
-  ratingValue: number
-  reviewCount: number
-  bestRating?: number
-  worstRating?: number
-}
-
-export interface VideoObjectSchema extends BaseSchema {
-  '@type': 'VideoObject'
-  name: string
-  description?: string
-  thumbnailUrl?: string | string[]
-  uploadDate: string
-  duration?: string
-  contentUrl?: string
-  embedUrl?: string
-}
-
-export interface WebPageSchema extends BaseSchema {
-  '@type': 'WebPage'
-  name: string
-  description?: string
-  url?: string
-  inLanguage?: string
-  isPartOf?: WebSiteSchema
-  breadcrumb?: BreadcrumbListSchema
-  mainEntity?: ArticleSchema | ProductSchema | EventSchema
-}
-
-export interface WebSiteSchema extends BaseSchema {
-  '@type': 'WebSite'
-  name: string
-  description?: string
-  url?: string
-  potentialAction?: SearchActionSchema
-}
-
-export interface SearchActionSchema {
-  '@type': 'SearchAction'
-  target: {
-    '@type': 'EntryPoint'
-    urlTemplate: string
-  }
-  'query-input': string
-}
-
-export interface ImageObjectSchema {
-  '@type': 'ImageObject'
-  url: string
-  width?: number
-  height?: number
-  caption?: string
-}
-
-export interface ContactPointSchema {
-  '@type': 'ContactPoint'
-  telephone?: string
-  contactType?: string
-  areaServed?: string
-  availableLanguage?: string[]
-}
-
-export type SchemaData =
-  | ArticleSchema
-  | BlogPostingSchema
-  | BreadcrumbListSchema
-  | EventSchema
-  | FAQPageSchema
-  | LocalBusinessSchema
-  | OrganizationSchema
-  | PersonSchema
-  | ProductSchema
-  | RecipeSchema
-  | ReviewSchema
-  | VideoObjectSchema
-  | WebPageSchema
-  | WebSiteSchema
+/**
+ * Type-safe schema data that matches the provided type
+ */
+export type TypedSchemaData<T extends string> = T extends 'Article'
+  ? Article
+  : T extends 'BlogPosting'
+    ? BlogPosting
+    : T extends 'BreadcrumbList'
+      ? BreadcrumbList
+      : T extends 'Event'
+        ? Event
+        : T extends 'FAQPage'
+          ? FAQPage
+          : T extends 'LocalBusiness'
+            ? LocalBusiness
+            : T extends 'Organization'
+              ? Organization
+              : T extends 'Person'
+                ? Person
+                : T extends 'Product'
+                  ? Product
+                  : T extends 'Recipe'
+                    ? Recipe
+                    : T extends 'Review'
+                      ? Review
+                      : T extends 'VideoObject'
+                        ? VideoObject
+                        : T extends 'WebPage'
+                          ? WebPage
+                          : T extends 'WebSite'
+                            ? WebSite
+                            : Thing

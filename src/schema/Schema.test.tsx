@@ -157,4 +157,25 @@ describe('Schema', () => {
     const content = JSON.parse(script?.textContent || '{}')
     expect(content['@type']).toBe('Article')
   })
+
+  test('accepts any Schema.org type as string', () => {
+    render(
+      <Schema
+        type="Movie"
+        data={{
+          name: 'Test Movie',
+          director: {
+            '@type': 'Person',
+            name: 'Director Name',
+          },
+        }}
+      />,
+      renderOptions,
+    )
+
+    const script = document.head.querySelector('script[type="application/ld+json"]')
+    const content = JSON.parse(script?.textContent || '{}')
+    expect(content['@type']).toBe('Movie')
+    expect(content.name).toBe('Test Movie')
+  })
 })
