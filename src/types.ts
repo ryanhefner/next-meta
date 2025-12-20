@@ -1,4 +1,4 @@
-import { Context, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export type Image = {
   alt?: string
@@ -68,7 +68,12 @@ export interface SiteMetaProps {
   title?: string
   twitter?: Twitter
   // @deprecated - Use twitter.card instead
-  twitterCard?: 'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
+  twitterCard?:
+    | 'app'
+    | 'player'
+    | 'summary'
+    | 'summary_large_image'
+    | TwitterCard
   // @deprecated - Use twitter.creator instead
   twitterCreator?: string
   // @deprecated - Use twitter.site instead
@@ -82,10 +87,3 @@ export interface SiteMetaProps {
 export interface MetaProviderProps extends SiteMetaProps {
   skipDefaultsRender?: boolean
 }
-
-export const MetaContext: Context<Partial<SiteMetaProps>>
-export const MetaProvider: React.FC<MetaProviderProps>
-export const PageMeta: React.FC<SiteMetaProps>
-export const renderMeta: (props?: SiteMetaProps, context?: SiteMetaProps) => ReactNode[]
-export const getAbsoluteUrl: (url: string | undefined, baseUrl?: string) => string | undefined
-export const SiteMeta: React.FC<SiteMetaProps>

@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import Head from 'next/head.js'
-import { MetaContext } from '../MetaContext'
-import { renderMeta } from '../renderMeta'
+import { MetaContext } from './MetaContext'
+import { renderMeta } from './renderMeta'
+import type { SiteMetaProps } from './types'
 
-const SiteMeta = ({ children, ...props }) => {
+export const PageMeta: React.FC<SiteMetaProps> = ({ children, ...props }) => {
   const context = useContext(MetaContext)
 
   return (
@@ -13,5 +14,3 @@ const SiteMeta = ({ children, ...props }) => {
     </Head>
   )
 }
-
-export default SiteMeta

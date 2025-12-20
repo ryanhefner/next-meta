@@ -3,11 +3,15 @@ import { getAbsoluteUrl } from './renderMeta'
 
 describe('getAbsoluteUrl', () => {
   test('should prepend baseUrl to relative url', () => {
-    expect(getAbsoluteUrl('/about', 'https://test.com')).toBe('https://test.com/about')
+    expect(getAbsoluteUrl('/about', 'https://test.com')).toBe(
+      'https://test.com/about',
+    )
   })
 
   test('should not modify absolute url even if baseUrl is provided', () => {
-    expect(getAbsoluteUrl('https://example.com/about', 'https://test.com')).toBe('https://example.com/about')
+    expect(
+      getAbsoluteUrl('https://example.com/about', 'https://test.com'),
+    ).toBe('https://example.com/about')
   })
 
   test('should return url as is if baseUrl is not provided', () => {

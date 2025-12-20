@@ -1,7 +1,11 @@
 import React from 'react'
 import merge from 'lodash/merge'
+import type { SiteMetaProps, Image } from './types'
 
-export const getAbsoluteUrl = (url, baseUrl) => {
+export const getAbsoluteUrl = (
+  url: string | undefined,
+  baseUrl?: string,
+): string | undefined => {
   if (baseUrl && url && url.indexOf('http') === -1) {
     return `${baseUrl}${url}`
   }
@@ -13,7 +17,10 @@ const DEFAULTS = {
   siteNameDelimiter: '|',
 }
 
-const renderMeta = (props = {}, context = {}) => {
+export const renderMeta = (
+  props: SiteMetaProps = {},
+  context: SiteMetaProps = {},
+): React.ReactNode[] => {
   const {
     audioUrl,
     audioType,
@@ -43,17 +50,17 @@ const renderMeta = (props = {}, context = {}) => {
   } = merge({}, DEFAULTS, context, props)
 
   const absoluteAudioUrl = getAbsoluteUrl(audioUrl, baseUrl)
-  const absoluteImageUrl = getAbsoluteUrl(imageUrl, baseUrl)
+  const absoluteImageUrl = getAbsoluteUrl(imageUrl ?? image?.url, baseUrl)
   const absoluteVideoUrl = getAbsoluteUrl(videoUrl, baseUrl)
   const absoluteUrl = getAbsoluteUrl(url, baseUrl)
   const absoluteCanonicalUrl = getAbsoluteUrl(canonical, baseUrl)
 
-  const tagsToRender = []
+  const tagsToRender: React.ReactNode[] = []
 
   // canonical
   if (absoluteCanonicalUrl) {
     tagsToRender.push(
-      <link key="canonical" rel="canonical" href={absoluteCanonicalUrl} />
+      <link key="canonical" rel="canonical" href={absoluteCanonicalUrl} />,
     )
   }
 
@@ -61,7 +68,7 @@ const renderMeta = (props = {}, context = {}) => {
   if (title) {
     tagsToRender.push(
       <title key="meta-title">{`${title}${
-        siteName ? ` ${siteNameDelimiter} ${siteName ?? siteNameContext}` : ''
+        siteName ? ` ${siteNameDelimiter} ${siteName}` : ''
       }`}</title>,
       <meta key="meta-og-title" property="og:title" content={title} />,
       <meta key="meta-twitter-title" name="twitter:title" content={title} />,
@@ -95,7 +102,7 @@ const renderMeta = (props = {}, context = {}) => {
   // locale alternates
   if (localeAlternates && localeAlternates.length) {
     tagsToRender.push(
-      localeAlternates.map((localeAlternate) => (
+      ...localeAlternates.map((localeAlternate) => (
         <meta
           key={`meta-og-locale-alternate-${localeAlternate}`}
           property="og:locale:alternate"
@@ -121,39 +128,39 @@ const renderMeta = (props = {}, context = {}) => {
     )
 
     // imageAlt
-    if (imageAlt) {
+    if (imageAlt || image?.alt) {
       tagsToRender.push(
         <meta
           key="meta-og-image-alt"
           property="og:image:alt"
-          content={imageAlt}
+          content={imageAlt ?? image?.alt}
         />,
         <meta
           key="meta-twitter-image-alt"
           name="twitter:image:alt"
-          content={imageAlt}
+          content={imageAlt ?? image?.alt}
         />,
       )
     }
 
     // imageWidth
-    if (imageWidth !== undefined) {
+    if (imageWidth !== undefined || image?.width) {
       tagsToRender.push(
         <meta
           key="meta-og-image-width"
           property="og:image:width"
-          content={imageWidth}
+          content={String(imageWidth ?? image?.width)}
         />,
       )
     }
 
     // imageHeight
-    if (imageHeight !== undefined) {
+    if (imageHeight !== undefined || image?.height) {
       tagsToRender.push(
         <meta
           key="meta-og-image-height"
           property="og:image:height"
-          content={imageHeight}
+          content={String(imageHeight ?? image?.height)}
         />,
       )
     }
@@ -203,6 +210,50 @@ const renderMeta = (props = {}, context = {}) => {
           content={twitter.card}
         />,
       )
+    }
+
+    // Twitter - Image
+    if (twitter.image) {
+      tagsToRender.push(
+        <meta
+          key="meta-twitter-image"
+          name="twitter:image"
+          content={twitter.image.url || ''}
+        />,
+      )
+
+      // Twitter - Image: Alt
+      if (twitter.image.alt) {
+        tagsToRender.push(
+          <meta
+            key="meta-twitter-image-alt"
+            name="twitter:image:alt"
+            content={twitter.image.alt}
+          />,
+        )
+      }
+
+      // Twitter - Image: Width
+      if (twitter.image.width) {
+        tagsToRender.push(
+          <meta
+            key="meta-twitter-image-width"
+            name="twitter:image:width"
+            content={String(twitter.image.width)}
+          />,
+        )
+      }
+
+      // Twitter - Image: Height
+      if (twitter.image.height) {
+        tagsToRender.push(
+          <meta
+            key="meta-twitter-image-height"
+            name="twitter:image:height"
+            content={String(twitter.image.height)}
+          />,
+        )
+      }
     }
 
     // Twitter - Site
@@ -403,7 +454,7 @@ const renderMeta = (props = {}, context = {}) => {
             <meta
               key="meta-twitter-player-stream-content-type"
               name="twitter:player:stream:content_type"
-              content={twitter.player.stream?.contentType}
+              content={twitter.player.stream.contentType}
             />,
           )
         }
@@ -515,5 +566,3 @@ const renderMeta = (props = {}, context = {}) => {
 
   return tagsToRender
 }
-
-export default renderMeta

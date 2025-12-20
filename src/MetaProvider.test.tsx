@@ -1,13 +1,13 @@
 import React from 'react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
-import MetaProvider from './MetaProvider'
-import { SiteMeta } from '../SiteMeta'
+import { MetaProvider } from './MetaProvider'
+import { SiteMeta } from './SiteMeta'
 
 vi.mock('next/head.js', () => {
   return {
     __esModule: true,
-    default: ({ children }) => {
+    default: ({ children }: { children: React.ReactNode }) => {
       return <>{children}</>
     },
   }
@@ -16,7 +16,7 @@ vi.mock('next/head.js', () => {
 const renderOptions = {
   baseElement: document.documentElement,
   container: document.head,
-  wrapper: ({ children }) => <>{children}</>,
+  wrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }
 
 describe('MetaProvider', () => {
@@ -41,17 +41,13 @@ describe('MetaProvider', () => {
   })
 
   test('renders - skipDefaultsRender', () => {
-    render(
-      <MetaProvider skipDefaultsRender />, renderOptions,
-    )
+    render(<MetaProvider skipDefaultsRender />, renderOptions)
     expect(document.head.querySelector('title')).toBeFalsy()
   })
 
   test('renders - title', () => {
-    render(
-      <MetaProvider title="Test Title" />, renderOptions,
-    )
-    expect(document.head.querySelector('title').textContent).toBe('Test Title')
+    render(<MetaProvider title="Test Title" />, renderOptions)
+    expect(document.head.querySelector('title')?.textContent).toBe('Test Title')
   })
 
   test('renders - og:title', () => {
@@ -66,12 +62,17 @@ describe('MetaProvider', () => {
       </MetaProvider>,
       renderOptions,
     )
-    expect(document.head.querySelector('title').textContent).toBe('Test Title Override | Test Site Name')
+    expect(document.head.querySelector('title')?.textContent).toBe(
+      'Test Title Override | Test Site Name',
+    )
   })
 
   test('renders - defaults w/ SiteMeta additions', () => {
     render(
-      <MetaProvider title="Test Title" twitter={{ card: 'summary_large_image', creator: '@ryanhefner' }}>
+      <MetaProvider
+        title="Test Title"
+        twitter={{ card: 'summary_large_image', creator: '@ryanhefner' }}
+      >
         <SiteMeta
           description="Test Description"
           twitter={{
@@ -86,12 +87,18 @@ describe('MetaProvider', () => {
       renderOptions,
     )
     expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
-    expect(document.head.querySelector('[property="og:description"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[property="og:description"]'),
+    ).toBeTruthy()
     expect(document.head.querySelector('[name="twitter:card"]')).toBeTruthy()
     expect(document.head.querySelector('[name="twitter:creator"]')).toBeTruthy()
     expect(document.head.querySelector('[name="twitter:player"]')).toBeTruthy()
-    expect(document.head.querySelector('[name="twitter:player:width"]')).toBeTruthy()
-    expect(document.head.querySelector('[name="twitter:player:height"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[name="twitter:player:width"]'),
+    ).toBeTruthy()
+    expect(
+      document.head.querySelector('[name="twitter:player:height"]'),
+    ).toBeTruthy()
   })
 
   test('renders - absolute urls w/ baseUrl + url override', () => {
@@ -143,21 +150,32 @@ describe('MetaProvider', () => {
       </MetaProvider>,
       renderOptions,
     )
-    const rssLink = document.head.querySelector('link[type="application/rss+xml"]')
-    const oembedLink = document.head.querySelector('link[type="application/json+oembed"]')
+    const rssLink = document.head.querySelector(
+      'link[type="application/rss+xml"]',
+    )
+    const oembedLink = document.head.querySelector(
+      'link[type="application/json+oembed"]',
+    )
 
     expect(rssLink).toBeTruthy()
-    expect(rssLink).toHaveProperty('href', 'https://feeds.transistor.fm/allplay')
+    expect(rssLink).toHaveProperty(
+      'href',
+      'https://feeds.transistor.fm/allplay',
+    )
     expect(oembedLink).toBeTruthy()
-    expect(oembedLink).toHaveProperty('href', 'https://share.transistor.fm/oembed?url=https://test.com/episode/001')
+    expect(oembedLink).toHaveProperty(
+      'href',
+      'https://share.transistor.fm/oembed?url=https://test.com/episode/001',
+    )
+    expect(document.head.querySelector('[property="og:audio"]')).toHaveProperty(
+      'content',
+      'https://test.com?src=allplay.fm',
+    )
     expect(
-      document.head.querySelector('[property="og:audio"]')
-    ).toHaveProperty('content', 'https://test.com?src=allplay.fm')
-    expect(
-      document.head.querySelector('[property="og:audio:type"]')
+      document.head.querySelector('[property="og:audio:type"]'),
     ).toHaveProperty('content', 'audio/mpeg')
     expect(
-      document.head.querySelectorAll('[name="twitter:card"]')[1]
+      document.head.querySelectorAll('[name="twitter:card"]')[1],
     ).toHaveProperty('content', 'player')
   })
 })

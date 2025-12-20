@@ -7,7 +7,7 @@ import { terser } from 'rollup-plugin-terser'
 
 import pkg from './package.json'
 
-const input = 'src/index.js'
+const input = 'src/index.ts'
 
 const defaultOutputOptions = {
   name: pkg.name,
@@ -33,7 +33,11 @@ const defaultPlugins = [
     exclude: 'node_modules/**',
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     babelHelpers: 'runtime',
-    presets: ['@babel/preset-env', '@babel/preset-react'],
+    presets: [
+      '@babel/preset-env',
+      '@babel/preset-react',
+      '@babel/preset-typescript',
+    ],
   }),
 ]
 
@@ -48,10 +52,7 @@ export default [
         format: 'umd',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-      terser(),
-    ],
+    plugins: [...defaultPlugins, terser()],
   },
   // UMD
   {
@@ -63,9 +64,7 @@ export default [
         format: 'umd',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
   // ES
   {
@@ -77,9 +76,7 @@ export default [
         format: 'esm',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
   // CJS
   {
@@ -92,8 +89,6 @@ export default [
         exports: 'auto',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
 ]

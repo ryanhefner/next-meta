@@ -1,12 +1,12 @@
 import React from 'react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
-import SiteMeta from './SiteMeta'
+import { SiteMeta } from './SiteMeta'
 
 vi.mock('next/head.js', () => {
   return {
     __esModule: true,
-    default: ({ children }) => {
+    default: ({ children }: { children: React.ReactNode }) => {
       return <>{children}</>
     },
   }
@@ -15,8 +15,7 @@ vi.mock('next/head.js', () => {
 const renderOptions = {
   baseElement: document.documentElement,
   container: document.head,
-  wrapper: ({ children }) => <>{children}</>,
-  // hydrate: true,
+  wrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }
 
 describe('SiteMeta', () => {
@@ -27,10 +26,10 @@ describe('SiteMeta', () => {
 
   describe('title', () => {
     test('renders - title', () => {
-      render(
-        <SiteMeta title="Test Title" />, renderOptions,
+      render(<SiteMeta title="Test Title" />, renderOptions)
+      expect(document.head.querySelector('title')?.textContent).toBe(
+        'Test Title',
       )
-      expect(document.head.querySelector('title').textContent).toBe('Test Title')
     })
 
     test('renders - og:title', () => {
@@ -40,9 +39,12 @@ describe('SiteMeta', () => {
 
     test('renders - title + siteName', () => {
       render(
-        <SiteMeta title="Test Title" siteName="Test Site Name" />, renderOptions,
+        <SiteMeta title="Test Title" siteName="Test Site Name" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('title').textContent).toBe('Test Title | Test Site Name')
+      expect(document.head.querySelector('title')?.textContent).toBe(
+        'Test Title | Test Site Name',
+      )
     })
 
     test('renders - title + siteName w/ delimiter', () => {
@@ -51,9 +53,12 @@ describe('SiteMeta', () => {
           title="Test Title"
           siteName="Test Site Name"
           siteNameDelimiter="-"
-        />, renderOptions,
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('title').textContent).toBe('Test Title - Test Site Name')
+      expect(document.head.querySelector('title')?.textContent).toBe(
+        'Test Title - Test Site Name',
+      )
     })
   })
 
@@ -93,24 +98,23 @@ describe('SiteMeta', () => {
 
     test('renders - imageAlt', () => {
       render(
-        <SiteMeta imageUrl="/test.jpg" imageAlt="Test Image" />, renderOptions,
+        <SiteMeta imageUrl="/test.jpg" imageAlt="Test Image" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[property="og:image:alt"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[property="og:image:alt"]'),
+      ).toBeTruthy()
     })
 
     test('renders - imageWidth', () => {
-      render(
-        <SiteMeta imageUrl="/test.jpg" imageWidth="100" />, renderOptions,
-      )
+      render(<SiteMeta imageUrl="/test.jpg" imageWidth="100" />, renderOptions)
       expect(
         document.head.querySelector('[property="og:image:width"]'),
       ).toBeTruthy()
     })
 
     test('renders - imageHeight', () => {
-      render(
-        <SiteMeta imageUrl="/test.jpg" imageHeight="100" />, renderOptions,
-      )
+      render(<SiteMeta imageUrl="/test.jpg" imageHeight="100" />, renderOptions)
       expect(
         document.head.querySelector('[property="og:image:height"]'),
       ).toBeTruthy()
@@ -124,26 +128,28 @@ describe('SiteMeta', () => {
     })
 
     test('renders - localeAlternates', () => {
-      render(
-        <SiteMeta localeAlternates={['en_US', 'en_CA']} />, renderOptions,
-      )
+      render(<SiteMeta localeAlternates={['en_US', 'en_CA']} />, renderOptions)
       expect(
         document.head.querySelector('[property="og:locale:alternate"]'),
       ).toBeTruthy()
       expect(
         document.head.querySelectorAll('[property="og:locale:alternate"]'),
-      ).length(2)
+      ).toHaveLength(2)
     })
   })
 
   test('renders - siteName', () => {
     render(<SiteMeta siteName="Test Site Name" />, renderOptions)
-    expect(document.head.querySelector('[property="og:site_name"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[property="og:site_name"]'),
+    ).toBeTruthy()
   })
 
   test('renders - determiner', () => {
     render(<SiteMeta determiner="the" />, renderOptions)
-    expect(document.head.querySelector('[property="og:determiner"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[property="og:determiner"]'),
+    ).toBeTruthy()
   })
 
   test('renders - type', () => {
@@ -159,7 +165,9 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:creator', () => {
       render(<SiteMeta twitterCreator="@test" />, renderOptions)
-      expect(document.head.querySelector('[name="twitter:creator"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:creator"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:card', () => {
@@ -174,7 +182,9 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:creator via twitter.creator', () => {
       render(<SiteMeta twitter={{ creator: '@test' }} />, renderOptions)
-      expect(document.head.querySelector('[name="twitter:creator"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:creator"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:card via twitter.card', () => {
@@ -183,41 +193,68 @@ describe('SiteMeta', () => {
     })
 
     test('renders - twitter:app:country', () => {
-      render(<SiteMeta twitter={{ app: { country: "US" } }} />, renderOptions)
-      expect(document.head.querySelector('[name="twitter:app:country"]')).toBeTruthy()
+      render(<SiteMeta twitter={{ app: { country: 'US' } }} />, renderOptions)
+      expect(
+        document.head.querySelector('[name="twitter:app:country"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:name:googleplay', () => {
       render(
-        <SiteMeta twitter={{ app: { googlePlay: { name: "Test App Name GooglePlay" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{
+            app: { googlePlay: { name: 'Test App Name GooglePlay' } },
+          }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:name:googleplay"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:name:googleplay"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:name:googleplay w/ app.name fallback', () => {
       render(
-        <SiteMeta twitter={{ app: { name: "Test App Name", googlePlay: { id: "com.test" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{
+            app: { name: 'Test App Name', googlePlay: { id: 'com.test' } },
+          }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:name:googleplay"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:name:googleplay"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:id:googleplay', () => {
       render(
-        <SiteMeta twitter={{ app: { googlePlay: { id: "com.test" } } }} />, renderOptions,
+        <SiteMeta twitter={{ app: { googlePlay: { id: 'com.test' } } }} />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:id:googleplay"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:id:googleplay"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:url:googleplay', () => {
       render(
-        <SiteMeta twitter={{ app: { googlePlay: { url: "https://test.com" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ app: { googlePlay: { url: 'https://test.com' } } }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:url:googleplay"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:url:googleplay"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:name:ipad', () => {
       render(
-        <SiteMeta twitter={{ app: { iPad: { name: "Test App Name iPad" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ app: { iPad: { name: 'Test App Name iPad' } } }}
+        />,
+        renderOptions,
       )
       expect(
         document.head.querySelector('[name="twitter:app:name:ipad"]'),
@@ -226,7 +263,10 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:app:name:ipad w/ app.name fallback', () => {
       render(
-        <SiteMeta twitter={{ app: { name: "Test App Name", iPad: { id: "com.test" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ app: { name: 'Test App Name', iPad: { id: 'com.test' } } }}
+        />,
+        renderOptions,
       )
       expect(
         document.head.querySelector('[name="twitter:app:name:ipad"]'),
@@ -235,21 +275,30 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:app:id:ipad', () => {
       render(
-        <SiteMeta twitter={{ app: { iPad: { id: "123456" } } }} />, renderOptions,
+        <SiteMeta twitter={{ app: { iPad: { id: '123456' } } }} />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:id:ipad"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:id:ipad"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:url:ipad', () => {
       render(
-        <SiteMeta twitter={{ app: { iPad: { url: "https://test.com" } } }} />, renderOptions,
+        <SiteMeta twitter={{ app: { iPad: { url: 'https://test.com' } } }} />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:url:ipad"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:url:ipad"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:name:iphone', () => {
       render(
-        <SiteMeta twitter={{ app: { iPhone: { name: "Test App Name iPhone" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ app: { iPhone: { name: 'Test App Name iPhone' } } }}
+        />,
+        renderOptions,
       )
       expect(
         document.head.querySelector('[name="twitter:app:name:iphone"]'),
@@ -258,7 +307,12 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:app:name:iphone w/ app.name fallback', () => {
       render(
-        <SiteMeta twitter={{ app: { name: "Test App Name", iPhone: { id: "com.test" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{
+            app: { name: 'Test App Name', iPhone: { id: 'com.test' } },
+          }}
+        />,
+        renderOptions,
       )
       expect(
         document.head.querySelector('[name="twitter:app:name:iphone"]'),
@@ -267,49 +321,95 @@ describe('SiteMeta', () => {
 
     test('renders - twitter:app:id:iphone', () => {
       render(
-        <SiteMeta twitter={{ app: { iPhone: { id: "123456" } } }} />, renderOptions,
+        <SiteMeta twitter={{ app: { iPhone: { id: '123456' } } }} />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:id:iphone"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:id:iphone"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:app:url:iphone', () => {
       render(
-        <SiteMeta twitter={{ app: { iPhone: { url: "https://test.com" } } }} />, renderOptions,
+        <SiteMeta twitter={{ app: { iPhone: { url: 'https://test.com' } } }} />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:app:url:iphone"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:app:url:iphone"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:player', () => {
-      render(<SiteMeta twitter={{ player: { url: "https://test.com" } }} />, renderOptions)
-      expect(document.head.querySelector('[name="twitter:player"]')).toBeTruthy()
+      render(
+        <SiteMeta twitter={{ player: { url: 'https://test.com' } }} />,
+        renderOptions,
+      )
+      expect(
+        document.head.querySelector('[name="twitter:player"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:player:width', () => {
       render(
-        <SiteMeta twitter={{ player: { url: "https://test.com", width: "100" } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ player: { url: 'https://test.com', width: '100' } }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:player:width"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:player:width"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:player:height', () => {
       render(
-        <SiteMeta twitter={{ player: { url: "https://test.com", height: "100" } }} />, renderOptions,
+        <SiteMeta
+          twitter={{ player: { url: 'https://test.com', height: '100' } }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:player:height"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:player:height"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:player:stream', () => {
       render(
-        <SiteMeta twitter={{ player: { url: "https://test.com", stream: { url: "https://test.com/stream" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{
+            player: {
+              url: 'https://test.com',
+              stream: { url: 'https://test.com/stream' },
+            },
+          }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:player:stream"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[name="twitter:player:stream"]'),
+      ).toBeTruthy()
     })
 
     test('renders - twitter:player:stream:content_type', () => {
       render(
-        <SiteMeta twitter={{ player: { url: "https://test.com", stream: { url: "https://test.com/stream", contentType: "video/mp4" } } }} />, renderOptions,
+        <SiteMeta
+          twitter={{
+            player: {
+              url: 'https://test.com',
+              stream: {
+                url: 'https://test.com/stream',
+                contentType: 'video/mp4',
+              },
+            },
+          }}
+        />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[name="twitter:player:stream:content_type"]')).toBeTruthy()
+      expect(
+        document.head.querySelector(
+          '[name="twitter:player:stream:content_type"]',
+        ),
+      ).toBeTruthy()
     })
   })
 
@@ -321,16 +421,22 @@ describe('SiteMeta', () => {
 
     test('renders - audioSecureUrl', () => {
       render(
-        <SiteMeta baseUrl="https://test.com" audioUrl="test.mp3" />, renderOptions,
+        <SiteMeta baseUrl="https://test.com" audioUrl="test.mp3" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[property="og:audio:secure_url"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[property="og:audio:secure_url"]'),
+      ).toBeTruthy()
     })
 
     test('renders - audioType', () => {
       render(
-        <SiteMeta audioUrl="test.mp3" audioType="audio/mpeg" />, renderOptions,
+        <SiteMeta audioUrl="test.mp3" audioType="audio/mpeg" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[property="og:audio:type"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[property="og:audio:type"]'),
+      ).toBeTruthy()
     })
   })
 
@@ -342,16 +448,22 @@ describe('SiteMeta', () => {
 
     test('renders - videoSecureUrl', () => {
       render(
-        <SiteMeta baseUrl="https://test.com" videoUrl="/test.mp4" />, renderOptions,
+        <SiteMeta baseUrl="https://test.com" videoUrl="/test.mp4" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[property="og:video:secure_url"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[property="og:video:secure_url"]'),
+      ).toBeTruthy()
     })
 
     test('renders - videoType', () => {
       render(
-        <SiteMeta videoUrl="/test.mp4" videoType="video/mp4" />, renderOptions,
+        <SiteMeta videoUrl="/test.mp4" videoType="video/mp4" />,
+        renderOptions,
       )
-      expect(document.head.querySelector('[property="og:video:type"]')).toBeTruthy()
+      expect(
+        document.head.querySelector('[property="og:video:type"]'),
+      ).toBeTruthy()
     })
   })
 
@@ -363,7 +475,8 @@ describe('SiteMeta', () => {
 
     test('renders - absoluteUrl', () => {
       render(
-        <SiteMeta baseUrl="https://test.com" url="/about" />, renderOptions,
+        <SiteMeta baseUrl="https://test.com" url="/about" />,
+        renderOptions,
       )
       expect(
         document.head.querySelector('[content="https://test.com/about"]'),
