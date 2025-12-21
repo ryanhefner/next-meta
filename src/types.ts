@@ -90,6 +90,7 @@ export interface PageMetaProps {
 
   locale?: string
   localeAlternates?: string[]
+  pinterestDomainVerify?: string
   siteName?: string
   siteNameDelimiter?: string
   title?: string

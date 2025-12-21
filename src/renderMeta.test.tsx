@@ -166,6 +166,18 @@ describe('renderMeta', () => {
       expect(alternates[0].getAttribute('content')).toBe('en_CA')
       expect(alternates[1].getAttribute('content')).toBe('fr_CA')
     })
+
+    test('renders Pinterest domain verification', () => {
+      render(
+        <>{renderMeta({ pinterestDomainVerify: 'abc123xyz' })}</>,
+        renderOptions,
+      )
+      expect(
+        document.head
+          .querySelector('[name="p:domain_verify"]')
+          ?.getAttribute('content'),
+      ).toBe('abc123xyz')
+    })
   })
 
   describe('Image Handling', () => {

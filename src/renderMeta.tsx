@@ -34,6 +34,7 @@ export const renderMeta = (
     images,
     locale,
     localeAlternates,
+    pinterestDomainVerify,
     siteName,
     siteNameDelimiter,
     title,
@@ -146,6 +147,17 @@ export const renderMeta = (
           content={localeAlternate}
         />
       )),
+    )
+  }
+
+  // Pinterest domain verification
+  if (pinterestDomainVerify) {
+    tagsToRender.push(
+      <meta
+        key="meta-pinterest-domain-verify"
+        name="p:domain_verify"
+        content={pinterestDomainVerify}
+      />,
     )
   }
 
