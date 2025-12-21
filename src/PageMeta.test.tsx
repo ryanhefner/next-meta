@@ -92,13 +92,13 @@ describe('PageMeta', () => {
 
   describe('image', () => {
     test('renders - imageUrl', () => {
-      render(<PageMeta imageUrl="/test.jpg" />, renderOptions)
+      render(<PageMeta images={[{ url: '/test.jpg' }]} />, renderOptions)
       expect(document.head.querySelector('[property="og:image"]')).toBeTruthy()
     })
 
     test('renders - imageAlt', () => {
       render(
-        <PageMeta imageUrl="/test.jpg" imageAlt="Test Image" />,
+        <PageMeta images={[{ url: '/test.jpg', alt: 'Test Image' }]} />,
         renderOptions,
       )
       expect(
@@ -107,14 +107,20 @@ describe('PageMeta', () => {
     })
 
     test('renders - imageWidth', () => {
-      render(<PageMeta imageUrl="/test.jpg" imageWidth="100" />, renderOptions)
+      render(
+        <PageMeta images={[{ url: '/test.jpg', width: '100' }]} />,
+        renderOptions,
+      )
       expect(
         document.head.querySelector('[property="og:image:width"]'),
       ).toBeTruthy()
     })
 
     test('renders - imageHeight', () => {
-      render(<PageMeta imageUrl="/test.jpg" imageHeight="100" />, renderOptions)
+      render(
+        <PageMeta images={[{ url: '/test.jpg', height: '100' }]} />,
+        renderOptions,
+      )
       expect(
         document.head.querySelector('[property="og:image:height"]'),
       ).toBeTruthy()
@@ -159,19 +165,19 @@ describe('PageMeta', () => {
 
   describe('twitter', () => {
     test('renders - twitter:site', () => {
-      render(<PageMeta twitterSite="@test" />, renderOptions)
+      render(<PageMeta twitter={{ site: '@test' }} />, renderOptions)
       expect(document.head.querySelector('[name="twitter:site"]')).toBeTruthy()
     })
 
     test('renders - twitter:creator', () => {
-      render(<PageMeta twitterCreator="@test" />, renderOptions)
+      render(<PageMeta twitter={{ creator: '@test' }} />, renderOptions)
       expect(
         document.head.querySelector('[name="twitter:creator"]'),
       ).toBeTruthy()
     })
 
     test('renders - twitter:card', () => {
-      render(<PageMeta twitterCard="summary" />, renderOptions)
+      render(<PageMeta twitter={{ card: 'summary' }} />, renderOptions)
       expect(document.head.querySelector('[name="twitter:card"]')).toBeTruthy()
     })
 
@@ -415,13 +421,13 @@ describe('PageMeta', () => {
 
   describe('audio', () => {
     test('renders - audioUrl', () => {
-      render(<PageMeta audioUrl="test.mp3" />, renderOptions)
+      render(<PageMeta audio={[{ url: 'test.mp3' }]} />, renderOptions)
       expect(document.head.querySelector('[property="og:audio"]')).toBeTruthy()
     })
 
     test('renders - audioSecureUrl', () => {
       render(
-        <PageMeta baseUrl="https://test.com" audioUrl="test.mp3" />,
+        <PageMeta baseUrl="https://test.com" audio={[{ url: 'test.mp3' }]} />,
         renderOptions,
       )
       expect(
@@ -431,7 +437,7 @@ describe('PageMeta', () => {
 
     test('renders - audioType', () => {
       render(
-        <PageMeta audioUrl="test.mp3" audioType="audio/mpeg" />,
+        <PageMeta audio={[{ url: 'test.mp3', type: 'audio/mpeg' }]} />,
         renderOptions,
       )
       expect(
@@ -442,13 +448,13 @@ describe('PageMeta', () => {
 
   describe('video', () => {
     test('renders - videoUrl', () => {
-      render(<PageMeta videoUrl="/test.mp4" />, renderOptions)
+      render(<PageMeta videos={[{ url: '/test.mp4' }]} />, renderOptions)
       expect(document.head.querySelector('[property="og:video"]')).toBeTruthy()
     })
 
     test('renders - videoSecureUrl', () => {
       render(
-        <PageMeta baseUrl="https://test.com" videoUrl="/test.mp4" />,
+        <PageMeta baseUrl="https://test.com" videos={[{ url: '/test.mp4' }]} />,
         renderOptions,
       )
       expect(
@@ -458,7 +464,7 @@ describe('PageMeta', () => {
 
     test('renders - videoType', () => {
       render(
-        <PageMeta videoUrl="/test.mp4" videoType="video/mp4" />,
+        <PageMeta videos={[{ url: '/test.mp4', type: 'video/mp4' }]} />,
         renderOptions,
       )
       expect(

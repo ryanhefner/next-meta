@@ -170,7 +170,10 @@ describe('renderMeta', () => {
 
   describe('Image Handling', () => {
     test('renders image with imageUrl', () => {
-      render(<>{renderMeta({ imageUrl: '/test-image.jpg' })}</>, renderOptions)
+      render(
+        <>{renderMeta({ images: [{ url: '/test-image.jpg' }] })}</>,
+        renderOptions,
+      )
       expect(
         document.head
           .querySelector('[property="og:image"]')
@@ -187,12 +190,14 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            image: {
-              url: '/test-image.jpg',
-              alt: 'Test image',
-              width: 1200,
-              height: 630,
-            },
+            images: [
+              {
+                url: '/test-image.jpg',
+                alt: 'Test image',
+                width: 1200,
+                height: 630,
+              },
+            ],
           })}
         </>,
         renderOptions,
@@ -223,8 +228,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/test-image.jpg',
-            imageAlt: 'Test image',
+            images: [{ url: '/test-image.jpg', alt: 'Test image' }],
           })}
         </>,
         renderOptions,
@@ -245,9 +249,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/test-image.jpg',
-            imageWidth: 1200,
-            imageHeight: 630,
+            images: [{ url: '/test-image.jpg', width: 1200, height: 630 }],
           })}
         </>,
         renderOptions,
@@ -268,7 +270,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/test-image.jpg',
+            images: [{ url: '/test-image.jpg' }],
             baseUrl: 'https://example.com',
           })}
         </>,
@@ -281,12 +283,11 @@ describe('renderMeta', () => {
       ).toBe('https://example.com/test-image.jpg')
     })
 
-    test('prioritizes imageUrl over image object', () => {
+    test('renders image object', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/old-image.jpg',
-            image: { url: '/new-image.jpg' },
+            images: [{ url: '/new-image.jpg' }],
           })}
         </>,
         renderOptions,
@@ -295,13 +296,16 @@ describe('renderMeta', () => {
         document.head
           .querySelector('[property="og:image"]')
           ?.getAttribute('content'),
-      ).toBe('/old-image.jpg')
+      ).toBe('/new-image.jpg')
     })
   })
 
   describe('Audio and Video', () => {
     test('renders audio URL', () => {
-      render(<>{renderMeta({ audioUrl: '/test-audio.mp3' })}</>, renderOptions)
+      render(
+        <>{renderMeta({ audio: [{ url: '/test-audio.mp3' }] })}</>,
+        renderOptions,
+      )
       expect(
         document.head
           .querySelector('[property="og:audio"]')
@@ -313,7 +317,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            audioUrl: '/test-audio.mp3',
+            audio: [{ url: '/test-audio.mp3' }],
             baseUrl: 'https://example.com',
           })}
         </>,
@@ -330,8 +334,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            audioUrl: '/test-audio.mp3',
-            audioType: 'audio/mpeg',
+            audio: [{ url: '/test-audio.mp3', type: 'audio/mpeg' }],
           })}
         </>,
         renderOptions,
@@ -345,7 +348,11 @@ describe('renderMeta', () => {
 
     test('renders secure audio URL for HTTPS', () => {
       render(
-        <>{renderMeta({ audioUrl: 'https://example.com/test-audio.mp3' })}</>,
+        <>
+          {renderMeta({
+            audio: [{ url: 'https://example.com/test-audio.mp3' }],
+          })}
+        </>,
         renderOptions,
       )
       expect(
@@ -356,7 +363,10 @@ describe('renderMeta', () => {
     })
 
     test('renders video URL', () => {
-      render(<>{renderMeta({ videoUrl: '/test-video.mp4' })}</>, renderOptions)
+      render(
+        <>{renderMeta({ videos: [{ url: '/test-video.mp4' }] })}</>,
+        renderOptions,
+      )
       expect(
         document.head
           .querySelector('[property="og:video"]')
@@ -368,7 +378,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            videoUrl: '/test-video.mp4',
+            videos: [{ url: '/test-video.mp4' }],
             baseUrl: 'https://example.com',
           })}
         </>,
@@ -385,8 +395,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            videoUrl: '/test-video.mp4',
-            videoType: 'video/mp4',
+            videos: [{ url: '/test-video.mp4', type: 'video/mp4' }],
           })}
         </>,
         renderOptions,
@@ -400,7 +409,11 @@ describe('renderMeta', () => {
 
     test('renders secure video URL for HTTPS', () => {
       render(
-        <>{renderMeta({ videoUrl: 'https://example.com/test-video.mp4' })}</>,
+        <>
+          {renderMeta({
+            videos: [{ url: 'https://example.com/test-video.mp4' }],
+          })}
+        </>,
         renderOptions,
       )
       expect(
@@ -414,7 +427,7 @@ describe('renderMeta', () => {
   describe('Twitter Cards', () => {
     test('renders twitterCard', () => {
       render(
-        <>{renderMeta({ twitterCard: 'summary_large_image' })}</>,
+        <>{renderMeta({ twitter: { card: 'summary_large_image' } })}</>,
         renderOptions,
       )
       expect(
@@ -425,7 +438,10 @@ describe('renderMeta', () => {
     })
 
     test('renders twitterCreator', () => {
-      render(<>{renderMeta({ twitterCreator: '@testuser' })}</>, renderOptions)
+      render(
+        <>{renderMeta({ twitter: { creator: '@testuser' } })}</>,
+        renderOptions,
+      )
       expect(
         document.head
           .querySelector('[name="twitter:creator"]')
@@ -434,7 +450,10 @@ describe('renderMeta', () => {
     })
 
     test('renders twitterSite', () => {
-      render(<>{renderMeta({ twitterSite: '@testsite' })}</>, renderOptions)
+      render(
+        <>{renderMeta({ twitter: { site: '@testsite' } })}</>,
+        renderOptions,
+      )
       expect(
         document.head
           .querySelector('[name="twitter:site"]')
@@ -779,7 +798,7 @@ describe('renderMeta', () => {
           {renderMeta({
             title: undefined,
             description: undefined,
-            imageUrl: undefined,
+            images: undefined,
             url: undefined,
           })}
         </>,
@@ -798,7 +817,7 @@ describe('renderMeta', () => {
           {renderMeta({
             title: '',
             description: '',
-            imageUrl: '',
+            images: undefined,
             url: '',
           })}
         </>,
@@ -817,7 +836,7 @@ describe('renderMeta', () => {
           {renderMeta({
             title: null as any,
             description: null as any,
-            imageUrl: null as any,
+            images: null as any,
             url: null as any,
           })}
         </>,
@@ -834,9 +853,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/test.jpg',
-            imageWidth: 0,
-            imageHeight: 0,
+            images: [{ url: '/test.jpg', width: 0, height: 0 }],
           })}
         </>,
         renderOptions,
@@ -858,9 +875,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
-            imageUrl: '/test.jpg',
-            imageWidth: '1200',
-            imageHeight: '630',
+            images: [{ url: '/test.jpg', width: '1200', height: '630' }],
           })}
         </>,
         renderOptions,
@@ -885,9 +900,9 @@ describe('renderMeta', () => {
         <>
           {renderMeta({
             url: 'https://example.com/page',
-            imageUrl: 'https://example.com/image.jpg',
-            audioUrl: 'https://example.com/audio.mp3',
-            videoUrl: 'https://example.com/video.mp4',
+            images: [{ url: 'https://example.com/image.jpg' }],
+            audio: [{ url: 'https://example.com/audio.mp3' }],
+            videos: [{ url: 'https://example.com/video.mp4' }],
             canonical: 'https://example.com/canonical',
           })}
         </>,
@@ -924,9 +939,9 @@ describe('renderMeta', () => {
         <>
           {renderMeta({
             url: '/page',
-            imageUrl: '/image.jpg',
-            audioUrl: '/audio.mp3',
-            videoUrl: '/video.mp4',
+            images: [{ url: '/image.jpg' }],
+            audio: [{ url: '/audio.mp3' }],
+            videos: [{ url: '/video.mp4' }],
             canonical: '/canonical',
             baseUrl: 'https://example.com',
           })}

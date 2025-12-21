@@ -2,7 +2,7 @@ import React from 'react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import { MetaProvider } from './MetaProvider'
-import { SiteMeta } from './SiteMeta'
+import { PageMeta } from './PageMeta'
 
 vi.mock('next/head.js', () => {
   return {
@@ -55,10 +55,10 @@ describe('MetaProvider', () => {
     expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
   })
 
-  test('renders defaults and SiteMeta overrides', () => {
+  test('renders defaults and PageMeta overrides', () => {
     render(
       <MetaProvider title="Test Title" siteName="Test Site Name">
-        <SiteMeta title="Test Title Override" />
+        <PageMeta title="Test Title Override" />
       </MetaProvider>,
       renderOptions,
     )
@@ -67,13 +67,13 @@ describe('MetaProvider', () => {
     )
   })
 
-  test('renders - defaults w/ SiteMeta additions', () => {
+  test('renders - defaults w/ PageMeta additions', () => {
     render(
       <MetaProvider
         title="Test Title"
         twitter={{ card: 'summary_large_image', creator: '@ryanhefner' }}
       >
-        <SiteMeta
+        <PageMeta
           description="Test Description"
           twitter={{
             player: {
@@ -104,7 +104,7 @@ describe('MetaProvider', () => {
   test('renders - absolute urls w/ baseUrl + url override', () => {
     render(
       <MetaProvider baseUrl="https://test.com" url="/test">
-        <SiteMeta url="/test-override" />
+        <PageMeta url="/test-override" />
       </MetaProvider>,
       renderOptions,
     )
@@ -113,14 +113,15 @@ describe('MetaProvider', () => {
     ).toHaveProperty('content', 'https://test.com/test-override')
   })
 
-  test('children rendered via SiteMeta', () => {
+  test('children rendered via PageMeta', () => {
     render(
       <MetaProvider twitter={{ card: 'summary_large_image' }}>
-        <SiteMeta
+        <PageMeta
           title={`Episode: 001 - Podcast`}
           description="Site Meta Description"
-          audioUrl={`https://test.com?src=allplay.fm`}
-          audioType="audio/mpeg"
+          audio={[
+            { url: `https://test.com?src=allplay.fm`, type: 'audio/mpeg' },
+          ]}
           twitter={{
             card: 'player',
             player: {
@@ -146,7 +147,7 @@ describe('MetaProvider', () => {
             title="Episode Title"
             href="https://share.transistor.fm/oembed?url=https://test.com/episode/001"
           />
-        </SiteMeta>
+        </PageMeta>
       </MetaProvider>,
       renderOptions,
     )

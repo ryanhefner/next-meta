@@ -72,14 +72,14 @@ describe('MetaContext', () => {
     expect(JSON.parse(innerComponent.textContent || '{}')).toEqual(innerProps)
   })
 
-  it('should skip rendering SiteMeta when skipDefaultsRender is true', () => {
+  it('should skip rendering PageMeta when skipDefaultsRender is true', () => {
     const { container } = render(
       <MetaProvider skipDefaultsRender>
         <div>Test Content</div>
       </MetaProvider>,
     )
 
-    // SiteMeta should not be rendered
+    // PageMeta should not be rendered
     expect(container.querySelector('head')).toBeNull()
   })
 })
