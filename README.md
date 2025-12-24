@@ -21,9 +21,10 @@ Managing meta tags, Open Graph, and Twitter cards in Next.js applications can be
 - Reduces boilerplate code for meta tag management
 - Ensures consistent meta tag structure across your application
 - Provides TypeScript support out of the box
-- Handles all major social media platforms (Open Graph, Twitter Cards)
+- Handles all major social media platforms (Open Graph, Twitter Cards, Pinterest)
 - Supports dynamic meta tags based on page content
 - Maintains SEO best practices
+- Includes Schema.org structured data support
 
 ## Install
 
@@ -45,7 +46,7 @@ yarn add next-meta
 
 Setting defaults within the Next.js App with `MetaProvider`.
 
-```js
+```tsx
 import { ReactElement, ReactNode } from 'react'
 import { NextPage } from 'next'
 import { AppProps } from 'next/app'
@@ -65,8 +66,14 @@ type AppPropsWithLayout = AppProps & {
 const BASE_URL = 'https://test.com'
 const SITE_NAME = 'Example Site'
 const DEFAULT_TITLE = 'An example title for using next-meta in your _app file.'
-const DEFAULT_DESCRIPTION = 'Hopefully this makes things a little easier with adding good meta/og tags to your site.'
-const DEFAULT_IMAGE_URL = '/social-share.png'
+const DEFAULT_DESCRIPTION =
+  'Hopefully this makes things a little easier with adding good meta/og tags to your site.'
+const DEFAULT_IMAGE = {
+  url: '/social-share.png',
+  alt: 'Default social share image',
+  width: 1200,
+  height: 630,
+}
 
 function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page)
@@ -82,13 +89,13 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
         baseUrl={BASE_URL}
         canonical={metaUrl}
         description={DEFAULT_DESCRIPTION}
-        imageUrl={DEFAULT_IMAGE_URL}
-        imageWidth={1200}
-        imageHeight={630}
+        images={[DEFAULT_IMAGE]}
         siteName={SITE_NAME}
         title={DEFAULT_TITLE}
-        twitterCard="summary_large_image"
-        twitterSite="@exampleSite"
+        twitter={{
+          card: 'summary_large_image',
+          site: '@exampleSite',
+        }}
         url={metaUrl}
       >
         {getLayout(<Component {...pageProps} />)}
@@ -102,107 +109,231 @@ export default CustomApp
 
 ### Page-Specific Meta Tags
 
-Specifying page specific meta tags using the `SiteMeta` component.
+Specifying page specific meta tags using the `PageMeta` component.
 
-```js
+```tsx
 import Head from 'next/head'
-import { SiteMeta } from 'next-meta'
+import { PageMeta } from 'next-meta'
 
-const ExamplePage = () => (
+const ExamplePage = () => {
   return (
     <>
       <Head>
-        <SiteMeta
-          imageUrl="/share/about-social.png"
+        <PageMeta
+          images={[
+            {
+              url: '/share/about-social.png',
+              alt: 'About page social share image',
+              width: 1200,
+              height: 630,
+            },
+          ]}
           title="About"
           siteName="Example Site"
           url="/about"
         />
       </Head>
-      {...page code...}
+      {/* ...page code... */}
     </>
   )
-)
+}
 ```
 
 ### Advanced Usage
 
 Here's an example showing more advanced features:
 
-```js
+```tsx
 import Head from 'next/head'
-import { SiteMeta } from 'next-meta'
+import { PageMeta } from 'next-meta'
 
-const BlogPost = ({ post }) => (
+const BlogPost = ({ post }) => {
   return (
     <>
       <Head>
-        <SiteMeta
+        <PageMeta
           title={post.title}
           description={post.excerpt}
-          imageUrl={post.featuredImage}
-          imageWidth={1200}
-          imageHeight={630}
+          images={[
+            {
+              url: post.featuredImage,
+              alt: post.featuredImageAlt,
+              width: 1200,
+              height: 630,
+            },
+          ]}
           url={`/blog/${post.slug}`}
-          twitterCard="summary_large_image"
-          twitterCreator="@authorHandle"
-          audioUrl={post.audioUrl}
-          audioType="audio/mpeg"
-          videoUrl={post.videoUrl}
-          videoType="video/mp4"
+          twitter={{
+            card: 'summary_large_image',
+            creator: '@authorHandle',
+          }}
+          audio={
+            post.audioUrl
+              ? [{ url: post.audioUrl, type: 'audio/mpeg' }]
+              : undefined
+          }
+          videos={
+            post.videoUrl
+              ? [
+                  {
+                    url: post.videoUrl,
+                    type: 'video/mp4',
+                    width: 1920,
+                    height: 1080,
+                  },
+                ]
+              : undefined
+          }
           locale="en_US"
           determiner="the"
+          article={{
+            author: post.authors,
+            publishedTime: post.publishedAt,
+            modifiedTime: post.updatedAt,
+            section: 'Technology',
+            tag: post.tags,
+          }}
         />
       </Head>
-      {...post content...}
+      {/* ...post content... */}
     </>
   )
-)
+}
 ```
+
+### Schema.org Structured Data
+
+next-meta includes comprehensive support for Schema.org structured data with exhaustive TypeScript type safety.
+
+```tsx
+import Head from 'next/head'
+import { Schema } from 'next-meta/schema'
+import { PageMeta } from 'next-meta'
+
+const BlogPost = ({ post }) => {
+  return (
+    <>
+      <Head>
+        <PageMeta
+          title={post.title}
+          description={post.excerpt}
+          images={[{ url: post.featuredImage }]}
+        />
+        <Schema
+          type="Article"
+          data={{
+            headline: post.title,
+            datePublished: post.publishedAt,
+            dateModified: post.updatedAt,
+            author: {
+              '@type': 'Person',
+              name: post.author.name,
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'My Blog',
+            },
+          }}
+        />
+      </Head>
+      {/* ...post content... */}
+    </>
+  )
+}
+```
+
+For more information about Schema.org support, see the [Schema.org documentation](./src/schema/README.md).
 
 ## TypeScript Support
 
 next-meta is written in TypeScript and provides type definitions out of the box. The package exports the following types:
 
+- `PageMetaProps`: Props for the PageMeta component
 - `MetaProviderProps`: Props for the MetaProvider component
-- `SiteMetaProps`: Props for the SiteMeta component
+- `Image`: Type for image objects
+- `Video`: Type for video objects
+- `Audio`: Type for audio objects
+- `Twitter`: Type for Twitter card configuration
+- `TwitterCard`: Enum for Twitter card types
 
 ## Properties
 
-| Prop                            | Description                                   | Example |
-|---------------------------------|-----------------------------------------------|---------|
-| `audioUrl?: string`             | URL to audio file.                            | `"/podcast/episode1.mp3"` |
-| `audioType?: string`            | Mimetype of audio file.                       | `"audio/mpeg"` |
-| `baseUrl?: string`              | Base URL for all `xUrl` props.                | `"https://example.com"` |
-| `canonical?: string`            | Canonical URL for the page.                   | `"/blog/post-1"` |
-| `debug?: boolean`               | Enable debug mode (in development).           | `true` |
-| `description?: string`          | Page description for meta tags.               | `"Learn about our company"` |
-| `determiner?: string`           | Word before object's title in a sentence.     | `"the"` |
-| `image?: Image`                 | Image object for social sharing.              | `{ url: "/images/share.png", alt: "Description", width: 1200, height: 630 }` |
-| `locale?: string`               | Locale of site/page.                          | `"en_US"` |
-| `localeAlternates?: string[]`   | Alternate locales for the page.               | `["en_CA", "fr_CA"]` |
-| `siteName?: string`             | Site name for meta tags.                      | `"My Blog"` |
-| `siteNameDelimiter?: string`    | Delimiter between title and site name.        | `"|"` |
-| `title?: string`                | Page title.                                   | `"About Us"` |
-| `twitter?: Twitter`             | Twitter card configuration object.            | `{ card: "summary_large_image", site: "@site", creator: "@author" }` |
-| `type?: string`                 | Open Graph type of the page.                  | `"website"` |
-| `url?: string`                  | URL of page.                                  | `"/about"` |
-| `videoUrl?: string`             | URL to video file.                            | `"/videos/tutorial.mp4"` |
-| `videoType?: string`            | Mimetype of video file.                       | `"video/mp4"` |
+### Core Properties
 
-### Deprecated Properties
+| Prop                             | Description                               | Example                     |
+| -------------------------------- | ----------------------------------------- | --------------------------- | --- |
+| `baseUrl?: string`               | Base URL for all relative URLs.           | `"https://example.com"`     |
+| `canonical?: string`             | Canonical URL for the page.               | `"/blog/post-1"`            |
+| `debug?: boolean`                | Enable debug mode (in development).       | `true`                      |
+| `description?: string`           | Page description for meta tags.           | `"Learn about our company"` |
+| `determiner?: string`            | Word before object's title in a sentence. | `"the"`                     |
+| `locale?: string`                | Locale of site/page.                      | `"en_US"`                   |
+| `localeAlternates?: string[]`    | Alternate locales for the page.           | `["en_CA", "fr_CA"]`        |
+| `siteName?: string`              | Site name for meta tags.                  | `"My Blog"`                 |
+| `siteNameDelimiter?: string`     | Delimiter between title and site name.    | `"                          | "`  |
+| `title?: string`                 | Page title.                               | `"About Us"`                |
+| `type?: string`                  | Open Graph type of the page.              | `"website"`                 |
+| `url?: string`                   | URL of page.                              | `"/about"`                  |
+| `pinterestDomainVerify?: string` | Pinterest domain verification code.       | `"abc123xyz"`               |
 
-The following properties are deprecated and should be replaced with their new counterparts:
+### Media Properties
 
-| Deprecated Prop      | New Prop                |
-|---------------------|------------------------|
-| `imageUrl`          | `image.url`            |
-| `imageAlt`          | `image.alt`            |
-| `imageWidth`        | `image.width`          |
-| `imageHeight`       | `image.height`         |
-| `twitterCard`       | `twitter.card`         |
-| `twitterCreator`    | `twitter.creator`      |
-| `twitterSite`       | `twitter.site`         |
+| Prop               | Description                                | Example                                                                           |
+| ------------------ | ------------------------------------------ | --------------------------------------------------------------------------------- |
+| `images?: Image[]` | Array of image objects for social sharing. | `[{ url: "/images/share.png", alt: "Description", width: 1200, height: 630 }]`    |
+| `audio?: Audio[]`  | Array of audio objects.                    | `[{ url: "/podcast/episode1.mp3", type: "audio/mpeg", title: "Episode 1" }]`      |
+| `videos?: Video[]` | Array of video objects.                    | `[{ url: "/videos/tutorial.mp4", type: "video/mp4", width: 1920, height: 1080 }]` |
+
+### Image Object
+
+| Property | Type               | Description            |
+| -------- | ------------------ | ---------------------- |
+| `url`    | `string`           | URL of the image       |
+| `alt`    | `string`           | Alt text for the image |
+| `width`  | `number \| string` | Width of the image     |
+| `height` | `number \| string` | Height of the image    |
+| `type`   | `string`           | MIME type of the image |
+
+### Video Object
+
+| Property      | Type                                                       | Description               |
+| ------------- | ---------------------------------------------------------- | ------------------------- |
+| `url`         | `string`                                                   | URL of the video          |
+| `secureUrl`   | `string`                                                   | HTTPS URL of the video    |
+| `type`        | `string`                                                   | MIME type of the video    |
+| `width`       | `number \| string`                                         | Width of the video        |
+| `height`      | `number \| string`                                         | Height of the video       |
+| `duration`    | `number \| string`                                         | Duration in seconds       |
+| `actor`       | `Array<{ name?: string; role?: string }>`                  | Actors in the video       |
+| `director`    | `string \| string[]`                                       | Director(s) of the video  |
+| `writer`      | `string \| string[]`                                       | Writer(s) of the video    |
+| `releaseDate` | `string`                                                   | Release date of the video |
+| `tag`         | `string \| string[]`                                       | Tags for the video        |
+| `series`      | `string`                                                   | Series name if applicable |
+| `episode`     | `{ season?: number \| string; number?: number \| string }` | Episode information       |
+
+### Audio Object
+
+| Property    | Type                 | Description                 |
+| ----------- | -------------------- | --------------------------- |
+| `url`       | `string`             | URL of the audio file       |
+| `secureUrl` | `string`             | HTTPS URL of the audio file |
+| `type`      | `string`             | MIME type of the audio file |
+| `duration`  | `number \| string`   | Duration in seconds         |
+| `title`     | `string`             | Title of the audio          |
+| `artist`    | `string \| string[]` | Artist(s) of the audio      |
+| `album`     | `string`             | Album name                  |
+
+### Twitter Object
+
+| Property  | Type         | Description                 |
+| --------- | ------------ | --------------------------- |
+| `card`    | `string`     | Twitter card type           |
+| `site`    | `string`     | Twitter username for site   |
+| `creator` | `string`     | Twitter username for author |
+| `image`   | `Image`      | Twitter-specific image      |
+| `app`     | `TwitterApp` | App card configuration      |
+| `player`  | `Player`     | Player card configuration   |
 
 ### Twitter Card Types
 
@@ -213,47 +344,165 @@ When using the `twitter.card` property, you can use one of the following values:
 - `"app"` - App card type
 - `"player"` - Player card type
 
-### Image Object
-
-The `image` object supports the following properties:
-
-| Property  | Type                | Description                |
-|-----------|---------------------|----------------------------|
-| `url`     | `string`            | URL of the image           |
-| `alt`     | `string`            | Alt text for the image     |
-| `width`   | `number \| string`  | Width of the image         |
-| `height`  | `number \| string`  | Height of the image        |
-
-### Twitter Object
-
-The `twitter` object supports the following properties:
-
-| Property  | Type                | Description                |
-|-----------|---------------------|----------------------------|
-| `card`    | `string`            | Twitter card type          |
-| `site`    | `string`            | Twitter username for site  |
-| `creator` | `string`            | Twitter username for author|
-| `player`  | `Player`            | Player card configuration  |
-
 ### Player Object
 
-The `player` object supports the following properties:
-
-| Property      | Type                | Description                |
-|---------------|---------------------|----------------------------|
-| `url`         | `string`            | URL of the player          |
-| `width`       | `number \| string`  | Width of the player        |
-| `height`      | `number \| string`  | Height of the player       |
-| `stream`      | `Stream`            | Stream configuration       |
+| Property | Type     | Description          |
+| -------- | -------- | -------------------- |
+| `url`    | `string` | URL of the player    |
+| `width`  | `string` | Width of the player  |
+| `height` | `string` | Height of the player |
+| `stream` | `Stream` | Stream configuration |
 
 ### Stream Object
 
-The `stream` object supports the following properties:
-
 | Property      | Type     | Description                |
-|---------------|----------|----------------------------|
+| ------------- | -------- | -------------------------- |
 | `url`         | `string` | URL of the stream          |
 | `contentType` | `string` | Content type of the stream |
+
+### General Metadata Properties
+
+| Prop             | Type                 | Description                  |
+| ---------------- | -------------------- | ---------------------------- |
+| `author`         | `string \| string[]` | Author(s) of the content     |
+| `updatedTime`    | `string`             | Last updated time (ISO 8601) |
+| `seeAlso`        | `string \| string[]` | Related URLs                 |
+| `richAttachment` | `boolean`            | Enable rich attachment       |
+| `tag`            | `string \| string[]` | Tags for the content         |
+| `section`        | `string`             | Section of the site          |
+| `publishedTime`  | `string`             | Publication time (ISO 8601)  |
+| `modifiedTime`   | `string`             | Modification time (ISO 8601) |
+| `releaseDate`    | `string`             | Release date                 |
+| `expirationTime` | `string`             | Expiration time (ISO 8601)   |
+| `startTime`      | `string`             | Start time (ISO 8601)        |
+| `endTime`        | `string`             | End time (ISO 8601)          |
+
+### Location Properties
+
+| Prop            | Type               | Description          |
+| --------------- | ------------------ | -------------------- |
+| `latitude`      | `number \| string` | Latitude coordinate  |
+| `longitude`     | `number \| string` | Longitude coordinate |
+| `streetAddress` | `string`           | Street address       |
+| `locality`      | `string`           | City or locality     |
+| `region`        | `string`           | State or region      |
+| `postalCode`    | `string`           | Postal/ZIP code      |
+| `countryName`   | `string`           | Country name         |
+
+### Contact Properties
+
+| Prop          | Type     | Description   |
+| ------------- | -------- | ------------- |
+| `email`       | `string` | Email address |
+| `phoneNumber` | `string` | Phone number  |
+| `faxNumber`   | `string` | Fax number    |
+
+### Product/Rating Properties
+
+| Prop            | Type                                                                               | Description              |
+| --------------- | ---------------------------------------------------------------------------------- | ------------------------ |
+| `price`         | `string \| number`                                                                 | Price of the product     |
+| `availability`  | `string`                                                                           | Availability status      |
+| `isbn`          | `string`                                                                           | ISBN for books           |
+| `rating`        | `{ value?: number \| string; scale?: number \| string; count?: number \| string }` | Rating information       |
+| `reviewCount`   | `number \| string`                                                                 | Number of reviews        |
+| `points`        | `string`                                                                           | Points/rewards           |
+| `restrictions`  | `string \| string[]`                                                               | Age/content restrictions |
+| `ageRating`     | `string`                                                                           | Age rating               |
+| `contentRating` | `string`                                                                           | Content rating           |
+
+### Article-Specific Properties
+
+| Prop                     | Type                 | Description                  |
+| ------------------------ | -------------------- | ---------------------------- |
+| `article.author`         | `string \| string[]` | Article author(s)            |
+| `article.publishedTime`  | `string`             | Publication time (ISO 8601)  |
+| `article.modifiedTime`   | `string`             | Modification time (ISO 8601) |
+| `article.expirationTime` | `string`             | Expiration time (ISO 8601)   |
+| `article.section`        | `string`             | Article section              |
+| `article.tag`            | `string \| string[]` | Article tags                 |
+
+### Book-Specific Properties
+
+| Prop               | Type                 | Description    |
+| ------------------ | -------------------- | -------------- |
+| `book.author`      | `string \| string[]` | Book author(s) |
+| `book.isbn`        | `string`             | ISBN           |
+| `book.releaseDate` | `string`             | Release date   |
+| `book.tag`         | `string \| string[]` | Book tags      |
+
+### Profile-Specific Properties
+
+| Prop                | Type     | Description |
+| ------------------- | -------- | ----------- |
+| `profile.firstName` | `string` | First name  |
+| `profile.lastName`  | `string` | Last name   |
+| `profile.username`  | `string` | Username    |
+| `profile.gender`    | `string` | Gender      |
+
+### Music-Specific Properties
+
+| Prop                | Type                                                              | Description          |
+| ------------------- | ----------------------------------------------------------------- | -------------------- |
+| `music.duration`    | `number \| string`                                                | Duration in seconds  |
+| `music.album`       | `string \| { disc?: number \| string; track?: number \| string }` | Album name or object |
+| `music.musician`    | `string \| string[]`                                              | Musician(s)          |
+| `music.releaseDate` | `string`                                                          | Release date         |
+
+## Breaking Changes
+
+### Version 4.0.0
+
+Version 4.0.0 introduced breaking changes:
+
+- **Removed `SiteMeta` component**: Use `PageMeta` instead
+- **Removed deprecated props**: `imageUrl`, `imageAlt`, `imageWidth`, `imageHeight`, `audioUrl`, `audioType`, `videoUrl`, `videoType`, `twitterCard`, `twitterCreator`, `twitterSite`
+- **Array-based media props**: All media now uses arrays:
+  - `images?: Image[]` (replaces `image?: Image` and `imageUrl`)
+  - `audio?: Audio[]` (replaces `audioUrl` and `audioType`)
+  - `videos?: Video[]` (replaces `videoUrl` and `videoType`)
+- **Twitter object**: Use `twitter` object instead of individual props:
+  - `twitter.card` (replaces `twitterCard`)
+  - `twitter.site` (replaces `twitterSite`)
+  - `twitter.creator` (replaces `twitterCreator`)
+
+### Migration Guide
+
+**Before (v3.x):**
+
+```tsx
+<SiteMeta
+  imageUrl="/image.jpg"
+  imageAlt="Description"
+  imageWidth={1200}
+  imageHeight={630}
+  audioUrl="/audio.mp3"
+  videoUrl="/video.mp4"
+  twitterCard="summary_large_image"
+  twitterSite="@site"
+/>
+```
+
+**After (v4.x):**
+
+```tsx
+<PageMeta
+  images={[
+    {
+      url: '/image.jpg',
+      alt: 'Description',
+      width: 1200,
+      height: 630,
+    },
+  ]}
+  audio={[{ url: '/audio.mp3' }]}
+  videos={[{ url: '/video.mp4' }]}
+  twitter={{
+    card: 'summary_large_image',
+    site: '@site',
+  }}
+/>
+```
 
 ## License
 
