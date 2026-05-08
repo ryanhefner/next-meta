@@ -234,6 +234,33 @@ describe('renderMeta', () => {
           .querySelector('[property="og:image:height"]')
           ?.getAttribute('content'),
       ).toBe('630')
+      expect(
+        document.head
+          .querySelector('[property="og:image:url"]')
+          ?.getAttribute('content'),
+      ).toBe('/test-image.jpg')
+    })
+
+    test('renders image secure URL', () => {
+      render(
+        <>
+          {renderMeta({
+            images: [
+              {
+                url: '/test-image.jpg',
+                secureUrl: 'https://example.com/test-image.jpg',
+              },
+            ],
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image:secure_url"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/test-image.jpg')
     })
 
     test('renders image with imageUrl and imageAlt', () => {
@@ -461,6 +488,45 @@ describe('renderMeta', () => {
       ).toBe('@testuser')
     })
 
+    test('renders twitter IDs and title/description overrides', () => {
+      render(
+        <>
+          {renderMeta({
+            title: 'Page title',
+            description: 'Page description',
+            twitter: {
+              creatorId: '12345',
+              description: 'Twitter description',
+              siteId: '67890',
+              title: 'Twitter title',
+            },
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[name="twitter:title"]')
+          ?.getAttribute('content'),
+      ).toBe('Twitter title')
+      expect(
+        document.head
+          .querySelector('[name="twitter:description"]')
+          ?.getAttribute('content'),
+      ).toBe('Twitter description')
+      expect(
+        document.head
+          .querySelector('[name="twitter:site:id"]')
+          ?.getAttribute('content'),
+      ).toBe('67890')
+      expect(
+        document.head
+          .querySelector('[name="twitter:creator:id"]')
+          ?.getAttribute('content'),
+      ).toBe('12345')
+    })
+
     test('renders twitterSite', () => {
       render(
         <>{renderMeta({ twitter: { site: '@testsite' } })}</>,
@@ -525,6 +591,7 @@ describe('renderMeta', () => {
       render(
         <>
           {renderMeta({
+            baseUrl: 'https://example.com',
             twitter: {
               image: {
                 url: '/twitter-image.jpg',
@@ -539,19 +606,20 @@ describe('renderMeta', () => {
       )
       expect(
         document.head
+          .querySelector('[name="twitter:image"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/twitter-image.jpg')
+      expect(
+        document.head
           .querySelector('[name="twitter:image:alt"]')
           ?.getAttribute('content'),
       ).toBe('Twitter image')
       expect(
-        document.head
-          .querySelector('[name="twitter:image:width"]')
-          ?.getAttribute('content'),
-      ).toBe('1200')
+        document.head.querySelector('[name="twitter:image:width"]'),
+      ).toBeNull()
       expect(
-        document.head
-          .querySelector('[name="twitter:image:height"]')
-          ?.getAttribute('content'),
-      ).toBe('630')
+        document.head.querySelector('[name="twitter:image:height"]'),
+      ).toBeNull()
     })
 
     test('renders twitter app with country', () => {
@@ -782,6 +850,97 @@ describe('renderMeta', () => {
           .querySelector('[name="description"]')
           ?.getAttribute('content'),
       ).toBe('Props Description')
+    })
+
+    test('replaces array props instead of merging them by index', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              images: [{ url: '/page.jpg' }],
+            },
+            {
+              images: [
+                {
+                  url: '/default.jpg',
+                  alt: 'Default image',
+                  width: 1200,
+                },
+              ],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/page.jpg')
+      expect(
+        document.head.querySelector('[property="og:image:alt"]'),
+      ).toBeNull()
+      expect(
+        document.head.querySelector('[property="og:image:width"]'),
+      ).toBeNull()
+    })
+
+    test('renders additional meta tags', () => {
+      render(
+        <>
+          {renderMeta({
+            additionalMetaTags: [
+              { name: 'robots', content: 'index,follow' },
+              { property: 'custom:property', content: 'custom value' },
+              { httpEquiv: 'x-ua-compatible', content: 'ie=edge' },
+              { charSet: 'utf-8' },
+              {
+                name: 'theme-color',
+                content: '#ffffff',
+                media: '(prefers-color-scheme: light)',
+              },
+              {
+                name: 'application-name',
+                content: 'Weather Wizard',
+                lang: 'en',
+              },
+              { itemProp: 'image', content: 'https://example.com/image.jpg' },
+            ],
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head.querySelector('[name="robots"]')?.getAttribute('content'),
+      ).toBe('index,follow')
+      expect(
+        document.head
+          .querySelector('[property="custom:property"]')
+          ?.getAttribute('content'),
+      ).toBe('custom value')
+      expect(
+        document.head
+          .querySelector('[http-equiv="x-ua-compatible"]')
+          ?.getAttribute('content'),
+      ).toBe('ie=edge')
+      expect(document.head.querySelector('[charset="utf-8"]')).toBeTruthy()
+      expect(
+        document.head
+          .querySelector('[name="theme-color"]')
+          ?.getAttribute('media'),
+      ).toBe('(prefers-color-scheme: light)')
+      expect(
+        document.head
+          .querySelector('[name="application-name"]')
+          ?.getAttribute('lang'),
+      ).toBe('en')
+      expect(
+        document.head
+          .querySelector('[itemprop="image"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/image.jpg')
     })
 
     test('uses defaults when no context or props provided', () => {
@@ -1048,7 +1207,6 @@ describe('renderMeta', () => {
                 releaseDate: '2024-01-01',
                 tag: ['action', 'thriller'],
                 series: 'Series Name',
-                episode: { season: 1, number: 5 },
               },
             ],
           })}
@@ -1083,19 +1241,17 @@ describe('renderMeta', () => {
       ).toBe('1080')
       expect(
         document.head
-          .querySelector('[property="og:video:duration"]')
+          .querySelector('[property="video:duration"]')
           ?.getAttribute('content'),
       ).toBe('120')
 
-      const actors = document.head.querySelectorAll(
-        '[property="og:video:actor"]',
-      )
+      const actors = document.head.querySelectorAll('[property="video:actor"]')
       expect(actors).toHaveLength(2)
       expect(actors[0].getAttribute('content')).toBe('Actor 1')
       expect(actors[1].getAttribute('content')).toBe('Actor 2')
 
       const actorRoles = document.head.querySelectorAll(
-        '[property="og:video:actor:role"]',
+        '[property="video:actor:role"]',
       )
       expect(actorRoles).toHaveLength(2)
       expect(actorRoles[0].getAttribute('content')).toBe('Lead')
@@ -1103,12 +1259,12 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:video:director"]')
+          .querySelector('[property="video:director"]')
           ?.getAttribute('content'),
       ).toBe('Director Name')
 
       const writers = document.head.querySelectorAll(
-        '[property="og:video:writer"]',
+        '[property="video:writer"]',
       )
       expect(writers).toHaveLength(2)
       expect(writers[0].getAttribute('content')).toBe('Writer 1')
@@ -1116,31 +1272,20 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:video:release_date"]')
+          .querySelector('[property="video:release_date"]')
           ?.getAttribute('content'),
       ).toBe('2024-01-01')
 
-      const tags = document.head.querySelectorAll('[property="og:video:tag"]')
+      const tags = document.head.querySelectorAll('[property="video:tag"]')
       expect(tags).toHaveLength(2)
       expect(tags[0].getAttribute('content')).toBe('action')
       expect(tags[1].getAttribute('content')).toBe('thriller')
 
       expect(
         document.head
-          .querySelector('[property="og:video:series"]')
+          .querySelector('[property="video:series"]')
           ?.getAttribute('content'),
       ).toBe('Series Name')
-
-      expect(
-        document.head
-          .querySelector('[property="og:video:episode:season"]')
-          ?.getAttribute('content'),
-      ).toBe('1')
-      expect(
-        document.head
-          .querySelector('[property="og:video:episode:number"]')
-          ?.getAttribute('content'),
-      ).toBe('5')
     })
 
     test('renders video with single director and writer', () => {
@@ -1161,12 +1306,12 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:video:director"]')
+          .querySelector('[property="video:director"]')
           ?.getAttribute('content'),
       ).toBe('Director Name')
       expect(
         document.head
-          .querySelector('[property="og:video:writer"]')
+          .querySelector('[property="video:writer"]')
           ?.getAttribute('content'),
       ).toBe('Writer Name')
     })
@@ -1181,7 +1326,7 @@ describe('renderMeta', () => {
         renderOptions,
       )
 
-      const tags = document.head.querySelectorAll('[property="og:video:tag"]')
+      const tags = document.head.querySelectorAll('[property="video:tag"]')
       expect(tags).toHaveLength(1)
       expect(tags[0].getAttribute('content')).toBe('action')
     })
@@ -1839,7 +1984,7 @@ describe('renderMeta', () => {
       )
 
       const authors = document.head.querySelectorAll(
-        '[property="og:article:author"]',
+        '[property="article:author"]',
       )
       expect(authors).toHaveLength(2)
       expect(authors[0].getAttribute('content')).toBe('John Doe')
@@ -1847,26 +1992,26 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:article:published_time"]')
+          .querySelector('[property="article:published_time"]')
           ?.getAttribute('content'),
       ).toBe('2024-01-01T00:00:00Z')
       expect(
         document.head
-          .querySelector('[property="og:article:modified_time"]')
+          .querySelector('[property="article:modified_time"]')
           ?.getAttribute('content'),
       ).toBe('2024-01-02T00:00:00Z')
       expect(
         document.head
-          .querySelector('[property="og:article:expiration_time"]')
+          .querySelector('[property="article:expiration_time"]')
           ?.getAttribute('content'),
       ).toBe('2025-01-01T00:00:00Z')
       expect(
         document.head
-          .querySelector('[property="og:article:section"]')
+          .querySelector('[property="article:section"]')
           ?.getAttribute('content'),
       ).toBe('Technology')
 
-      const tags = document.head.querySelectorAll('[property="og:article:tag"]')
+      const tags = document.head.querySelectorAll('[property="article:tag"]')
       expect(tags).toHaveLength(2)
       expect(tags[0].getAttribute('content')).toBe('web')
       expect(tags[1].getAttribute('content')).toBe('development')
@@ -1886,12 +2031,12 @@ describe('renderMeta', () => {
       )
 
       const authors = document.head.querySelectorAll(
-        '[property="og:article:author"]',
+        '[property="article:author"]',
       )
       expect(authors).toHaveLength(1)
       expect(authors[0].getAttribute('content')).toBe('John Doe')
 
-      const tags = document.head.querySelectorAll('[property="og:article:tag"]')
+      const tags = document.head.querySelectorAll('[property="article:tag"]')
       expect(tags).toHaveLength(1)
       expect(tags[0].getAttribute('content')).toBe('technology')
     })
@@ -1913,25 +2058,23 @@ describe('renderMeta', () => {
         renderOptions,
       )
 
-      const authors = document.head.querySelectorAll(
-        '[property="og:book:author"]',
-      )
+      const authors = document.head.querySelectorAll('[property="book:author"]')
       expect(authors).toHaveLength(2)
       expect(authors[0].getAttribute('content')).toBe('Author 1')
       expect(authors[1].getAttribute('content')).toBe('Author 2')
 
       expect(
         document.head
-          .querySelector('[property="og:book:isbn"]')
+          .querySelector('[property="book:isbn"]')
           ?.getAttribute('content'),
       ).toBe('978-0-123456-78-9')
       expect(
         document.head
-          .querySelector('[property="og:book:release_date"]')
+          .querySelector('[property="book:release_date"]')
           ?.getAttribute('content'),
       ).toBe('2024-01-01')
 
-      const tags = document.head.querySelectorAll('[property="og:book:tag"]')
+      const tags = document.head.querySelectorAll('[property="book:tag"]')
       expect(tags).toHaveLength(2)
       expect(tags[0].getAttribute('content')).toBe('fiction')
       expect(tags[1].getAttribute('content')).toBe('sci-fi')
@@ -1950,13 +2093,11 @@ describe('renderMeta', () => {
         renderOptions,
       )
 
-      const authors = document.head.querySelectorAll(
-        '[property="og:book:author"]',
-      )
+      const authors = document.head.querySelectorAll('[property="book:author"]')
       expect(authors).toHaveLength(1)
       expect(authors[0].getAttribute('content')).toBe('Author Name')
 
-      const tags = document.head.querySelectorAll('[property="og:book:tag"]')
+      const tags = document.head.querySelectorAll('[property="book:tag"]')
       expect(tags).toHaveLength(1)
       expect(tags[0].getAttribute('content')).toBe('fiction')
     })
@@ -1980,22 +2121,22 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:profile:first_name"]')
+          .querySelector('[property="profile:first_name"]')
           ?.getAttribute('content'),
       ).toBe('John')
       expect(
         document.head
-          .querySelector('[property="og:profile:last_name"]')
+          .querySelector('[property="profile:last_name"]')
           ?.getAttribute('content'),
       ).toBe('Doe')
       expect(
         document.head
-          .querySelector('[property="og:profile:username"]')
+          .querySelector('[property="profile:username"]')
           ?.getAttribute('content'),
       ).toBe('johndoe')
       expect(
         document.head
-          .querySelector('[property="og:profile:gender"]')
+          .querySelector('[property="profile:gender"]')
           ?.getAttribute('content'),
       ).toBe('male')
     })
@@ -2019,17 +2160,17 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:music:duration"]')
+          .querySelector('[property="music:duration"]')
           ?.getAttribute('content'),
       ).toBe('180')
       expect(
         document.head
-          .querySelector('[property="og:music:album"]')
+          .querySelector('[property="music:album"]')
           ?.getAttribute('content'),
       ).toBe('Album Name')
 
       const musicians = document.head.querySelectorAll(
-        '[property="og:music:musician"]',
+        '[property="music:musician"]',
       )
       expect(musicians).toHaveLength(2)
       expect(musicians[0].getAttribute('content')).toBe('Musician 1')
@@ -2037,7 +2178,7 @@ describe('renderMeta', () => {
 
       expect(
         document.head
-          .querySelector('[property="og:music:release_date"]')
+          .querySelector('[property="music:release_date"]')
           ?.getAttribute('content'),
       ).toBe('2024-01-01')
     })
@@ -2060,18 +2201,16 @@ describe('renderMeta', () => {
       // When album is an object, only disc and track are rendered, not the album itself
       expect(
         document.head
-          .querySelector('[property="og:music:album:disc"]')
+          .querySelector('[property="music:album:disc"]')
           ?.getAttribute('content'),
       ).toBe('1')
       expect(
         document.head
-          .querySelector('[property="og:music:album:track"]')
+          .querySelector('[property="music:album:track"]')
           ?.getAttribute('content'),
       ).toBe('5')
       // music:album should not be rendered when album is an object
-      expect(
-        document.head.querySelector('[property="og:music:album"]'),
-      ).toBeNull()
+      expect(document.head.querySelector('[property="music:album"]')).toBeNull()
     })
 
     test('renders music with single musician', () => {
@@ -2087,7 +2226,7 @@ describe('renderMeta', () => {
       )
 
       const musicians = document.head.querySelectorAll(
-        '[property="og:music:musician"]',
+        '[property="music:musician"]',
       )
       expect(musicians).toHaveLength(1)
       expect(musicians[0].getAttribute('content')).toBe('Musician Name')
@@ -2106,9 +2245,109 @@ describe('renderMeta', () => {
       )
       expect(
         document.head
-          .querySelector('[property="og:music:duration"]')
+          .querySelector('[property="music:duration"]')
           ?.getAttribute('content'),
       ).toBe('180')
+    })
+
+    test('renders music song and creator metadata', () => {
+      render(
+        <>
+          {renderMeta({
+            baseUrl: 'https://example.com',
+            music: {
+              creator: ['https://example.com/profile/dj'],
+              song: [
+                {
+                  url: '/songs/one',
+                  disc: 1,
+                  track: 2,
+                },
+              ],
+            },
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="music:song"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/songs/one')
+      expect(
+        document.head
+          .querySelector('[property="music:song:disc"]')
+          ?.getAttribute('content'),
+      ).toBe('1')
+      expect(
+        document.head
+          .querySelector('[property="music:song:track"]')
+          ?.getAttribute('content'),
+      ).toBe('2')
+      expect(
+        document.head
+          .querySelector('[property="music:creator"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/profile/dj')
+    })
+  })
+
+  describe('Payment Metadata', () => {
+    test('renders payment metadata', () => {
+      render(
+        <>
+          {renderMeta({
+            baseUrl: 'https://example.com',
+            payment: {
+              amount: 29.99,
+              currency: 'USD',
+              description: 'Invoice payment',
+              expiresAt: '2025-01-01T00:00:00Z',
+              id: 'pay_123',
+              status: 'PENDING',
+              successUrl: '/success',
+            },
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="payment:description"]')
+          ?.getAttribute('content'),
+      ).toBe('Invoice payment')
+      expect(
+        document.head
+          .querySelector('[property="payment:currency"]')
+          ?.getAttribute('content'),
+      ).toBe('USD')
+      expect(
+        document.head
+          .querySelector('[property="payment:amount"]')
+          ?.getAttribute('content'),
+      ).toBe('29.99')
+      expect(
+        document.head
+          .querySelector('[property="payment:expires_at"]')
+          ?.getAttribute('content'),
+      ).toBe('2025-01-01T00:00:00Z')
+      expect(
+        document.head
+          .querySelector('[property="payment:id"]')
+          ?.getAttribute('content'),
+      ).toBe('pay_123')
+      expect(
+        document.head
+          .querySelector('[property="payment:status"]')
+          ?.getAttribute('content'),
+      ).toBe('PENDING')
+      expect(
+        document.head
+          .querySelector('[property="payment:success_url"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/success')
     })
   })
 

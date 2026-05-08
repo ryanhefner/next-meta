@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 export type Image = {
   alt?: string
   height?: number | string
+  secureUrl?: string
   type?: string
   url?: string
   width?: number | string
@@ -22,10 +23,6 @@ export type Video = {
   releaseDate?: string
   tag?: string | string[]
   series?: string
-  episode?: {
-    season?: number | string
-    number?: number | string
-  }
 }
 
 export type Audio = {
@@ -61,20 +58,49 @@ export type Twitter = {
   }
   card?: 'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
   creator?: string
+  creatorId?: string
+  description?: string
   image?: Image
   player?: {
-    height?: string
+    height?: number | string
     stream?: {
       url?: string
       contentType?: string
     }
     url?: string
-    width?: string
+    width?: number | string
   }
   site?: string
+  siteId?: string
+  title?: string
 }
 
+export type MetaContent = string | number | boolean
+
+export type MetaTag = {
+  charSet?: string
+  content?: MetaContent
+  httpEquiv?: string
+  itemProp?: string
+  key?: string
+  lang?: string
+  media?: string
+  name?: string
+  property?: string
+  scheme?: string
+}
+
+export type MusicReference =
+  | string
+  | {
+      disc?: number | string
+      track?: number | string
+      url?: string
+    }
+
 export interface PageMetaProps {
+  additionalMetaTags?: MetaTag[]
+
   // Audio (array support)
   audio?: Audio[]
 
@@ -173,14 +199,22 @@ export interface PageMetaProps {
   // Music-specific
   music?: {
     duration?: number | string
-    album?:
-      | string
-      | {
-          disc?: number | string
-          track?: number | string
-        }
+    album?: MusicReference | MusicReference[]
+    creator?: string | string[]
     musician?: string | string[]
     releaseDate?: string
+    song?: MusicReference | MusicReference[]
+  }
+
+  // Payment link-specific (beta Open Graph type)
+  payment?: {
+    amount?: number | string
+    currency?: string
+    description?: string
+    expiresAt?: string
+    id?: string
+    status?: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | string
+    successUrl?: string
   }
 
   // Video-specific (for video.other)

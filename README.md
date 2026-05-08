@@ -266,28 +266,38 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 - `Image`: Type for image objects
 - `Video`: Type for video objects
 - `Audio`: Type for audio objects
+- `MetaTag`: Type for additional meta tag objects
+- `MetaContent`: Type for additional meta tag content
+- `MusicReference`: Type for music song and album references
 - `Twitter`: Type for Twitter card configuration
+- `TwitterApp`: Type for Twitter app card platform configuration
 - `TwitterCard`: Enum for Twitter card types
 
 ## Properties
 
+next-meta supports the current Open Graph protocol basics, structured image,
+audio, and video properties, and the object-type namespaces for `article`,
+`book`, `profile`, `music`, `video`, and `payment.link`. For custom, uncommon,
+or platform-specific meta tags, use `additionalMetaTags`.
+
 ### Core Properties
 
-| Prop                             | Description                               | Example                     |
-| -------------------------------- | ----------------------------------------- | --------------------------- | --- |
-| `baseUrl?: string`               | Base URL for all relative URLs.           | `"https://example.com"`     |
-| `canonical?: string`             | Canonical URL for the page.               | `"/blog/post-1"`            |
-| `debug?: boolean`                | Enable debug mode (in development).       | `true`                      |
-| `description?: string`           | Page description for meta tags.           | `"Learn about our company"` |
-| `determiner?: string`            | Word before object's title in a sentence. | `"the"`                     |
-| `locale?: string`                | Locale of site/page.                      | `"en_US"`                   |
-| `localeAlternates?: string[]`    | Alternate locales for the page.           | `["en_CA", "fr_CA"]`        |
-| `siteName?: string`              | Site name for meta tags.                  | `"My Blog"`                 |
-| `siteNameDelimiter?: string`     | Delimiter between title and site name.    | `"                          | "`  |
-| `title?: string`                 | Page title.                               | `"About Us"`                |
-| `type?: string`                  | Open Graph type of the page.              | `"website"`                 |
-| `url?: string`                   | URL of page.                              | `"/about"`                  |
-| `pinterestDomainVerify?: string` | Pinterest domain verification code.       | `"abc123xyz"`               |
+| Prop                             | Description                               | Example                                         |
+| -------------------------------- | ----------------------------------------- | ----------------------------------------------- |
+| `additionalMetaTags?: MetaTag[]` | Additional custom meta tags.              | `[{ name: "robots", content: "index,follow" }]` |
+| `baseUrl?: string`               | Base URL for all relative URLs.           | `"https://example.com"`                         |
+| `canonical?: string`             | Canonical URL for the page.               | `"/blog/post-1"`                                |
+| `debug?: boolean`                | Enable debug mode (in development).       | `true`                                          |
+| `description?: string`           | Page description for meta tags.           | `"Learn about our company"`                     |
+| `determiner?: string`            | Word before object's title in a sentence. | `"the"`                                         |
+| `locale?: string`                | Locale of site/page.                      | `"en_US"`                                       |
+| `localeAlternates?: string[]`    | Alternate locales for the page.           | `["en_CA", "fr_CA"]`                            |
+| `siteName?: string`              | Site name for meta tags.                  | `"My Blog"`                                     |
+| `siteNameDelimiter?: string`     | Delimiter between title and site name.    | `" - "`                                         |
+| `title?: string`                 | Page title.                               | `"About Us"`                                    |
+| `type?: string`                  | Open Graph type of the page.              | `"website"`                                     |
+| `url?: string`                   | URL of page.                              | `"/about"`                                      |
+| `pinterestDomainVerify?: string` | Pinterest domain verification code.       | `"abc123xyz"`                                   |
 
 ### Media Properties
 
@@ -299,31 +309,31 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 
 ### Image Object
 
-| Property | Type               | Description            |
-| -------- | ------------------ | ---------------------- |
-| `url`    | `string`           | URL of the image       |
-| `alt`    | `string`           | Alt text for the image |
-| `width`  | `number \| string` | Width of the image     |
-| `height` | `number \| string` | Height of the image    |
-| `type`   | `string`           | MIME type of the image |
+| Property    | Type               | Description            |
+| ----------- | ------------------ | ---------------------- |
+| `url`       | `string`           | URL of the image       |
+| `alt`       | `string`           | Alt text for the image |
+| `secureUrl` | `string`           | HTTPS URL of the image |
+| `width`     | `number \| string` | Width of the image     |
+| `height`    | `number \| string` | Height of the image    |
+| `type`      | `string`           | MIME type of the image |
 
 ### Video Object
 
-| Property      | Type                                                       | Description               |
-| ------------- | ---------------------------------------------------------- | ------------------------- |
-| `url`         | `string`                                                   | URL of the video          |
-| `secureUrl`   | `string`                                                   | HTTPS URL of the video    |
-| `type`        | `string`                                                   | MIME type of the video    |
-| `width`       | `number \| string`                                         | Width of the video        |
-| `height`      | `number \| string`                                         | Height of the video       |
-| `duration`    | `number \| string`                                         | Duration in seconds       |
-| `actor`       | `Array<{ name?: string; role?: string }>`                  | Actors in the video       |
-| `director`    | `string \| string[]`                                       | Director(s) of the video  |
-| `writer`      | `string \| string[]`                                       | Writer(s) of the video    |
-| `releaseDate` | `string`                                                   | Release date of the video |
-| `tag`         | `string \| string[]`                                       | Tags for the video        |
-| `series`      | `string`                                                   | Series name if applicable |
-| `episode`     | `{ season?: number \| string; number?: number \| string }` | Episode information       |
+| Property      | Type                                      | Description               |
+| ------------- | ----------------------------------------- | ------------------------- |
+| `url`         | `string`                                  | URL of the video          |
+| `secureUrl`   | `string`                                  | HTTPS URL of the video    |
+| `type`        | `string`                                  | MIME type of the video    |
+| `width`       | `number \| string`                        | Width of the video        |
+| `height`      | `number \| string`                        | Height of the video       |
+| `duration`    | `number \| string`                        | Duration in seconds       |
+| `actor`       | `Array<{ name?: string; role?: string }>` | Actors in the video       |
+| `director`    | `string \| string[]`                      | Director(s) of the video  |
+| `writer`      | `string \| string[]`                      | Writer(s) of the video    |
+| `releaseDate` | `string`                                  | Release date of the video |
+| `tag`         | `string \| string[]`                      | Tags for the video        |
+| `series`      | `string`                                  | Series name if applicable |
 
 ### Audio Object
 
@@ -339,14 +349,18 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 
 ### Twitter Object
 
-| Property  | Type         | Description                 |
-| --------- | ------------ | --------------------------- |
-| `card`    | `string`     | Twitter card type           |
-| `site`    | `string`     | Twitter username for site   |
-| `creator` | `string`     | Twitter username for author |
-| `image`   | `Image`      | Twitter-specific image      |
-| `app`     | `TwitterApp` | App card configuration      |
-| `player`  | `Player`     | Player card configuration   |
+| Property      | Type         | Description                    |
+| ------------- | ------------ | ------------------------------ |
+| `card`        | `string`     | Twitter card type              |
+| `title`       | `string`     | Twitter-specific title         |
+| `description` | `string`     | Twitter-specific description   |
+| `site`        | `string`     | Twitter username for site      |
+| `siteId`      | `string`     | Twitter numeric site ID        |
+| `creator`     | `string`     | Twitter username for author    |
+| `creatorId`   | `string`     | Twitter numeric creator ID     |
+| `image`       | `Image`      | Twitter-specific image and alt |
+| `app`         | `TwitterApp` | App card configuration         |
+| `player`      | `Player`     | Player card configuration      |
 
 ### Twitter Card Types
 
@@ -357,14 +371,32 @@ When using the `twitter.card` property, you can use one of the following values:
 - `"app"` - App card type
 - `"player"` - Player card type
 
+### Twitter App Object
+
+| Property     | Type         | Description                   |
+| ------------ | ------------ | ----------------------------- |
+| `country`    | `string`     | App Store country code        |
+| `name`       | `string`     | Fallback app name             |
+| `iPhone`     | `TwitterApp` | iPhone app card metadata      |
+| `iPad`       | `TwitterApp` | iPad app card metadata        |
+| `googlePlay` | `TwitterApp` | Google Play app card metadata |
+
+### Twitter App Platform Object
+
+| Property | Type     | Description                  |
+| -------- | -------- | ---------------------------- |
+| `name`   | `string` | Platform-specific app name   |
+| `id`     | `string` | Platform-specific app ID     |
+| `url`    | `string` | Platform-specific custom URL |
+
 ### Player Object
 
-| Property | Type     | Description          |
-| -------- | -------- | -------------------- |
-| `url`    | `string` | URL of the player    |
-| `width`  | `string` | Width of the player  |
-| `height` | `string` | Height of the player |
-| `stream` | `Stream` | Stream configuration |
+| Property | Type               | Description          |
+| -------- | ------------------ | -------------------- |
+| `url`    | `string`           | URL of the player    |
+| `width`  | `number \| string` | Width of the player  |
+| `height` | `number \| string` | Height of the player |
+| `stream` | `Stream`           | Stream configuration |
 
 ### Stream Object
 
@@ -455,12 +487,48 @@ When using the `twitter.card` property, you can use one of the following values:
 
 ### Music-Specific Properties
 
-| Prop                | Type                                                              | Description          |
-| ------------------- | ----------------------------------------------------------------- | -------------------- |
-| `music.duration`    | `number \| string`                                                | Duration in seconds  |
-| `music.album`       | `string \| { disc?: number \| string; track?: number \| string }` | Album name or object |
-| `music.musician`    | `string \| string[]`                                              | Musician(s)          |
-| `music.releaseDate` | `string`                                                          | Release date         |
+| Prop                | Type                                 | Description             |
+| ------------------- | ------------------------------------ | ----------------------- |
+| `music.duration`    | `number \| string`                   | Duration in seconds     |
+| `music.album`       | `MusicReference \| MusicReference[]` | Album reference(s)      |
+| `music.song`        | `MusicReference \| MusicReference[]` | Song reference(s)       |
+| `music.musician`    | `string \| string[]`                 | Musician profile URL(s) |
+| `music.creator`     | `string \| string[]`                 | Creator profile URL(s)  |
+| `music.releaseDate` | `string`                             | Release date            |
+
+### Music Reference Object
+
+| Property | Type               | Description       |
+| -------- | ------------------ | ----------------- |
+| `url`    | `string`           | Song or album URL |
+| `disc`   | `number \| string` | Disc number       |
+| `track`  | `number \| string` | Track number      |
+
+### Payment-Specific Properties
+
+| Prop                  | Type               | Description              |
+| --------------------- | ------------------ | ------------------------ |
+| `payment.description` | `string`           | Payment link description |
+| `payment.currency`    | `string`           | ISO 4217 currency code   |
+| `payment.amount`      | `number \| string` | Payment amount           |
+| `payment.expiresAt`   | `string`           | Expiration datetime      |
+| `payment.status`      | `string`           | Payment status           |
+| `payment.id`          | `string`           | Payment identifier       |
+| `payment.successUrl`  | `string`           | Success redirect URL     |
+
+### Additional Meta Tags
+
+| Property    | Type                          | Description                     |
+| ----------- | ----------------------------- | ------------------------------- |
+| `name`      | `string`                      | Renders a `name` meta tag       |
+| `property`  | `string`                      | Renders a `property` meta tag   |
+| `httpEquiv` | `string`                      | Renders an HTTP-equiv tag       |
+| `itemProp`  | `string`                      | Renders an itemprop meta tag    |
+| `charSet`   | `string`                      | Renders a charset meta tag      |
+| `lang`      | `string`                      | Language for localized metadata |
+| `media`     | `string`                      | Media query for supported tags  |
+| `scheme`    | `string`                      | Legacy metadata scheme          |
+| `content`   | `string \| number \| boolean` | Meta tag content                |
 
 ## Breaking Changes
 

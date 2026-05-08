@@ -1,20 +1,192 @@
 import React from 'react'
-import merge from 'lodash/merge'
-import type { PageMetaProps, Image, Video, Audio } from './types'
+import mergeWith from 'lodash/mergeWith'
+import type {
+  PageMetaProps,
+  Image,
+  Video,
+  Audio,
+  MetaTag,
+  MusicReference,
+} from './types'
 
 export const getAbsoluteUrl = (
   url: string | undefined,
   baseUrl?: string,
 ): string | undefined => {
-  if (baseUrl && url && url.indexOf('http') === -1) {
-    return `${baseUrl}${url}`
+  if (!url) {
+    return url
   }
 
-  return url
+  if (!baseUrl || /^[a-z][a-z\d+.-]*:/i.test(url)) {
+    return url
+  }
+
+  try {
+    return new URL(url, baseUrl).toString()
+  } catch {
+    const normalizedBaseUrl = baseUrl.replace(/\/+$/, '')
+    const normalizedUrl = url.startsWith('/') ? url : `/${url}`
+
+    return `${normalizedBaseUrl}${normalizedUrl}`
+  }
 }
 
-const DEFAULTS = {
+const DEFAULTS: Pick<PageMetaProps, 'siteNameDelimiter'> = {
   siteNameDelimiter: '|',
+}
+
+const mergePageMetaProps = (
+  ...sources: Array<PageMetaProps | Pick<PageMetaProps, 'siteNameDelimiter'>>
+): PageMetaProps =>
+  mergeWith({}, ...sources, (_objectValue: unknown, sourceValue: unknown) => {
+    if (Array.isArray(sourceValue)) {
+      return sourceValue
+    }
+
+    return undefined
+  })
+
+const renderAdditionalMetaTag = (
+  metaTag: MetaTag,
+  index: number,
+): React.ReactNode | null => {
+  const keyDescriptor =
+    metaTag.key ??
+    metaTag.name ??
+    metaTag.property ??
+    metaTag.httpEquiv ??
+    metaTag.itemProp ??
+    metaTag.charSet ??
+    'meta'
+  const key = metaTag.key ?? `${keyDescriptor}-${index}`
+  const commonProps = {
+    lang: metaTag.lang,
+    media: metaTag.media,
+    scheme: metaTag.scheme,
+  }
+
+  if (metaTag.charSet) {
+    return (
+      <meta
+        key={`meta-additional-${key}`}
+        charSet={metaTag.charSet}
+        {...commonProps}
+      />
+    )
+  }
+
+  if (metaTag.content === undefined) {
+    return null
+  }
+
+  const content = String(metaTag.content)
+
+  if (metaTag.name) {
+    return (
+      <meta
+        key={`meta-additional-${key}`}
+        name={metaTag.name}
+        content={content}
+        {...commonProps}
+      />
+    )
+  }
+
+  if (metaTag.property) {
+    return (
+      <meta
+        key={`meta-additional-${key}`}
+        property={metaTag.property}
+        content={content}
+        {...commonProps}
+      />
+    )
+  }
+
+  if (metaTag.httpEquiv) {
+    return (
+      <meta
+        key={`meta-additional-${key}`}
+        httpEquiv={metaTag.httpEquiv}
+        content={content}
+        {...commonProps}
+      />
+    )
+  }
+
+  if (metaTag.itemProp) {
+    return (
+      <meta
+        key={`meta-additional-${key}`}
+        itemProp={metaTag.itemProp}
+        content={content}
+        {...commonProps}
+      />
+    )
+  }
+
+  return null
+}
+
+const toArray = <T,>(value: T | T[] | undefined): T[] => {
+  if (value === undefined) {
+    return []
+  }
+
+  return Array.isArray(value) ? value : [value]
+}
+
+const renderMusicReferenceTags = (
+  property: 'music:album' | 'music:song',
+  keyBase: string,
+  reference: MusicReference,
+  index: number,
+  baseUrl?: string,
+): React.ReactNode[] => {
+  const tagsToRender: React.ReactNode[] = []
+  const key = `${keyBase}-${index}`
+
+  if (typeof reference === 'string') {
+    const absoluteUrl = getAbsoluteUrl(reference, baseUrl)
+
+    if (absoluteUrl) {
+      tagsToRender.push(
+        <meta key={key} property={property} content={absoluteUrl} />,
+      )
+    }
+
+    return tagsToRender
+  }
+
+  const absoluteUrl = getAbsoluteUrl(reference.url, baseUrl)
+
+  if (absoluteUrl) {
+    tagsToRender.push(
+      <meta key={key} property={property} content={absoluteUrl} />,
+    )
+  }
+
+  if (reference.disc !== undefined) {
+    tagsToRender.push(
+      <meta
+        key={`${key}-disc`}
+        property={`${property}:disc`}
+        content={String(reference.disc)}
+      />,
+    )
+  }
+
+  if (reference.track !== undefined) {
+    tagsToRender.push(
+      <meta
+        key={`${key}-track`}
+        property={`${property}:track`}
+        content={String(reference.track)}
+      />,
+    )
+  }
+
+  return tagsToRender
 }
 
 export const renderMeta = (
@@ -22,6 +194,7 @@ export const renderMeta = (
   context: PageMetaProps = {},
 ): React.ReactNode[] => {
   const {
+    additionalMetaTags,
     // Audio (array)
     audio,
     // General
@@ -86,9 +259,11 @@ export const renderMeta = (
     profile,
     // Music-specific
     music,
+    // Payment link-specific
+    payment,
     // Video-specific (for video.other)
     videoOther,
-  } = merge({}, DEFAULTS, context, props)
+  } = mergePageMetaProps(DEFAULTS, context, props)
 
   const absoluteUrl = getAbsoluteUrl(url, baseUrl)
   const absoluteCanonicalUrl = getAbsoluteUrl(canonical, baseUrl)
@@ -109,7 +284,6 @@ export const renderMeta = (
         siteName ? ` ${siteNameDelimiter} ${siteName}` : ''
       }`}</title>,
       <meta key="meta-og-title" property="og:title" content={title} />,
-      <meta key="meta-twitter-title" name="twitter:title" content={title} />,
     )
   }
 
@@ -120,11 +294,6 @@ export const renderMeta = (
       <meta
         key="meta-og-description"
         property="og:description"
-        content={description}
-      />,
-      <meta
-        key="meta-twitter-description"
-        name="twitter:description"
         content={description}
       />,
     )
@@ -179,15 +348,20 @@ export const renderMeta = (
             property="og:image"
             content={absoluteImgUrl}
           />,
+          <meta
+            key={`meta-og-image-url-${index}`}
+            property="og:image:url"
+            content={absoluteImgUrl}
+          />,
         )
 
-        // For Twitter, only use the first image
-        if (index === 0) {
+        const absoluteSecureUrl = getAbsoluteUrl(img.secureUrl, baseUrl)
+        if (absoluteSecureUrl || absoluteImgUrl.startsWith('https://')) {
           tagsToRender.push(
             <meta
-              key="meta-twitter-image"
-              name="twitter:image"
-              content={absoluteImgUrl}
+              key={`meta-og-image-secure-url-${index}`}
+              property="og:image:secure_url"
+              content={absoluteSecureUrl || absoluteImgUrl}
             />,
           )
         }
@@ -201,15 +375,6 @@ export const renderMeta = (
               content={img.alt}
             />,
           )
-          if (index === 0) {
-            tagsToRender.push(
-              <meta
-                key="meta-twitter-image-alt"
-                name="twitter:image:alt"
-                content={img.alt}
-              />,
-            )
-          }
         }
 
         // imageWidth
@@ -340,7 +505,7 @@ export const renderMeta = (
           tagsToRender.push(
             <meta
               key={`meta-og-video-duration-${index}`}
-              property="og:video:duration"
+              property="video:duration"
               content={String(vid.duration)}
             />,
           )
@@ -353,7 +518,7 @@ export const renderMeta = (
               tagsToRender.push(
                 <meta
                   key={`meta-og-video-actor-${index}-${actorIndex}`}
-                  property="og:video:actor"
+                  property="video:actor"
                   content={actor.name}
                 />,
               )
@@ -362,7 +527,7 @@ export const renderMeta = (
               tagsToRender.push(
                 <meta
                   key={`meta-og-video-actor-role-${index}-${actorIndex}`}
-                  property="og:video:actor:role"
+                  property="video:actor:role"
                   content={actor.role}
                 />,
               )
@@ -379,7 +544,7 @@ export const renderMeta = (
             tagsToRender.push(
               <meta
                 key={`meta-og-video-director-${index}-${dirIndex}`}
-                property="og:video:director"
+                property="video:director"
                 content={director}
               />,
             )
@@ -393,7 +558,7 @@ export const renderMeta = (
             tagsToRender.push(
               <meta
                 key={`meta-og-video-writer-${index}-${writerIndex}`}
-                property="og:video:writer"
+                property="video:writer"
                 content={writer}
               />,
             )
@@ -405,7 +570,7 @@ export const renderMeta = (
           tagsToRender.push(
             <meta
               key={`meta-og-video-release-date-${index}`}
-              property="og:video:release_date"
+              property="video:release_date"
               content={vid.releaseDate}
             />,
           )
@@ -418,7 +583,7 @@ export const renderMeta = (
             tagsToRender.push(
               <meta
                 key={`meta-og-video-tag-${index}-${tagIndex}`}
-                property="og:video:tag"
+                property="video:tag"
                 content={tagValue}
               />,
             )
@@ -430,32 +595,10 @@ export const renderMeta = (
           tagsToRender.push(
             <meta
               key={`meta-og-video-series-${index}`}
-              property="og:video:series"
+              property="video:series"
               content={vid.series}
             />,
           )
-        }
-
-        // videoEpisode
-        if (vid.episode) {
-          if (vid.episode.season !== undefined) {
-            tagsToRender.push(
-              <meta
-                key={`meta-og-video-episode-season-${index}`}
-                property="og:video:episode:season"
-                content={String(vid.episode.season)}
-              />,
-            )
-          }
-          if (vid.episode.number !== undefined) {
-            tagsToRender.push(
-              <meta
-                key={`meta-og-video-episode-number-${index}`}
-                property="og:video:episode:number"
-                content={String(vid.episode.number)}
-              />,
-            )
-          }
         }
       }
     })
@@ -555,6 +698,51 @@ export const renderMeta = (
   }
 
   // Twitter
+  const twitterTitle = twitter?.title ?? title
+  const twitterDescription = twitter?.description ?? description
+  const twitterImage = twitter?.image ?? allImages[0]
+  const absoluteTwitterImageUrl = getAbsoluteUrl(twitterImage?.url, baseUrl)
+
+  if (twitterTitle) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-title"
+        name="twitter:title"
+        content={twitterTitle}
+      />,
+    )
+  }
+
+  if (twitterDescription) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-description"
+        name="twitter:description"
+        content={twitterDescription}
+      />,
+    )
+  }
+
+  if (absoluteTwitterImageUrl) {
+    tagsToRender.push(
+      <meta
+        key="meta-twitter-image"
+        name="twitter:image"
+        content={absoluteTwitterImageUrl}
+      />,
+    )
+
+    if (twitterImage?.alt) {
+      tagsToRender.push(
+        <meta
+          key="meta-twitter-image-alt"
+          name="twitter:image:alt"
+          content={twitterImage.alt}
+        />,
+      )
+    }
+  }
+
   if (twitter) {
     if (twitter.card) {
       tagsToRender.push(
@@ -564,46 +752,6 @@ export const renderMeta = (
           content={twitter.card}
         />,
       )
-    }
-
-    if (twitter.image) {
-      tagsToRender.push(
-        <meta
-          key="meta-twitter-image"
-          name="twitter:image"
-          content={twitter.image.url || ''}
-        />,
-      )
-
-      if (twitter.image.alt) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-image-alt"
-            name="twitter:image:alt"
-            content={twitter.image.alt}
-          />,
-        )
-      }
-
-      if (twitter.image.width) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-image-width"
-            name="twitter:image:width"
-            content={String(twitter.image.width)}
-          />,
-        )
-      }
-
-      if (twitter.image.height) {
-        tagsToRender.push(
-          <meta
-            key="meta-twitter-image-height"
-            name="twitter:image:height"
-            content={String(twitter.image.height)}
-          />,
-        )
-      }
     }
 
     if (twitter.site) {
@@ -616,12 +764,32 @@ export const renderMeta = (
       )
     }
 
+    if (twitter.siteId) {
+      tagsToRender.push(
+        <meta
+          key="meta-twitter-site-id"
+          name="twitter:site:id"
+          content={twitter.siteId}
+        />,
+      )
+    }
+
     if (twitter.creator) {
       tagsToRender.push(
         <meta
           key="meta-twitter-creator"
           name="twitter:creator"
           content={twitter.creator}
+        />,
+      )
+    }
+
+    if (twitter.creatorId) {
+      tagsToRender.push(
+        <meta
+          key="meta-twitter-creator-id"
+          name="twitter:creator:id"
+          content={twitter.creatorId}
         />,
       )
     }
@@ -750,7 +918,7 @@ export const renderMeta = (
           <meta
             key="meta-twitter-player-width"
             name="twitter:player:width"
-            content={twitter.player.width}
+            content={String(twitter.player.width)}
           />,
         )
       }
@@ -760,7 +928,7 @@ export const renderMeta = (
           <meta
             key="meta-twitter-player-height"
             name="twitter:player:height"
-            content={twitter.player.height}
+            content={String(twitter.player.height)}
           />,
         )
       }
@@ -1135,7 +1303,7 @@ export const renderMeta = (
         tagsToRender.push(
           <meta
             key={`meta-og-article-author-${authIndex}`}
-            property="og:article:author"
+            property="article:author"
             content={auth}
           />,
         )
@@ -1146,7 +1314,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-article-published-time"
-          property="og:article:published_time"
+          property="article:published_time"
           content={article.publishedTime}
         />,
       )
@@ -1156,7 +1324,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-article-modified-time"
-          property="og:article:modified_time"
+          property="article:modified_time"
           content={article.modifiedTime}
         />,
       )
@@ -1166,7 +1334,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-article-expiration-time"
-          property="og:article:expiration_time"
+          property="article:expiration_time"
           content={article.expirationTime}
         />,
       )
@@ -1176,7 +1344,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-article-section"
-          property="og:article:section"
+          property="article:section"
           content={article.section}
         />,
       )
@@ -1188,7 +1356,7 @@ export const renderMeta = (
         tagsToRender.push(
           <meta
             key={`meta-og-article-tag-${tagIndex}`}
-            property="og:article:tag"
+            property="article:tag"
             content={tagValue}
           />,
         )
@@ -1204,7 +1372,7 @@ export const renderMeta = (
         tagsToRender.push(
           <meta
             key={`meta-og-book-author-${authIndex}`}
-            property="og:book:author"
+            property="book:author"
             content={auth}
           />,
         )
@@ -1215,7 +1383,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-book-isbn"
-          property="og:book:isbn"
+          property="book:isbn"
           content={book.isbn}
         />,
       )
@@ -1225,7 +1393,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-book-release-date"
-          property="og:book:release_date"
+          property="book:release_date"
           content={book.releaseDate}
         />,
       )
@@ -1237,7 +1405,7 @@ export const renderMeta = (
         tagsToRender.push(
           <meta
             key={`meta-og-book-tag-${tagIndex}`}
-            property="og:book:tag"
+            property="book:tag"
             content={tagValue}
           />,
         )
@@ -1251,7 +1419,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-profile-first-name"
-          property="og:profile:first_name"
+          property="profile:first_name"
           content={profile.firstName}
         />,
       )
@@ -1261,7 +1429,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-profile-last-name"
-          property="og:profile:last_name"
+          property="profile:last_name"
           content={profile.lastName}
         />,
       )
@@ -1271,7 +1439,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-profile-username"
-          property="og:profile:username"
+          property="profile:username"
           content={profile.username}
         />,
       )
@@ -1281,7 +1449,7 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-profile-gender"
-          property="og:profile:gender"
+          property="profile:gender"
           content={profile.gender}
         />,
       )
@@ -1294,41 +1462,35 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-music-duration"
-          property="og:music:duration"
+          property="music:duration"
           content={String(music.duration)}
         />,
       )
     }
 
-    if (typeof music.album === 'string') {
+    toArray(music.album).forEach((album, albumIndex) => {
       tagsToRender.push(
-        <meta
-          key="meta-og-music-album"
-          property="og:music:album"
-          content={music.album}
-        />,
+        ...renderMusicReferenceTags(
+          'music:album',
+          'meta-og-music-album',
+          album,
+          albumIndex,
+          baseUrl,
+        ),
       )
-    } else if (music.album) {
-      if (music.album.disc !== undefined) {
-        tagsToRender.push(
-          <meta
-            key="meta-og-music-album-disc"
-            property="og:music:album:disc"
-            content={String(music.album.disc)}
-          />,
-        )
-      }
+    })
 
-      if (music.album.track !== undefined) {
-        tagsToRender.push(
-          <meta
-            key="meta-og-music-album-track"
-            property="og:music:album:track"
-            content={String(music.album.track)}
-          />,
-        )
-      }
-    }
+    toArray(music.song).forEach((song, songIndex) => {
+      tagsToRender.push(
+        ...renderMusicReferenceTags(
+          'music:song',
+          'meta-og-music-song',
+          song,
+          songIndex,
+          baseUrl,
+        ),
+      )
+    })
 
     if (music.musician) {
       const musicians = Array.isArray(music.musician)
@@ -1338,8 +1500,23 @@ export const renderMeta = (
         tagsToRender.push(
           <meta
             key={`meta-og-music-musician-${musicianIndex}`}
-            property="og:music:musician"
+            property="music:musician"
             content={musician}
+          />,
+        )
+      })
+    }
+
+    if (music.creator) {
+      const creators = Array.isArray(music.creator)
+        ? music.creator
+        : [music.creator]
+      creators.forEach((creator, creatorIndex) => {
+        tagsToRender.push(
+          <meta
+            key={`meta-og-music-creator-${creatorIndex}`}
+            property="music:creator"
+            content={creator}
           />,
         )
       })
@@ -1349,10 +1526,87 @@ export const renderMeta = (
       tagsToRender.push(
         <meta
           key="meta-og-music-release-date"
-          property="og:music:release_date"
+          property="music:release_date"
           content={music.releaseDate}
         />,
       )
+    }
+  }
+
+  // Payment link-specific
+  if (payment) {
+    if (payment.description) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-description"
+          property="payment:description"
+          content={payment.description}
+        />,
+      )
+    }
+
+    if (payment.currency) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-currency"
+          property="payment:currency"
+          content={payment.currency}
+        />,
+      )
+    }
+
+    if (payment.amount !== undefined) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-amount"
+          property="payment:amount"
+          content={String(payment.amount)}
+        />,
+      )
+    }
+
+    if (payment.expiresAt) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-expires-at"
+          property="payment:expires_at"
+          content={payment.expiresAt}
+        />,
+      )
+    }
+
+    if (payment.status) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-status"
+          property="payment:status"
+          content={payment.status}
+        />,
+      )
+    }
+
+    if (payment.id) {
+      tagsToRender.push(
+        <meta
+          key="meta-payment-id"
+          property="payment:id"
+          content={payment.id}
+        />,
+      )
+    }
+
+    if (payment.successUrl) {
+      const absoluteSuccessUrl = getAbsoluteUrl(payment.successUrl, baseUrl)
+
+      if (absoluteSuccessUrl) {
+        tagsToRender.push(
+          <meta
+            key="meta-payment-success-url"
+            property="payment:success_url"
+            content={absoluteSuccessUrl}
+          />,
+        )
+      }
     }
   }
 
@@ -1494,6 +1748,12 @@ export const renderMeta = (
         }
       }
     }
+  }
+
+  if (additionalMetaTags?.length) {
+    tagsToRender.push(
+      ...additionalMetaTags.map(renderAdditionalMetaTag).filter(Boolean),
+    )
   }
 
   return tagsToRender

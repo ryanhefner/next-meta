@@ -21,4 +21,16 @@ describe('getAbsoluteUrl', () => {
   test('should return undefined if url is not provided', () => {
     expect(getAbsoluteUrl(undefined, 'https://test.com')).toBeUndefined()
   })
+
+  test('should join baseUrl and relative paths without a leading slash', () => {
+    expect(getAbsoluteUrl('about', 'https://test.com')).toBe(
+      'https://test.com/about',
+    )
+  })
+
+  test('should preserve non-HTTP absolute URLs', () => {
+    expect(getAbsoluteUrl('mailto:test@example.com', 'https://test.com')).toBe(
+      'mailto:test@example.com',
+    )
+  })
 })
