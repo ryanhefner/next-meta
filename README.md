@@ -24,7 +24,7 @@ Managing meta tags, Open Graph, and Twitter cards in Next.js applications can be
 - Handles all major social media platforms (Open Graph, Twitter Cards, Pinterest)
 - Supports dynamic meta tags based on page content
 - Maintains SEO best practices
-- Includes Schema.org structured data support
+- Pairs with `react-structured` for Schema.org structured data
 
 ## Install
 
@@ -203,12 +203,23 @@ const BlogPost = ({ post }) => {
 
 ### Schema.org Structured Data
 
-next-meta includes comprehensive support for Schema.org structured data with exhaustive TypeScript type safety.
+next-meta focuses on meta tags, Open Graph, and social card metadata. For
+Schema.org structured data, use
+[`react-structured`](https://github.com/ryanhefner/react-structured) alongside
+next-meta.
+
+```sh
+npm install react-structured
+```
+
+```sh
+yarn add react-structured
+```
 
 ```tsx
 import Head from 'next/head'
-import { Schema } from 'next-meta/schema'
 import { PageMeta } from 'next-meta'
+import { Schema } from 'react-structured'
 
 const BlogPost = ({ post }) => {
   return (
@@ -242,7 +253,9 @@ const BlogPost = ({ post }) => {
 }
 ```
 
-For more information about Schema.org support, see the [Schema.org documentation](./src/schema/README.md).
+See the
+[`react-structured` README](https://github.com/ryanhefner/react-structured#readme)
+for more Schema.org examples and TypeScript usage.
 
 ## TypeScript Support
 

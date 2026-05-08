@@ -1,5 +1,0 @@
-{
-  "types": "../types/schema/index.d.ts",
-  "main": "../dist/cjs/schema/index.cjs",
-  "module": "../dist/esm/schema/index.mjs"
-}

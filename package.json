@@ -47,7 +47,6 @@
     "dist",
     "src",
     "types",
-    "schema",
     "LICENSE",
     "README.md"
   ],
@@ -61,12 +60,6 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
-    },
-    "./schema": {
-      "types": "./types/schema/index.d.ts",
-      "import": "./dist/esm/schema/index.mjs",
-      "require": "./dist/cjs/schema/index.cjs",
-      "default": "./dist/esm/schema/index.mjs"
     }
   },
   "publishConfig": {
@@ -79,17 +72,10 @@
   "module": "dist/esm/index.mjs",
   "jsnext:main": "dist/esm/index.mjs",
   "types": "types",
-  "typesVersions": {
-    "*": {
-      "schema": [
-        "types/schema/index.d.ts"
-      ]
-    }
-  },
   "scripts": {
     "clean": "rimraf dist types",
     "prebuild": "yarn clean",
-    "build": "rollup -c --bundleConfigAsCjs",
+    "build": "rollup -c --bundleConfigAsCjs && yarn types",
     "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
     "prepare": "yarn build",
     "prepublishOnly": "yarn build",
@@ -106,8 +92,7 @@
     "react-dom": ">=16.8"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "schema-dts": "^1.1.5"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
