@@ -985,6 +985,23 @@ describe('renderMeta', () => {
       expect(images[1].getAttribute('content')).toBe('/default.jpg')
     })
 
+    test('keeps page repeatable props when composing without provider values', () => {
+      render(
+        <>
+          {renderMeta({
+            composeMeta: { images: true },
+            images: [{ url: '/page.jpg' }],
+          })}
+        </>,
+        renderOptions,
+      )
+
+      const images = document.head.querySelectorAll('[property="og:image"]')
+
+      expect(images).toHaveLength(1)
+      expect(images[0].getAttribute('content')).toBe('/page.jpg')
+    })
+
     test('clears inherited arrays with explicit empty arrays', () => {
       render(
         <>
@@ -1096,6 +1113,30 @@ describe('renderMeta', () => {
       ).toBe('https://example.com/image.jpg')
     })
 
+    test('does not render incomplete additional meta tags when composed', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              additionalMetaTags: [
+                { content: 'page content without a descriptor' },
+                { name: 'robots' },
+              ],
+              composeMeta: { additionalMetaTags: true },
+            },
+            {
+              additionalMetaTags: [
+                { content: 'context content without a descriptor' },
+              ],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      expect(document.head.querySelectorAll('meta')).toHaveLength(0)
+    })
+
     test('uses defaults when no context or props provided', () => {
       render(<>{renderMeta()}</>, renderOptions)
 
@@ -1171,6 +1212,80 @@ describe('renderMeta', () => {
       expect(document.head.querySelectorAll('meta, title, link')).toHaveLength(
         0,
       )
+    })
+
+    test('handles sparse nested metadata objects without rendering optional tags', () => {
+      render(
+        <>
+          {renderMeta({
+            article: {},
+            book: {},
+            music: {
+              album: { url: '/album' },
+              creator: 'https://example.com/profile/dj',
+              song: '',
+            },
+            payment: {},
+            profile: {},
+            rating: {},
+            twitter: {
+              player: {
+                stream: {},
+              },
+            },
+            videoOther: {
+              stream: {},
+            },
+            videos: [
+              {
+                actor: [{}],
+                director: ['Director 1', 'Director 2'],
+                url: '/video.mp4',
+              },
+            ],
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(document.head.querySelector('[name="twitter:player"]')).toBeNull()
+      expect(
+        document.head.querySelector('[name="twitter:player:stream"]'),
+      ).toBeNull()
+      expect(document.head.querySelector('[property="video:actor"]')).toBeNull()
+      expect(
+        document.head.querySelector('[property="video:actor:role"]'),
+      ).toBeNull()
+      expect(
+        document.head.querySelectorAll('[property="video:director"]'),
+      ).toHaveLength(2)
+      expect(document.head.querySelector('[property="og:rating"]')).toBeNull()
+      expect(
+        document.head.querySelector('[property="article:author"]'),
+      ).toBeNull()
+      expect(document.head.querySelector('[property="article:tag"]')).toBeNull()
+      expect(document.head.querySelector('[property="book:author"]')).toBeNull()
+      expect(document.head.querySelector('[property="book:tag"]')).toBeNull()
+      expect(
+        document.head.querySelector('[property="profile:first_name"]'),
+      ).toBeNull()
+      expect(
+        document.head
+          .querySelector('[property="music:album"]')
+          ?.getAttribute('content'),
+      ).toBe('/album')
+      expect(document.head.querySelector('[property="music:song"]')).toBeNull()
+      expect(
+        document.head
+          .querySelector('[property="music:creator"]')
+          ?.getAttribute('content'),
+      ).toBe('https://example.com/profile/dj')
+      expect(
+        document.head.querySelector('[property="payment:description"]'),
+      ).toBeNull()
+      expect(
+        document.head.querySelector('[property="og:video:other:stream"]'),
+      ).toBeNull()
     })
 
     test('handles zero values for dimensions', () => {

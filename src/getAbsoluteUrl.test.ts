@@ -34,4 +34,9 @@ describe('getAbsoluteUrl', () => {
       'mailto:test@example.com',
     )
   })
+
+  test('should fall back to string joining when URL parsing fails', () => {
+    expect(getAbsoluteUrl('about', 'not a url')).toBe('not a url/about')
+    expect(getAbsoluteUrl('/about', 'not a url/')).toBe('not a url/about')
+  })
 })
