@@ -1,5 +1,5 @@
 import React from 'react'
-import mergeWith from 'lodash/mergeWith'
+
 import type {
   PageMetaProps,
   Image,
@@ -7,6 +7,7 @@ import type {
   Audio,
   MetaTag,
   MusicReference,
+  ComposeMetaOptions,
 } from './types'
 
 export const getAbsoluteUrl = (
@@ -35,16 +36,176 @@ const DEFAULTS: Pick<PageMetaProps, 'siteNameDelimiter'> = {
   siteNameDelimiter: '|',
 }
 
+const COMPOSE_META_KEYS = [
+  'additionalMetaTags',
+  'audio',
+  'images',
+  'localeAlternates',
+  'videos',
+] as const
+
+type ComposeMetaKey = (typeof COMPOSE_META_KEYS)[number]
+type ResolvedComposeMetaOptions = Record<ComposeMetaKey, boolean>
+type MergeableObject = Record<string, unknown>
+
+const DANGEROUS_MERGE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
+const isPlainObject = (value: unknown): value is MergeableObject => {
+  if (value === null || typeof value !== 'object') {
+    return false
+  }
+
+  const prototype = Object.getPrototypeOf(value)
+
+  return prototype === Object.prototype || prototype === null
+}
+
+const cloneMergeValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return [...value]
+  }
+
+  if (!isPlainObject(value)) {
+    return value
+  }
+
+  return mergeObjects({}, value)
+}
+
+const mergeObjects = (
+  target: MergeableObject,
+  source: MergeableObject,
+): MergeableObject => {
+  Object.entries(source).forEach(([key, sourceValue]) => {
+    if (sourceValue === undefined || DANGEROUS_MERGE_KEYS.has(key)) {
+      return
+    }
+
+    const targetValue = target[key]
+
+    if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
+      target[key] = mergeObjects({ ...targetValue }, sourceValue)
+      return
+    }
+
+    target[key] = cloneMergeValue(sourceValue)
+  })
+
+  return target
+}
+
 const mergePageMetaProps = (
   ...sources: Array<PageMetaProps | Pick<PageMetaProps, 'siteNameDelimiter'>>
 ): PageMetaProps =>
-  mergeWith({}, ...sources, (_objectValue: unknown, sourceValue: unknown) => {
-    if (Array.isArray(sourceValue)) {
-      return sourceValue
+  sources.reduce<MergeableObject>(
+    (mergedProps, source) =>
+      mergeObjects(mergedProps, source as MergeableObject),
+    {},
+  ) as PageMetaProps
+
+const normalizeComposeMeta = (
+  composeMeta: ComposeMetaOptions | undefined,
+): Partial<ResolvedComposeMetaOptions> => {
+  if (composeMeta === undefined) {
+    return {}
+  }
+
+  if (typeof composeMeta === 'boolean') {
+    return COMPOSE_META_KEYS.reduce<ResolvedComposeMetaOptions>(
+      (options, key) => {
+        options[key] = composeMeta
+        return options
+      },
+      {
+        additionalMetaTags: false,
+        audio: false,
+        images: false,
+        localeAlternates: false,
+        videos: false,
+      },
+    )
+  }
+
+  return composeMeta
+}
+
+const resolveComposeMeta = (
+  contextComposeMeta: ComposeMetaOptions | undefined,
+  propsComposeMeta: ComposeMetaOptions | undefined,
+): ResolvedComposeMetaOptions => ({
+  additionalMetaTags: false,
+  audio: false,
+  images: false,
+  localeAlternates: false,
+  videos: false,
+  ...normalizeComposeMeta(contextComposeMeta),
+  ...normalizeComposeMeta(propsComposeMeta),
+})
+
+const composeRepeatableMeta = <T,>(
+  propsValue: T[] | undefined,
+  contextValue: T[] | undefined,
+  mergedValue: T[] | undefined,
+  shouldCompose: boolean,
+  getKey?: (value: T) => string | undefined,
+): T[] | undefined => {
+  if (!shouldCompose || propsValue === undefined) {
+    return mergedValue
+  }
+
+  if (propsValue.length === 0) {
+    return []
+  }
+
+  const composedValue = [...propsValue, ...(contextValue ?? [])]
+
+  if (!getKey) {
+    return composedValue
+  }
+
+  const seenKeys = new Set<string>()
+
+  return composedValue.filter((value) => {
+    const key = getKey(value)
+
+    if (!key) {
+      return true
     }
 
-    return undefined
+    if (seenKeys.has(key)) {
+      return false
+    }
+
+    seenKeys.add(key)
+    return true
   })
+}
+
+const getMediaKey = (media: { url?: string }): string | undefined => media.url
+
+const getAdditionalMetaTagKey = (metaTag: MetaTag): string | undefined => {
+  const descriptor =
+    metaTag.key ??
+    metaTag.name ??
+    metaTag.property ??
+    metaTag.httpEquiv ??
+    metaTag.itemProp ??
+    metaTag.charSet
+
+  if (!descriptor) {
+    return undefined
+  }
+
+  return [
+    descriptor,
+    metaTag.content,
+    metaTag.lang,
+    metaTag.media,
+    metaTag.scheme,
+  ]
+    .filter((value) => value !== undefined)
+    .join(':')
+}
 
 const renderAdditionalMetaTag = (
   metaTag: MetaTag,
@@ -194,9 +355,9 @@ export const renderMeta = (
   context: PageMetaProps = {},
 ): React.ReactNode[] => {
   const {
-    additionalMetaTags,
+    additionalMetaTags: mergedAdditionalMetaTags,
     // Audio (array)
-    audio,
+    audio: mergedAudio,
     // General
     baseUrl,
     canonical,
@@ -204,9 +365,9 @@ export const renderMeta = (
     description,
     determiner,
     // Image (array)
-    images,
+    images: mergedImages,
     locale,
-    localeAlternates,
+    localeAlternates: mergedLocaleAlternates,
     pinterestDomainVerify,
     siteName,
     siteNameDelimiter,
@@ -215,7 +376,7 @@ export const renderMeta = (
     type,
     url,
     // Video (array)
-    videos,
+    videos: mergedVideos,
     // New general metadata
     author,
     updatedTime,
@@ -264,6 +425,42 @@ export const renderMeta = (
     // Video-specific (for video.other)
     videoOther,
   } = mergePageMetaProps(DEFAULTS, context, props)
+
+  const composeMeta = resolveComposeMeta(context.composeMeta, props.composeMeta)
+  const additionalMetaTags = composeRepeatableMeta(
+    props.additionalMetaTags,
+    context.additionalMetaTags,
+    mergedAdditionalMetaTags,
+    composeMeta.additionalMetaTags,
+    getAdditionalMetaTagKey,
+  )
+  const audio = composeRepeatableMeta(
+    props.audio,
+    context.audio,
+    mergedAudio,
+    composeMeta.audio,
+    getMediaKey,
+  )
+  const images = composeRepeatableMeta(
+    props.images,
+    context.images,
+    mergedImages,
+    composeMeta.images,
+    getMediaKey,
+  )
+  const localeAlternates = composeRepeatableMeta(
+    props.localeAlternates,
+    context.localeAlternates,
+    mergedLocaleAlternates,
+    composeMeta.localeAlternates,
+  )
+  const videos = composeRepeatableMeta(
+    props.videos,
+    context.videos,
+    mergedVideos,
+    composeMeta.videos,
+    getMediaKey,
+  )
 
   const absoluteUrl = getAbsoluteUrl(url, baseUrl)
   const absoluteCanonicalUrl = getAbsoluteUrl(canonical, baseUrl)

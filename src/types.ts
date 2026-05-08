@@ -90,6 +90,16 @@ export type MetaTag = {
   scheme?: string
 }
 
+export type ComposeMetaOptions =
+  | boolean
+  | {
+      additionalMetaTags?: boolean
+      audio?: boolean
+      images?: boolean
+      localeAlternates?: boolean
+      videos?: boolean
+    }
+
 export type MusicReference =
   | string
   | {
@@ -107,6 +117,7 @@ export interface PageMetaProps {
   baseUrl?: string
   canonical?: string
   children?: ReactNode
+  composeMeta?: ComposeMetaOptions
   debug?: boolean
   description?: string
   determiner?: string

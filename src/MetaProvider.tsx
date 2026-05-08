@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { MetaContext } from './MetaContext'
 import { PageMeta } from './PageMeta'
 import type { MetaProviderProps } from './types'

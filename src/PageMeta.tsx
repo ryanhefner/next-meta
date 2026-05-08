@@ -1,5 +1,7 @@
 import React, { useContext } from 'react'
+
 import Head from 'next/head.js'
+
 import { MetaContext } from './MetaContext'
 import { renderMeta } from './renderMeta'
 import type { PageMetaProps } from './types'

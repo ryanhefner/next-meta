@@ -1,6 +1,9 @@
 import React from 'react'
+
 import { afterEach, describe, expect, test, vi } from 'vitest'
+
 import { cleanup, render } from '@testing-library/react'
+
 import { MetaProvider } from './MetaProvider'
 import { PageMeta } from './PageMeta'
 
@@ -111,6 +114,46 @@ describe('MetaProvider', () => {
     expect(
       document.head.querySelectorAll('[property="og:url"]')[1],
     ).toHaveProperty('content', 'https://test.com/test-override')
+  })
+
+  test('composes provider images into PageMeta when enabled', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        composeMeta={{ images: true }}
+        images={[{ url: '/default.jpg' }]}
+      >
+        <PageMeta images={[{ url: '/page.jpg' }]} />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    const images = document.head.querySelectorAll('[property="og:image"]')
+
+    expect(images).toHaveLength(2)
+    expect(images[0]).toHaveProperty('content', '/page.jpg')
+    expect(images[1]).toHaveProperty('content', '/default.jpg')
+  })
+
+  test('allows PageMeta to opt out of provider image composition', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        composeMeta={{ images: true }}
+        images={[{ url: '/default.jpg' }]}
+      >
+        <PageMeta
+          composeMeta={{ images: false }}
+          images={[{ url: '/page.jpg' }]}
+        />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    const images = document.head.querySelectorAll('[property="og:image"]')
+
+    expect(images).toHaveLength(1)
+    expect(images[0]).toHaveProperty('content', '/page.jpg')
   })
 
   test('children rendered via PageMeta', () => {

@@ -1,7 +1,9 @@
+import prettierConfig from 'eslint-config-prettier'
+import importPlugin from 'eslint-plugin-import'
+import prettier from 'eslint-plugin-prettier'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
-import prettier from 'eslint-plugin-prettier'
-import prettierConfig from 'eslint-config-prettier'
+
 import babelParser from '@babel/eslint-parser'
 import tsParser from '@typescript-eslint/parser'
 
@@ -25,6 +27,7 @@ const sharedGlobals = {
 }
 
 const sharedPlugins = {
+  import: importPlugin,
   react,
   'react-hooks': reactHooks,
   prettier,
@@ -103,6 +106,9 @@ const sharedRules = {
 }
 
 export default [
+  {
+    ignores: ['dist/**', 'types/**', 'node_modules/**', 'coverage/**'],
+  },
   // TypeScript files
   {
     files: ['**/*.{ts,tsx}'],
@@ -136,8 +142,5 @@ export default [
     plugins: sharedPlugins,
     settings: sharedSettings,
     rules: sharedRules,
-  },
-  {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
 ]

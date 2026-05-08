@@ -1,6 +1,6 @@
 {
   "name": "next-meta",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A composable React component for managing meta tags, Open Graph, and X/Twitter cards in Next.js applications.",
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
   "files": [
     "dist",
     "src",
+    "!src/**/*.test.*",
     "types",
     "LICENSE",
     "README.md"
@@ -79,7 +80,8 @@
     "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
     "prepare": "yarn build",
     "prepublishOnly": "yarn build",
-    "prettier": "prettier -c",
+    "lint": "eslint .",
+    "prettier": "prettier -c README.md package.json rollup.config.js eslint.config.js tsconfig.json vite.config.ts \"src/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
     "dtslint": "dtslint types",
     "test": "snyk test && vitest run",
@@ -90,9 +92,6 @@
     "next": ">=10.0.0",
     "react": ">=16.8",
     "react-dom": ">=16.8"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
@@ -111,7 +110,6 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
-    "@types/lodash": "^4.17.21",
     "@types/react": "^19.1.8",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
     "@typescript-eslint/parser": "^8.50.0",

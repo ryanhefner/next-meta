@@ -263,6 +263,7 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 
 - `PageMetaProps`: Props for the PageMeta component
 - `MetaProviderProps`: Props for the MetaProvider component
+- `ComposeMetaOptions`: Controls repeatable metadata composition
 - `Image`: Type for image objects
 - `Video`: Type for video objects
 - `Audio`: Type for audio objects
@@ -282,22 +283,59 @@ or platform-specific meta tags, use `additionalMetaTags`.
 
 ### Core Properties
 
-| Prop                             | Description                               | Example                                         |
-| -------------------------------- | ----------------------------------------- | ----------------------------------------------- |
-| `additionalMetaTags?: MetaTag[]` | Additional custom meta tags.              | `[{ name: "robots", content: "index,follow" }]` |
-| `baseUrl?: string`               | Base URL for all relative URLs.           | `"https://example.com"`                         |
-| `canonical?: string`             | Canonical URL for the page.               | `"/blog/post-1"`                                |
-| `debug?: boolean`                | Enable debug mode (in development).       | `true`                                          |
-| `description?: string`           | Page description for meta tags.           | `"Learn about our company"`                     |
-| `determiner?: string`            | Word before object's title in a sentence. | `"the"`                                         |
-| `locale?: string`                | Locale of site/page.                      | `"en_US"`                                       |
-| `localeAlternates?: string[]`    | Alternate locales for the page.           | `["en_CA", "fr_CA"]`                            |
-| `siteName?: string`              | Site name for meta tags.                  | `"My Blog"`                                     |
-| `siteNameDelimiter?: string`     | Delimiter between title and site name.    | `" - "`                                         |
-| `title?: string`                 | Page title.                               | `"About Us"`                                    |
-| `type?: string`                  | Open Graph type of the page.              | `"website"`                                     |
-| `url?: string`                   | URL of page.                              | `"/about"`                                      |
-| `pinterestDomainVerify?: string` | Pinterest domain verification code.       | `"abc123xyz"`                                   |
+| Prop                               | Description                                              | Example                                         |
+| ---------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| `additionalMetaTags?: MetaTag[]`   | Additional custom meta tags.                             | `[{ name: "robots", content: "index,follow" }]` |
+| `baseUrl?: string`                 | Base URL for all relative URLs.                          | `"https://example.com"`                         |
+| `canonical?: string`               | Canonical URL for the page.                              | `"/blog/post-1"`                                |
+| `composeMeta?: ComposeMetaOptions` | Compose repeatable provider metadata into page metadata. | `{ images: true }`                              |
+| `debug?: boolean`                  | Enable debug mode (in development).                      | `true`                                          |
+| `description?: string`             | Page description for meta tags.                          | `"Learn about our company"`                     |
+| `determiner?: string`              | Word before object's title in a sentence.                | `"the"`                                         |
+| `locale?: string`                  | Locale of site/page.                                     | `"en_US"`                                       |
+| `localeAlternates?: string[]`      | Alternate locales for the page.                          | `["en_CA", "fr_CA"]`                            |
+| `siteName?: string`                | Site name for meta tags.                                 | `"My Blog"`                                     |
+| `siteNameDelimiter?: string`       | Delimiter between title and site name.                   | `" - "`                                         |
+| `title?: string`                   | Page title.                                              | `"About Us"`                                    |
+| `type?: string`                    | Open Graph type of the page.                             | `"website"`                                     |
+| `url?: string`                     | URL of page.                                             | `"/about"`                                      |
+| `pinterestDomainVerify?: string`   | Pinterest domain verification code.                      | `"abc123xyz"`                                   |
+
+### Composing Repeatable Metadata
+
+By default, page-level array props replace provider-level array props. To render
+page-specific tags first and then append matching provider defaults, opt in with
+`composeMeta` on `MetaProvider`:
+
+```tsx
+<MetaProvider
+  skipDefaultsRender
+  composeMeta={{ images: true }}
+  images={[{ url: '/default-og.png', alt: 'Default share image' }]}
+>
+  <PageMeta
+    title="Post title"
+    images={[{ url: '/post-og.png', alt: 'Post share image' }]}
+  />
+</MetaProvider>
+```
+
+This renders the page image first, followed by the provider image. `PageMeta`
+can override the provider policy for one page:
+
+```tsx
+<PageMeta composeMeta={{ images: false }} images={[{ url: '/post-og.png' }]} />
+```
+
+Supported composition fields are `images`, `audio`, `videos`,
+`localeAlternates`, and `additionalMetaTags`. You can also pass
+`composeMeta={true}` as shorthand for all supported fields. Passing an explicit
+empty array, such as `images={[]}`, clears inherited values even when
+composition is enabled.
+
+When composing page-specific repeatable tags, `skipDefaultsRender` keeps the
+provider defaults from rendering separately before the composed `PageMeta`
+output.
 
 ### Media Properties
 
@@ -529,61 +567,6 @@ When using the `twitter.card` property, you can use one of the following values:
 | `media`     | `string`                      | Media query for supported tags  |
 | `scheme`    | `string`                      | Legacy metadata scheme          |
 | `content`   | `string \| number \| boolean` | Meta tag content                |
-
-## Breaking Changes
-
-### Version 4.0.0
-
-Version 4.0.0 introduced breaking changes:
-
-- **Removed `SiteMeta` component**: Use `PageMeta` instead
-- **Removed deprecated props**: `imageUrl`, `imageAlt`, `imageWidth`, `imageHeight`, `audioUrl`, `audioType`, `videoUrl`, `videoType`, `twitterCard`, `twitterCreator`, `twitterSite`
-- **Array-based media props**: All media now uses arrays:
-  - `images?: Image[]` (replaces `image?: Image` and `imageUrl`)
-  - `audio?: Audio[]` (replaces `audioUrl` and `audioType`)
-  - `videos?: Video[]` (replaces `videoUrl` and `videoType`)
-- **Twitter object**: Use `twitter` object instead of individual props:
-  - `twitter.card` (replaces `twitterCard`)
-  - `twitter.site` (replaces `twitterSite`)
-  - `twitter.creator` (replaces `twitterCreator`)
-
-### Migration Guide
-
-**Before (v3.x):**
-
-```tsx
-<SiteMeta
-  imageUrl="/image.jpg"
-  imageAlt="Description"
-  imageWidth={1200}
-  imageHeight={630}
-  audioUrl="/audio.mp3"
-  videoUrl="/video.mp4"
-  twitterCard="summary_large_image"
-  twitterSite="@site"
-/>
-```
-
-**After (v4.x):**
-
-```tsx
-<PageMeta
-  images={[
-    {
-      url: '/image.jpg',
-      alt: 'Description',
-      width: 1200,
-      height: 630,
-    },
-  ]}
-  audio={[{ url: '/audio.mp3' }]}
-  videos={[{ url: '/video.mp4' }]}
-  twitter={{
-    card: 'summary_large_image',
-    site: '@site',
-  }}
-/>
-```
 
 ## License
 

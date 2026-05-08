@@ -1,6 +1,9 @@
 import React from 'react'
+
 import { afterEach, describe, expect, test, vi } from 'vitest'
+
 import { cleanup, render } from '@testing-library/react'
+
 import { PageMeta } from './PageMeta'
 
 vi.mock('next/head.js', () => {

@@ -1,7 +1,11 @@
 import React from 'react'
+
 import { afterEach, describe, expect, test } from 'vitest'
+
 import { cleanup, render } from '@testing-library/react'
+
 import { renderMeta } from './renderMeta'
+import type { PageMetaProps } from './types'
 
 const renderOptions = {
   baseElement: document.documentElement,
@@ -884,6 +888,155 @@ describe('renderMeta', () => {
       expect(
         document.head.querySelector('[property="og:image:width"]'),
       ).toBeNull()
+    })
+
+    test('ignores dangerous merge keys while merging context and props', () => {
+      const context = JSON.parse(
+        '{"__proto__":{"polluted":"context"},"constructor":{"prototype":{"polluted":"constructor"}},"title":"Context Title"}',
+      ) as PageMetaProps
+      const props = JSON.parse(
+        '{"prototype":{"polluted":"props"},"description":"Props Description"}',
+      ) as PageMetaProps
+
+      render(<>{renderMeta(props, context)}</>, renderOptions)
+
+      expect(({} as { polluted?: string }).polluted).toBeUndefined()
+      expect(document.head.querySelector('title')?.textContent).toBe(
+        'Context Title',
+      )
+      expect(
+        document.head
+          .querySelector('[name="description"]')
+          ?.getAttribute('content'),
+      ).toBe('Props Description')
+    })
+
+    test('composes repeatable props when enabled in context', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              images: [{ url: '/page.jpg' }],
+            },
+            {
+              composeMeta: { images: true },
+              images: [
+                { url: '/default.jpg' },
+                { url: '/brand.jpg' },
+                { url: '/page.jpg' },
+              ],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      const images = document.head.querySelectorAll('[property="og:image"]')
+
+      expect(images).toHaveLength(3)
+      expect(images[0].getAttribute('content')).toBe('/page.jpg')
+      expect(images[1].getAttribute('content')).toBe('/default.jpg')
+      expect(images[2].getAttribute('content')).toBe('/brand.jpg')
+    })
+
+    test('allows page props to opt out of context composition', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              composeMeta: { images: false },
+              images: [{ url: '/page.jpg' }],
+            },
+            {
+              composeMeta: { images: true },
+              images: [{ url: '/default.jpg' }],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      const images = document.head.querySelectorAll('[property="og:image"]')
+
+      expect(images).toHaveLength(1)
+      expect(images[0].getAttribute('content')).toBe('/page.jpg')
+    })
+
+    test('allows page props to opt into composition', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              composeMeta: { images: true },
+              images: [{ url: '/page.jpg' }],
+            },
+            {
+              images: [{ url: '/default.jpg' }],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      const images = document.head.querySelectorAll('[property="og:image"]')
+
+      expect(images).toHaveLength(2)
+      expect(images[0].getAttribute('content')).toBe('/page.jpg')
+      expect(images[1].getAttribute('content')).toBe('/default.jpg')
+    })
+
+    test('clears inherited arrays with explicit empty arrays', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              images: [],
+            },
+            {
+              composeMeta: { images: true },
+              images: [{ url: '/default.jpg' }],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      expect(document.head.querySelector('[property="og:image"]')).toBeNull()
+    })
+
+    test('composes locale alternates and additional meta tags', () => {
+      render(
+        <>
+          {renderMeta(
+            {
+              additionalMetaTags: [{ name: 'robots', content: 'noindex' }],
+              localeAlternates: ['fr_CA'],
+            },
+            {
+              additionalMetaTags: [{ name: 'googlebot', content: 'noindex' }],
+              composeMeta: true,
+              localeAlternates: ['en_CA'],
+            },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      const alternates = document.head.querySelectorAll(
+        '[property="og:locale:alternate"]',
+      )
+
+      expect(alternates).toHaveLength(2)
+      expect(alternates[0].getAttribute('content')).toBe('fr_CA')
+      expect(alternates[1].getAttribute('content')).toBe('en_CA')
+      expect(
+        document.head.querySelector('[name="robots"]')?.getAttribute('content'),
+      ).toBe('noindex')
+      expect(
+        document.head
+          .querySelector('[name="googlebot"]')
+          ?.getAttribute('content'),
+      ).toBe('noindex')
     })
 
     test('renders additional meta tags', () => {
