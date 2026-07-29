@@ -47,11 +47,11 @@ yarn add next-meta
 Setting defaults within the Next.js App with `MetaProvider`.
 
 ```tsx
-import { ReactElement, ReactNode } from 'react'
-import { NextPage } from 'next'
-import { AppProps } from 'next/app'
+import type { ReactElement, ReactNode } from 'react'
+import type { NextPage } from 'next'
+import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { MetaProvider } from 'next-meta'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -77,8 +77,7 @@ const DEFAULT_IMAGE = {
 
 function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page)
-
-  const metaUrl = usePathname()
+  const { asPath: metaUrl } = useRouter()
 
   return (
     <>
@@ -109,30 +108,28 @@ export default CustomApp
 
 ### Page-Specific Meta Tags
 
-Specifying page specific meta tags using the `PageMeta` component.
+Specify page-specific meta tags with `PageMeta`. It renders through
+`next/head`, so it should not be wrapped in another `Head` component.
 
 ```tsx
-import Head from 'next/head'
 import { PageMeta } from 'next-meta'
 
 const ExamplePage = () => {
   return (
     <>
-      <Head>
-        <PageMeta
-          images={[
-            {
-              url: '/share/about-social.png',
-              alt: 'About page social share image',
-              width: 1200,
-              height: 630,
-            },
-          ]}
-          title="About"
-          siteName="Example Site"
-          url="/about"
-        />
-      </Head>
+      <PageMeta
+        images={[
+          {
+            url: '/share/about-social.png',
+            alt: 'About page social share image',
+            width: 1200,
+            height: 630,
+          },
+        ]}
+        title="About"
+        siteName="Example Site"
+        url="/about"
+      />
       {/* ...page code... */}
     </>
   )
@@ -144,57 +141,54 @@ const ExamplePage = () => {
 Here's an example showing more advanced features:
 
 ```tsx
-import Head from 'next/head'
 import { PageMeta } from 'next-meta'
 
 const BlogPost = ({ post }) => {
   return (
     <>
-      <Head>
-        <PageMeta
-          title={post.title}
-          description={post.excerpt}
-          images={[
-            {
-              url: post.featuredImage,
-              alt: post.featuredImageAlt,
-              width: 1200,
-              height: 630,
-            },
-          ]}
-          url={`/blog/${post.slug}`}
-          twitter={{
-            card: 'summary_large_image',
-            creator: '@authorHandle',
-          }}
-          audio={
-            post.audioUrl
-              ? [{ url: post.audioUrl, type: 'audio/mpeg' }]
-              : undefined
-          }
-          videos={
-            post.videoUrl
-              ? [
-                  {
-                    url: post.videoUrl,
-                    type: 'video/mp4',
-                    width: 1920,
-                    height: 1080,
-                  },
-                ]
-              : undefined
-          }
-          locale="en_US"
-          determiner="the"
-          article={{
-            author: post.authors,
-            publishedTime: post.publishedAt,
-            modifiedTime: post.updatedAt,
-            section: 'Technology',
-            tag: post.tags,
-          }}
-        />
-      </Head>
+      <PageMeta
+        title={post.title}
+        description={post.excerpt}
+        images={[
+          {
+            url: post.featuredImage,
+            alt: post.featuredImageAlt,
+            width: 1200,
+            height: 630,
+          },
+        ]}
+        url={`/blog/${post.slug}`}
+        twitter={{
+          card: 'summary_large_image',
+          creator: '@authorHandle',
+        }}
+        audio={
+          post.audioUrl
+            ? [{ url: post.audioUrl, type: 'audio/mpeg' }]
+            : undefined
+        }
+        videos={
+          post.videoUrl
+            ? [
+                {
+                  url: post.videoUrl,
+                  type: 'video/mp4',
+                  width: 1920,
+                  height: 1080,
+                },
+              ]
+            : undefined
+        }
+        locale="en_US"
+        determiner="the"
+        article={{
+          author: post.authors,
+          publishedTime: post.publishedAt,
+          modifiedTime: post.updatedAt,
+          section: 'Technology',
+          tag: post.tags,
+        }}
+      />
       {/* ...post content... */}
     </>
   )
@@ -224,12 +218,12 @@ import { Schema } from 'react-structured'
 const BlogPost = ({ post }) => {
   return (
     <>
+      <PageMeta
+        title={post.title}
+        description={post.excerpt}
+        images={[{ url: post.featuredImage }]}
+      />
       <Head>
-        <PageMeta
-          title={post.title}
-          description={post.excerpt}
-          images={[{ url: post.featuredImage }]}
-        />
         <Schema
           type="Article"
           data={{
@@ -263,6 +257,7 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 
 - `PageMetaProps`: Props for the PageMeta component
 - `MetaProviderProps`: Props for the MetaProvider component
+- `SiteMetaProps`: Deprecated compatibility alias for `PageMetaProps`
 - `ComposeMetaOptions`: Controls repeatable metadata composition
 - `Image`: Type for image objects
 - `Video`: Type for video objects
@@ -273,6 +268,48 @@ next-meta is written in TypeScript and provides type definitions out of the box.
 - `Twitter`: Type for Twitter card configuration
 - `TwitterApp`: Type for Twitter app card platform configuration
 - `TwitterCard`: Enum for Twitter card types
+
+## Components
+
+### `PageMeta`
+
+Renders page metadata through `next/head`. It accepts `PageMetaProps`, including
+custom `children` such as alternate feed links.
+
+### `MetaProvider`
+
+Provides default `PageMetaProps` to descendant `PageMeta` components.
+
+| Prop                           | Description                                                        |
+| ------------------------------ | ------------------------------------------------------------------ |
+| All `PageMetaProps`            | Default metadata inherited by descendant `PageMeta` components.    |
+| `skipDefaultsRender?: boolean` | Provide defaults without immediately rendering a separate tag set. |
+| `children?: ReactNode`         | Application or page content that receives the defaults.            |
+
+### `SiteMeta` (deprecated)
+
+`SiteMeta` remains a compatibility alias for `PageMeta` during the v0.x
+migration period. New code should use `PageMeta`.
+
+## Migrating from v0.3
+
+v0.4 uses repeatable media arrays and groups X/Twitter settings under
+`twitter`. The v0.3 names remain available as deprecated compatibility aliases,
+but new code should use the current API:
+
+| Deprecated v0.3 API                            | Current v0.4 API                         |
+| ---------------------------------------------- | ---------------------------------------- |
+| `SiteMeta`                                     | `PageMeta`                               |
+| `SiteMetaProps`                                | `PageMetaProps`                          |
+| `image` or `imageUrl`, `imageAlt`, dimensions  | `images={[{ url, alt, width, height }]}` |
+| `audioUrl`, `audioType`                        | `audio={[{ url, type }]}`                |
+| `videoUrl`, `videoType`                        | `videos={[{ url, type }]}`               |
+| `twitterCard`, `twitterCreator`, `twitterSite` | `twitter={{ card, creator, site }}`      |
+
+When current and deprecated image props are both supplied, `images` takes
+precedence over `image`, and fields in `image` take precedence over their flat
+deprecated equivalents. Nested `twitter` fields likewise take precedence over
+the flat Twitter props.
 
 ## Properties
 
@@ -297,9 +334,15 @@ or platform-specific meta tags, use `additionalMetaTags`.
 | `siteName?: string`                | Site name for meta tags.                                 | `"My Blog"`                                     |
 | `siteNameDelimiter?: string`       | Delimiter between title and site name.                   | `" - "`                                         |
 | `title?: string`                   | Page title.                                              | `"About Us"`                                    |
+| `twitter?: Twitter`                | X/Twitter card overrides and configuration.              | `{ card: "summary_large_image" }`               |
 | `type?: string`                    | Open Graph type of the page.                             | `"website"`                                     |
 | `url?: string`                     | URL of page.                                             | `"/about"`                                      |
 | `pinterestDomainVerify?: string`   | Pinterest domain verification code.                      | `"abc123xyz"`                                   |
+
+Relative values for `canonical`, `url`, and media URLs are resolved against
+`baseUrl` with the standard `URL` constructor. A trailing slash on a directory
+base is significant: `new URL('guide', 'https://example.com/docs/')` resolves to
+`https://example.com/docs/guide`.
 
 ### Composing Repeatable Metadata
 
@@ -372,6 +415,26 @@ output.
 | `releaseDate` | `string`                                  | Release date of the video |
 | `tag`         | `string \| string[]`                      | Tags for the video        |
 | `series`      | `string`                                  | Series name if applicable |
+
+### Other Video Properties
+
+Use `videoOther` for the `og:video:other` extension and its optional stream
+metadata.
+
+| Property                        | Type               | Description           |
+| ------------------------------- | ------------------ | --------------------- |
+| `videoOther.url`                | `string`           | Other video URL       |
+| `videoOther.secureUrl`          | `string`           | HTTPS other video URL |
+| `videoOther.type`               | `string`           | Other video MIME type |
+| `videoOther.width`              | `number \| string` | Other video width     |
+| `videoOther.height`             | `number \| string` | Other video height    |
+| `videoOther.duration`           | `number \| string` | Other video duration  |
+| `videoOther.stream.url`         | `string`           | Stream URL            |
+| `videoOther.stream.secureUrl`   | `string`           | HTTPS stream URL      |
+| `videoOther.stream.contentType` | `string`           | Stream MIME type      |
+| `videoOther.stream.width`       | `number \| string` | Stream width          |
+| `videoOther.stream.height`      | `number \| string` | Stream height         |
+| `videoOther.stream.duration`    | `number \| string` | Stream duration       |
 
 ### Audio Object
 
@@ -489,7 +552,7 @@ When using the `twitter.card` property, you can use one of the following values:
 | `isbn`          | `string`                                                                           | ISBN for books           |
 | `rating`        | `{ value?: number \| string; scale?: number \| string; count?: number \| string }` | Rating information       |
 | `reviewCount`   | `number \| string`                                                                 | Number of reviews        |
-| `points`        | `string`                                                                           | Points/rewards           |
+| `points`        | `number \| string`                                                                 | Points/rewards           |
 | `restrictions`  | `string \| string[]`                                                               | Age/content restrictions |
 | `ageRating`     | `string`                                                                           | Age rating               |
 | `contentRating` | `string`                                                                           | Content rating           |
