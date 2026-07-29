@@ -103,6 +103,61 @@ const mergePageMetaProps = (
     {},
   ) as PageMetaProps
 
+const normalizePageMetaProps = (source: PageMetaProps): PageMetaProps => {
+  const normalized = { ...source }
+
+  if (source.images === undefined) {
+    const hasLegacyImage =
+      source.image !== undefined ||
+      source.imageUrl !== undefined ||
+      source.imageAlt !== undefined ||
+      source.imageWidth !== undefined ||
+      source.imageHeight !== undefined
+
+    if (hasLegacyImage) {
+      normalized.images = [
+        {
+          ...source.image,
+          alt: source.image?.alt ?? source.imageAlt,
+          height: source.image?.height ?? source.imageHeight,
+          url: source.image?.url ?? source.imageUrl,
+          width: source.image?.width ?? source.imageWidth,
+        },
+      ]
+    }
+  }
+
+  if (
+    source.audio === undefined &&
+    (source.audioUrl !== undefined || source.audioType !== undefined)
+  ) {
+    normalized.audio = [{ type: source.audioType, url: source.audioUrl }]
+  }
+
+  if (
+    source.videos === undefined &&
+    (source.videoUrl !== undefined || source.videoType !== undefined)
+  ) {
+    normalized.videos = [{ type: source.videoType, url: source.videoUrl }]
+  }
+
+  const hasLegacyTwitter =
+    source.twitterCard !== undefined ||
+    source.twitterCreator !== undefined ||
+    source.twitterSite !== undefined
+
+  if (source.twitter !== undefined || hasLegacyTwitter) {
+    normalized.twitter = {
+      ...source.twitter,
+      card: source.twitter?.card ?? source.twitterCard,
+      creator: source.twitter?.creator ?? source.twitterCreator,
+      site: source.twitter?.site ?? source.twitterSite,
+    }
+  }
+
+  return normalized
+}
+
 const normalizeComposeMeta = (
   composeMeta: ComposeMetaOptions | undefined,
 ): Partial<ResolvedComposeMetaOptions> => {
@@ -354,6 +409,8 @@ export const renderMeta = (
   props: PageMetaProps = {},
   context: PageMetaProps = {},
 ): React.ReactNode[] => {
+  const normalizedProps = normalizePageMetaProps(props)
+  const normalizedContext = normalizePageMetaProps(context)
   const {
     additionalMetaTags: mergedAdditionalMetaTags,
     // Audio (array)
@@ -424,39 +481,42 @@ export const renderMeta = (
     payment,
     // Video-specific (for video.other)
     videoOther,
-  } = mergePageMetaProps(DEFAULTS, context, props)
+  } = mergePageMetaProps(DEFAULTS, normalizedContext, normalizedProps)
 
-  const composeMeta = resolveComposeMeta(context.composeMeta, props.composeMeta)
+  const composeMeta = resolveComposeMeta(
+    normalizedContext.composeMeta,
+    normalizedProps.composeMeta,
+  )
   const additionalMetaTags = composeRepeatableMeta(
-    props.additionalMetaTags,
-    context.additionalMetaTags,
+    normalizedProps.additionalMetaTags,
+    normalizedContext.additionalMetaTags,
     mergedAdditionalMetaTags,
     composeMeta.additionalMetaTags,
     getAdditionalMetaTagKey,
   )
   const audio = composeRepeatableMeta(
-    props.audio,
-    context.audio,
+    normalizedProps.audio,
+    normalizedContext.audio,
     mergedAudio,
     composeMeta.audio,
     getMediaKey,
   )
   const images = composeRepeatableMeta(
-    props.images,
-    context.images,
+    normalizedProps.images,
+    normalizedContext.images,
     mergedImages,
     composeMeta.images,
     getMediaKey,
   )
   const localeAlternates = composeRepeatableMeta(
-    props.localeAlternates,
-    context.localeAlternates,
+    normalizedProps.localeAlternates,
+    normalizedContext.localeAlternates,
     mergedLocaleAlternates,
     composeMeta.localeAlternates,
   )
   const videos = composeRepeatableMeta(
-    props.videos,
-    context.videos,
+    normalizedProps.videos,
+    normalizedContext.videos,
     mergedVideos,
     composeMeta.videos,
     getMediaKey,

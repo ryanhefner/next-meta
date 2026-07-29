@@ -832,6 +832,207 @@ describe('renderMeta', () => {
     })
   })
 
+  describe('Deprecated Prop Compatibility', () => {
+    test('normalizes flat image props', () => {
+      render(
+        <>
+          {renderMeta({
+            imageUrl: '/legacy-image.jpg',
+            imageAlt: 'Legacy image',
+            imageWidth: 1200,
+            imageHeight: 630,
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/legacy-image.jpg')
+      expect(
+        document.head
+          .querySelector('[property="og:image:alt"]')
+          ?.getAttribute('content'),
+      ).toBe('Legacy image')
+      expect(
+        document.head
+          .querySelector('[property="og:image:width"]')
+          ?.getAttribute('content'),
+      ).toBe('1200')
+      expect(
+        document.head
+          .querySelector('[property="og:image:height"]')
+          ?.getAttribute('content'),
+      ).toBe('630')
+    })
+
+    test('gives nested image fields precedence over flat image props', () => {
+      render(
+        <>
+          {renderMeta({
+            image: {
+              url: '/nested-image.jpg',
+              alt: 'Nested image',
+              width: 800,
+              height: 400,
+            },
+            imageUrl: '/legacy-image.jpg',
+            imageAlt: 'Legacy image',
+            imageWidth: 1200,
+            imageHeight: 630,
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/nested-image.jpg')
+      expect(
+        document.head
+          .querySelector('[property="og:image:alt"]')
+          ?.getAttribute('content'),
+      ).toBe('Nested image')
+      expect(
+        document.head
+          .querySelector('[property="og:image:width"]')
+          ?.getAttribute('content'),
+      ).toBe('800')
+      expect(
+        document.head
+          .querySelector('[property="og:image:height"]')
+          ?.getAttribute('content'),
+      ).toBe('400')
+    })
+
+    test('gives the images array precedence over deprecated image props', () => {
+      render(
+        <>
+          {renderMeta({
+            images: [{ url: '/current-image.jpg' }],
+            image: { url: '/nested-image.jpg' },
+            imageUrl: '/legacy-image.jpg',
+          })}
+        </>,
+        renderOptions,
+      )
+
+      const images = document.head.querySelectorAll('[property="og:image"]')
+
+      expect(images).toHaveLength(1)
+      expect(images[0].getAttribute('content')).toBe('/current-image.jpg')
+    })
+
+    test('normalizes deprecated audio, video, and Twitter props', () => {
+      render(
+        <>
+          {renderMeta({
+            audioUrl: '/legacy-audio.mp3',
+            audioType: 'audio/mpeg',
+            videoUrl: '/legacy-video.mp4',
+            videoType: 'video/mp4',
+            twitterCard: 'summary_large_image',
+            twitterCreator: '@legacy-creator',
+            twitterSite: '@legacy-site',
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:audio"]')
+          ?.getAttribute('content'),
+      ).toBe('/legacy-audio.mp3')
+      expect(
+        document.head
+          .querySelector('[property="og:audio:type"]')
+          ?.getAttribute('content'),
+      ).toBe('audio/mpeg')
+      expect(
+        document.head
+          .querySelector('[property="og:video"]')
+          ?.getAttribute('content'),
+      ).toBe('/legacy-video.mp4')
+      expect(
+        document.head
+          .querySelector('[property="og:video:type"]')
+          ?.getAttribute('content'),
+      ).toBe('video/mp4')
+      expect(
+        document.head
+          .querySelector('[name="twitter:card"]')
+          ?.getAttribute('content'),
+      ).toBe('summary_large_image')
+      expect(
+        document.head
+          .querySelector('[name="twitter:creator"]')
+          ?.getAttribute('content'),
+      ).toBe('@legacy-creator')
+      expect(
+        document.head
+          .querySelector('[name="twitter:site"]')
+          ?.getAttribute('content'),
+      ).toBe('@legacy-site')
+    })
+
+    test('gives nested Twitter props precedence over flat Twitter props', () => {
+      render(
+        <>
+          {renderMeta({
+            twitter: {
+              card: 'player',
+              creator: '@current-creator',
+              site: '@current-site',
+            },
+            twitterCard: 'summary',
+            twitterCreator: '@legacy-creator',
+            twitterSite: '@legacy-site',
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[name="twitter:card"]')
+          ?.getAttribute('content'),
+      ).toBe('player')
+      expect(
+        document.head
+          .querySelector('[name="twitter:creator"]')
+          ?.getAttribute('content'),
+      ).toBe('@current-creator')
+      expect(
+        document.head
+          .querySelector('[name="twitter:site"]')
+          ?.getAttribute('content'),
+      ).toBe('@current-site')
+    })
+
+    test('allows deprecated page props to override provider values', () => {
+      render(
+        <>
+          {renderMeta(
+            { imageUrl: '/legacy-page-image.jpg' },
+            { images: [{ url: '/provider-image.jpg' }] },
+          )}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/legacy-page-image.jpg')
+    })
+  })
+
   describe('Context and Props Merging', () => {
     test('merges context and props correctly', () => {
       const context = {

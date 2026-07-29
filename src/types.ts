@@ -113,6 +113,10 @@ export interface PageMetaProps {
 
   // Audio (array support)
   audio?: Audio[]
+  /** @deprecated Use `audio` instead. */
+  audioUrl?: string
+  /** @deprecated Use `audio` instead. */
+  audioType?: string
 
   baseUrl?: string
   canonical?: string
@@ -124,6 +128,16 @@ export interface PageMetaProps {
 
   // Image (array support)
   images?: Image[]
+  /** @deprecated Use `images` instead. */
+  image?: Image
+  /** @deprecated Use `images` instead. */
+  imageUrl?: string
+  /** @deprecated Use `images` instead. */
+  imageAlt?: string
+  /** @deprecated Use `images` instead. */
+  imageWidth?: number | string
+  /** @deprecated Use `images` instead. */
+  imageHeight?: number | string
 
   locale?: string
   localeAlternates?: string[]
@@ -132,11 +146,26 @@ export interface PageMetaProps {
   siteNameDelimiter?: string
   title?: string
   twitter?: Twitter
+  /** @deprecated Use `twitter.card` instead. */
+  twitterCard?:
+    | 'app'
+    | 'player'
+    | 'summary'
+    | 'summary_large_image'
+    | TwitterCard
+  /** @deprecated Use `twitter.creator` instead. */
+  twitterCreator?: string
+  /** @deprecated Use `twitter.site` instead. */
+  twitterSite?: string
   type?: string
   url?: string
 
   // Video (array support)
   videos?: Video[]
+  /** @deprecated Use `videos` instead. */
+  videoUrl?: string
+  /** @deprecated Use `videos` instead. */
+  videoType?: string
 
   // General metadata
   author?: string | string[]
@@ -250,3 +279,6 @@ export interface PageMetaProps {
 export interface MetaProviderProps extends PageMetaProps {
   skipDefaultsRender?: boolean
 }
+
+/** @deprecated Use `PageMetaProps` instead. */
+export type SiteMetaProps = PageMetaProps
