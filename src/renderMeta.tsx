@@ -18,17 +18,14 @@ export const getAbsoluteUrl = (
     return url
   }
 
-  if (!baseUrl || /^[a-z][a-z\d+.-]*:/i.test(url)) {
+  if (!baseUrl) {
     return url
   }
 
   try {
     return new URL(url, baseUrl).toString()
   } catch {
-    const normalizedBaseUrl = baseUrl.replace(/\/+$/, '')
-    const normalizedUrl = url.startsWith('/') ? url : `/${url}`
-
-    return `${normalizedBaseUrl}${normalizedUrl}`
+    return url
   }
 }
 

@@ -96,6 +96,21 @@ describe('renderMeta', () => {
       ).toBe('https://example.com/test-page')
     })
 
+    test('resolves a path-relative canonical URL from a base directory', () => {
+      render(
+        <>
+          {renderMeta({
+            canonical: 'guide',
+            baseUrl: 'https://example.com/docs/',
+          })}
+        </>,
+        renderOptions,
+      )
+      expect(
+        document.head.querySelector('[rel="canonical"]')?.getAttribute('href'),
+      ).toBe('https://example.com/docs/guide')
+    })
+
     test('renders type', () => {
       render(<>{renderMeta({ type: 'article' })}</>, renderOptions)
       expect(
