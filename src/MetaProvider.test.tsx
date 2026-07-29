@@ -104,6 +104,58 @@ describe('MetaProvider', () => {
     ).toBeTruthy()
   })
 
+  test('deep-merges nested provider metadata with page overrides', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        twitter={{
+          card: 'summary_large_image',
+          image: {
+            url: '/provider-image.jpg',
+            alt: 'Provider image',
+          },
+          site: '@provider',
+        }}
+      >
+        <PageMeta
+          twitter={{
+            creator: '@page',
+            image: {
+              alt: 'Page image',
+            },
+          }}
+        />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    expect(
+      document.head
+        .querySelector('[name="twitter:card"]')
+        ?.getAttribute('content'),
+    ).toBe('summary_large_image')
+    expect(
+      document.head
+        .querySelector('[name="twitter:site"]')
+        ?.getAttribute('content'),
+    ).toBe('@provider')
+    expect(
+      document.head
+        .querySelector('[name="twitter:creator"]')
+        ?.getAttribute('content'),
+    ).toBe('@page')
+    expect(
+      document.head
+        .querySelector('[name="twitter:image"]')
+        ?.getAttribute('content'),
+    ).toBe('/provider-image.jpg')
+    expect(
+      document.head
+        .querySelector('[name="twitter:image:alt"]')
+        ?.getAttribute('content'),
+    ).toBe('Page image')
+  })
+
   test('renders - absolute urls w/ baseUrl + url override', () => {
     render(
       <MetaProvider baseUrl="https://test.com" url="/test">

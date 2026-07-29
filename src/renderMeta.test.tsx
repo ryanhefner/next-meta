@@ -641,6 +641,75 @@ describe('renderMeta', () => {
       ).toBeNull()
     })
 
+    test('uses a Twitter image instead of the general image', () => {
+      render(
+        <>
+          {renderMeta({
+            images: [
+              {
+                url: '/general-image.jpg',
+                alt: 'General image',
+              },
+            ],
+            twitter: {
+              image: {
+                url: '/twitter-image.jpg',
+                alt: 'Twitter image',
+              },
+            },
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[property="og:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/general-image.jpg')
+      expect(
+        document.head
+          .querySelector('[name="twitter:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/twitter-image.jpg')
+      expect(
+        document.head
+          .querySelector('[name="twitter:image:alt"]')
+          ?.getAttribute('content'),
+      ).toBe('Twitter image')
+    })
+
+    test('falls back to the first general image for Twitter', () => {
+      render(
+        <>
+          {renderMeta({
+            images: [
+              {
+                url: '/first-image.jpg',
+                alt: 'First image',
+              },
+              {
+                url: '/second-image.jpg',
+                alt: 'Second image',
+              },
+            ],
+          })}
+        </>,
+        renderOptions,
+      )
+
+      expect(
+        document.head
+          .querySelector('[name="twitter:image"]')
+          ?.getAttribute('content'),
+      ).toBe('/first-image.jpg')
+      expect(
+        document.head
+          .querySelector('[name="twitter:image:alt"]')
+          ?.getAttribute('content'),
+      ).toBe('First image')
+    })
+
     test('renders twitter app with country', () => {
       render(
         <>
