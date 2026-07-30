@@ -18,6 +18,20 @@ configure the `next-meta` package's trusted publisher on npm:
 The workflow requests GitHub's OIDC token, and npm automatically records
 provenance for the published package.
 
+## Dry-run the publish workflow
+
+The `Publish Package` workflow can be run manually from GitHub's Actions tab or
+with the GitHub CLI:
+
+```sh
+gh workflow run publish.yml --ref main
+```
+
+Manual runs always execute `npm publish --dry-run`; they cannot publish the
+package. This exercises the hosted runner, frozen dependency installation,
+publish lifecycle, and package assembly. npm trusted-publisher authentication
+can only be confirmed by an actual publish.
+
 ## Prepare
 
 1. Confirm the intended version in `package.json` and `CHANGELOG.md`.
