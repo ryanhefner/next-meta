@@ -20,7 +20,7 @@ const defaultOutputOptions = {
     react: 'React',
   },
   banner: `/*! ${pkg.name} v${pkg.version} !*/`,
-  footer: `/* ${pkg.repository.url} | ${pkg.author} */`,
+  footer: `/* ${pkg.homepage.replace('#readme', '')} | ${pkg.author} */`,
 }
 
 const defaultPlugins = [
