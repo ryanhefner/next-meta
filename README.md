@@ -199,7 +199,8 @@ const BlogPost = ({ post }) => {
 next-meta focuses on meta tags, Open Graph, and social card metadata. For
 Schema.org structured data, use
 [`react-structured`](https://github.com/ryanhefner/react-structured) alongside
-next-meta.
+next-meta. When both packages are installed, React 16.14 or newer is required by
+their combined peer dependency ranges.
 
 ```sh
 npm install react-structured
@@ -209,38 +210,100 @@ npm install react-structured
 yarn add react-structured
 ```
 
+#### Pages Router
+
+Render the structured-data component alongside `PageMeta`. Do not nest it inside
+`PageMeta` or `next/head`: Next.js requires scripts inside `Head` to be direct
+children, while JSON-LD is valid in the document body.
+
 ```tsx
-import Head from 'next/head'
 import { PageMeta } from 'next-meta'
 import { Schema } from 'react-structured'
 
-const BlogPost = ({ post }) => {
+const BlogPost = ({ post, nonce }) => {
+  const articleUrl = new URL(
+    `/blog/${post.slug}`,
+    'https://example.com',
+  ).toString()
+
   return (
     <>
       <PageMeta
         title={post.title}
         description={post.excerpt}
         images={[{ url: post.featuredImage }]}
+        canonical={articleUrl}
+        url={articleUrl}
       />
-      <Head>
-        <Schema
-          type="Article"
-          data={{
-            headline: post.title,
-            datePublished: post.publishedAt,
-            dateModified: post.updatedAt,
-            author: {
-              '@type': 'Person',
-              name: post.author.name,
-            },
-            publisher: {
-              '@type': 'Organization',
-              name: 'My Blog',
-            },
-          }}
-        />
-      </Head>
+      <Schema
+        id="article-jsonld"
+        nonce={nonce}
+        type="Article"
+        data={{
+          headline: post.title,
+          image: post.featuredImage,
+          mainEntityOfPage: articleUrl,
+          datePublished: post.publishedAt,
+          dateModified: post.updatedAt,
+          author: {
+            '@type': 'Person',
+            name: post.author.name,
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'My Blog',
+          },
+        }}
+      />
       {/* ...post content... */}
+    </>
+  )
+}
+```
+
+Give each JSON-LD script a stable, document-unique `id` for inspection and
+testing. Pass `nonce` when the application's Content Security Policy requires
+one; otherwise omit it. Reuse the same absolute canonical and media URLs in
+metadata and structured data so they cannot disagree.
+
+#### App Router
+
+next-meta v0.4 targets Pages Router. In App Router today, use Next.js's native
+Metadata API and continue rendering `react-structured` in the page or layout.
+The planned next-meta App Router adapter will replace only the metadata
+construction in this pattern; JSON-LD will remain a sibling component.
+
+```tsx
+// app/articles/example/page.tsx
+import type { Metadata } from 'next'
+import { Schema } from 'react-structured'
+
+const ARTICLE_URL = 'https://example.com/articles/example'
+const ARTICLE_IMAGE = 'https://example.com/articles/example/social.jpg'
+
+export const metadata: Metadata = {
+  title: 'Example article',
+  alternates: { canonical: ARTICLE_URL },
+  openGraph: {
+    type: 'article',
+    url: ARTICLE_URL,
+    images: [ARTICLE_IMAGE],
+  },
+}
+
+export default function ArticlePage() {
+  return (
+    <>
+      <Schema
+        id="article-jsonld"
+        type="Article"
+        data={{
+          headline: 'Example article',
+          image: ARTICLE_IMAGE,
+          mainEntityOfPage: ARTICLE_URL,
+        }}
+      />
+      <main>{/* ...article content... */}</main>
     </>
   )
 }
