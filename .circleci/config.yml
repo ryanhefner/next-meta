@@ -16,7 +16,10 @@ jobs:
 
       - run:
           name: Use repository npm version
-          command: npm install --global npm@11.17.0
+          command: |
+            npm install --global npm@11.17.0 --prefix "${HOME}/.local"
+            echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${BASH_ENV}"
+            "${HOME}/.local/bin/npm" --version
 
       # Download and cache dependencies
       - restore_cache:
