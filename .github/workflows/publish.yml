@@ -1,0 +1,63 @@
+name: Publish Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Enable Yarn
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Verify release version
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          PACKAGE_VERSION="$(node --print "require('./package.json').version")"
+          EXPECTED_TAG="v${PACKAGE_VERSION}"
+
+          if [ "${RELEASE_TAG}" != "${EXPECTED_TAG}" ]; then
+            echo "::error::Release tag ${RELEASE_TAG} does not match package version ${PACKAGE_VERSION}."
+            exit 1
+          fi
+
+          if [[ "${PACKAGE_VERSION}" == *-* ]]; then
+            NPM_DIST_TAG="next"
+          else
+            NPM_DIST_TAG="latest"
+          fi
+
+          echo "version=${PACKAGE_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "dist-tag=${NPM_DIST_TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish package
+        env:
+          NPM_DIST_TAG: ${{ steps.release.outputs.dist-tag }}
+        run: npm publish --access public --tag "${NPM_DIST_TAG}"

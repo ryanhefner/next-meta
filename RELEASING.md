@@ -3,6 +3,21 @@
 This checklist keeps the GitHub source, CI result, git tag, and npm package on
 the same verified commit.
 
+## One-time npm setup
+
+The publish workflow uses npm trusted publishing, so it does not require a
+long-lived `NPM_TOKEN` GitHub secret. Before the first automated release,
+configure the `next-meta` package's trusted publisher on npm:
+
+- Provider: GitHub Actions
+- Organization or user: `ryanhefner`
+- Repository: `next-meta`
+- Workflow filename: `publish.yml`
+- Allowed action: `npm publish`
+
+The workflow requests GitHub's OIDC token, and npm automatically records
+provenance for the published package.
+
 ## Prepare
 
 1. Confirm the intended version in `package.json` and `CHANGELOG.md`.
@@ -43,35 +58,31 @@ the same verified commit.
 
 ## Tag and publish
 
-1. Confirm npm authentication and the currently published version:
+1. Confirm the currently published npm version:
 
    ```sh
-   npm whoami
    npm view next-meta version
    ```
 
-2. Create and push the annotated version tag:
+2. Create a GitHub release whose tag is exactly `v` followed by the version in
+   `package.json`, such as `v0.4.0`. Use the corresponding `CHANGELOG.md` entry
+   as the release notes.
+3. Publish the GitHub release. The `Publish Package` workflow will verify that
+   the release tag matches `package.json`, run the package's publish lifecycle,
+   and publish it to npm.
 
-   ```sh
-   git tag -a v0.4.0 -m "next-meta v0.4.0"
-   git push origin v0.4.0
-   ```
-
-3. Publish the package:
-
-   ```sh
-   npm publish
-   ```
+Stable versions are published with npm's `latest` tag. SemVer prerelease
+versions are published with the `next` tag.
 
 ## Verify the release
 
-1. Confirm npm's `latest` tag:
+1. Confirm that the `Publish Package` GitHub Actions workflow passed for the
+   release.
+2. Confirm npm's dist-tags:
 
    ```sh
    npm view next-meta version dist-tags
    ```
 
-2. Create the GitHub release from the version tag using the corresponding
-   `CHANGELOG.md` entry as the release notes.
 3. Install the published version in a clean consumer project and smoke-test one
    ESM or CJS import.
