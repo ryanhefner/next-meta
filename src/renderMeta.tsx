@@ -10,10 +10,16 @@ import type {
   ComposeMetaOptions,
 } from './types'
 
-export const getAbsoluteUrl = (
+export function getAbsoluteUrl(url: string, baseUrl?: string): string
+export function getAbsoluteUrl(url: undefined, baseUrl?: string): undefined
+export function getAbsoluteUrl(
   url: string | undefined,
   baseUrl?: string,
-): string | undefined => {
+): string | undefined
+export function getAbsoluteUrl(
+  url: string | undefined,
+  baseUrl?: string,
+): string | undefined {
   if (!url) {
     return url
   }
@@ -1851,15 +1857,13 @@ export const renderMeta = (
     if (payment.successUrl) {
       const absoluteSuccessUrl = getAbsoluteUrl(payment.successUrl, baseUrl)
 
-      if (absoluteSuccessUrl) {
-        tagsToRender.push(
-          <meta
-            key="meta-payment-success-url"
-            property="payment:success_url"
-            content={absoluteSuccessUrl}
-          />,
-        )
-      }
+      tagsToRender.push(
+        <meta
+          key="meta-payment-success-url"
+          property="payment:success_url"
+          content={absoluteSuccessUrl}
+        />,
+      )
     }
   }
 
@@ -1867,28 +1871,24 @@ export const renderMeta = (
   if (videoOther) {
     if (videoOther.url) {
       const absoluteOtherUrl = getAbsoluteUrl(videoOther.url, baseUrl)
-      if (absoluteOtherUrl) {
-        tagsToRender.push(
-          <meta
-            key="meta-og-video-other"
-            property="og:video:other"
-            content={absoluteOtherUrl}
-          />,
-        )
-      }
+      tagsToRender.push(
+        <meta
+          key="meta-og-video-other"
+          property="og:video:other"
+          content={absoluteOtherUrl}
+        />,
+      )
     }
 
     if (videoOther.secureUrl) {
       const absoluteSecureUrl = getAbsoluteUrl(videoOther.secureUrl, baseUrl)
-      if (absoluteSecureUrl) {
-        tagsToRender.push(
-          <meta
-            key="meta-og-video-other-secure-url"
-            property="og:video:other:secure_url"
-            content={absoluteSecureUrl}
-          />,
-        )
-      }
+      tagsToRender.push(
+        <meta
+          key="meta-og-video-other-secure-url"
+          property="og:video:other:secure_url"
+          content={absoluteSecureUrl}
+        />,
+      )
     }
 
     if (videoOther.type) {
@@ -1934,15 +1934,13 @@ export const renderMeta = (
     if (videoOther.stream) {
       if (videoOther.stream.url) {
         const absoluteStreamUrl = getAbsoluteUrl(videoOther.stream.url, baseUrl)
-        if (absoluteStreamUrl) {
-          tagsToRender.push(
-            <meta
-              key="meta-og-video-other-stream"
-              property="og:video:other:stream"
-              content={absoluteStreamUrl}
-            />,
-          )
-        }
+        tagsToRender.push(
+          <meta
+            key="meta-og-video-other-stream"
+            property="og:video:other:stream"
+            content={absoluteStreamUrl}
+          />,
+        )
       }
 
       if (videoOther.stream.contentType) {
@@ -1990,15 +1988,13 @@ export const renderMeta = (
           videoOther.stream.secureUrl,
           baseUrl,
         )
-        if (absoluteStreamSecureUrl) {
-          tagsToRender.push(
-            <meta
-              key="meta-og-video-other-stream-secure-url"
-              property="og:video:other:stream:secure_url"
-              content={absoluteStreamSecureUrl}
-            />,
-          )
-        }
+        tagsToRender.push(
+          <meta
+            key="meta-og-video-other-stream-secure-url"
+            property="og:video:other:stream:secure_url"
+            content={absoluteStreamSecureUrl}
+          />,
+        )
       }
     }
   }
