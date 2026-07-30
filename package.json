@@ -48,6 +48,7 @@
     "src",
     "!src/**/*.test.*",
     "types",
+    "CHANGELOG.md",
     "LICENSE",
     "README.md"
   ],
@@ -81,7 +82,7 @@
     "prepare": "yarn build",
     "prepublishOnly": "yarn verify && yarn build",
     "lint": "eslint .",
-    "prettier": "prettier -c README.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\"",
+    "prettier": "prettier -c \"*.md\" package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
     "test": "snyk test && vitest run",
     "test:ci": "vitest run --coverage",
