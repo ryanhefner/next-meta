@@ -77,7 +77,7 @@
     "clean": "rimraf dist types",
     "prebuild": "yarn clean",
     "build": "rollup -c --bundleConfigAsCjs && yarn types",
-    "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
+    "watch": "rollup -c --bundleConfigAsCjs --watch",
     "prepare": "yarn build",
     "prepublishOnly": "yarn verify && yarn build",
     "lint": "eslint .",
@@ -95,7 +95,6 @@
     "react-dom": ">=16.8"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
