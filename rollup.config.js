@@ -15,6 +15,7 @@ const defaultOutputOptions = {
   format: 'umd',
   exports: 'named',
   sourcemap: true,
+  sourcemapExcludeSources: true,
   globals: {
     'next/head.js': 'Head',
     react: 'React',
