@@ -10,7 +10,7 @@ orbs:
 jobs:
   build-test-package:
     docker:
-      - image: cimg/node:22.15.1
+      - image: cimg/node:24.18.0
     steps:
       - checkout
 

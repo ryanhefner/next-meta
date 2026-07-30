@@ -3,9 +3,10 @@
 This checklist keeps the GitHub source, CI result, git tag, and npm package on
 the same verified commit.
 
-The repository uses the npm version declared by `packageManager` in
-`package.json`. Its project-level npm configuration only resolves package
-versions that have been published for at least 14 days.
+The repository uses the Node.js version declared by `.nvmrc` and `.node-version`
+and enforced by `devEngines`, along with the npm version declared by
+`packageManager` in `package.json`. Its project-level npm configuration only
+resolves package versions that have been published for at least 14 days.
 
 When the age gate blocks a known security fix, add a temporary package-specific
 `min-release-age-exclude` entry to `.npmrc`, pin the reviewed fixed version with
