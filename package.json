@@ -76,25 +76,30 @@
   "types": "types",
   "scripts": {
     "clean": "rimraf dist types",
-    "prebuild": "yarn clean",
-    "build": "rollup -c --bundleConfigAsCjs && yarn types",
+    "prebuild": "npm run clean",
+    "build": "rollup -c --bundleConfigAsCjs && npm run types",
     "watch": "rollup -c --bundleConfigAsCjs --watch",
-    "prepare": "yarn build",
-    "prepublishOnly": "yarn verify && yarn build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run verify && npm run build",
     "lint": "eslint .",
     "prettier": "prettier -c \"*.md\" package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
-    "test": "yarn test:security && vitest run",
+    "test": "npm run test:security && vitest run",
     "test:ci": "vitest run --coverage",
     "test:security": "snyk test --all-projects --dev",
     "test:types": "tsc --project tsconfig.type-tests.json",
     "types": "tsc",
-    "verify": "yarn lint && yarn prettier && yarn test:types && vitest run"
+    "verify": "npm run lint && npm run prettier && npm run test:types && vitest run"
   },
   "peerDependencies": {
     "next": ">=10.0.0",
     "react": ">=16.8",
     "react-dom": ">=16.8"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -127,5 +132,5 @@
     "vite": "^8.1.5",
     "vitest": "^4.1.10"
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+  "packageManager": "npm@11.17.0"
 }
