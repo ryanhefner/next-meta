@@ -30,11 +30,8 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Enable Yarn
-        run: corepack enable
-
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: Verify release version
         id: release

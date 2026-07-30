@@ -17,24 +17,24 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v2-dependencies-{{ checksum "yarn.lock" }}
+            - v3-npm-{{ checksum "package-lock.json" }}
             # fallback to using the latest cache if no exact match is found
-            - v2-dependencies-
+            - v3-npm-
 
-      - run: yarn install --frozen-lockfile
+      - run: npm ci --ignore-scripts
 
       - save_cache:
           paths:
-            - node_modules
-          key: v2-dependencies-{{ checksum "yarn.lock" }}
+            - ~/.npm
+          key: v3-npm-{{ checksum "package-lock.json" }}
 
-      - run: yarn lint
-      - run: yarn prettier
-      - run: yarn test:types
-      - run: yarn build
+      - run: npm run lint
+      - run: npm run prettier
+      - run: npm run test:types
+      - run: npm run build
 
       # run tests!
-      - run: yarn test:ci
+      - run: npm run test:ci
 
       - codecov/upload:
           disable_search: true
