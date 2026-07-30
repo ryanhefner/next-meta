@@ -1,4 +1,6 @@
 export * from './MetaContext'
 export * from './MetaProvider'
+export * from './PageMeta'
 export * from './renderMeta'
 export * from './SiteMeta'
+export * from './types'

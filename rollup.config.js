@@ -1,46 +1,54 @@
 import babel from '@rollup/plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
-import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
-import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import { terser } from 'rollup-plugin-terser'
+import terser from '@rollup/plugin-terser'
 
 import pkg from './package.json'
 
-const input = 'src/index.js'
+const input = 'src/index.ts'
+const peerDependencies = Object.keys(pkg.peerDependencies)
+const external = (id) =>
+  peerDependencies.some(
+    (peerDependency) =>
+      id === peerDependency || id.startsWith(`${peerDependency}/`),
+  )
 
 const defaultOutputOptions = {
   name: pkg.name,
   format: 'umd',
   exports: 'named',
   sourcemap: true,
+  sourcemapExcludeSources: true,
   globals: {
     'next/head.js': 'Head',
     react: 'React',
   },
   banner: `/*! ${pkg.name} v${pkg.version} !*/`,
-  footer: `/* ${pkg.repository.url} | ${pkg.author} */`,
+  footer: `/* ${pkg.homepage.replace('#readme', '')} | ${pkg.author} */`,
 }
 
 const defaultPlugins = [
-  peerDepsExternal(),
-  json(),
   resolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   }),
-  commonjs(),
   babel({
     exclude: 'node_modules/**',
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    babelHelpers: 'runtime',
-    presets: ['@babel/preset-env', '@babel/preset-react'],
+    babelHelpers: 'bundled',
+    babelrc: false,
+    configFile: false,
+    presets: [
+      '@babel/preset-env',
+      '@babel/preset-react',
+      '@babel/preset-typescript',
+    ],
   }),
 ]
 
 export default [
-  // UMD - Minified
+  // Main package - UMD - Minified
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -48,14 +56,12 @@ export default [
         format: 'umd',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-      terser(),
-    ],
+    plugins: [...defaultPlugins, terser()],
   },
-  // UMD
+  // Main package - UMD
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -63,13 +69,12 @@ export default [
         format: 'umd',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
-  // ES
+  // Main package - ES
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -77,13 +82,12 @@ export default [
         format: 'esm',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
-  // CJS
+  // Main package - CJS
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -92,8 +96,6 @@ export default [
         exports: 'auto',
       },
     ],
-    plugins: [
-      ...defaultPlugins,
-    ],
+    plugins: [...defaultPlugins],
   },
 ]

@@ -4,39 +4,49 @@ version: 2.1
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
+  codecov: codecov/codecov@6.0.0
   node: circleci/node@5.2.0
 
 jobs:
   build-test-package:
     docker:
-      - image: cimg/node:22.15.1
+      - image: cimg/node:24.18.0
     steps:
       - checkout
+
+      - run:
+          name: Use repository npm version
+          command: |
+            npm install --global npm@11.17.0 --prefix "${HOME}/.local"
+            echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${BASH_ENV}"
+            "${HOME}/.local/bin/npm" --version
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v3-npm-{{ checksum "package-lock.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v3-npm-
 
-      - run: yarn
+      - run: npm ci --ignore-scripts
 
       - save_cache:
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ~/.npm
+          key: v3-npm-{{ checksum "package-lock.json" }}
 
-      - run: yarn build
+      - run: npm run lint
+      - run: npm run prettier
+      - run: npm run test:types
+      - run: npm run build
 
       # run tests!
-      - run: yarn test:ci
+      - run: npm run test:ci
 
-      # send code coverage info to coveralls
-      - run: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-
-      # send code coverage info to codecov
-      - run: bash <(curl -s https://codecov.io/bash)
+      - codecov/upload:
+          disable_search: true
+          fail_on_error: true
+          files: ./coverage/lcov.info
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

@@ -1,0 +1,26 @@
+name: Dependency Review
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Review dependency changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          fail-on-scopes: development, runtime
+          # 1.1.18 backports the fix, but the advisory currently recognizes
+          # only the patched 5.x release. Remove when its ranges are updated.
+          allow-ghsas: GHSA-mh99-v99m-4gvg

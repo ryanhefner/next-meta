@@ -4,19 +4,7 @@ node_modules
 # Build / Test files
 coverage
 dist
-
-# Lib files
-MetaContext
-MetaProvider
-renderMeta
-SiteMeta
-!src/MetaContext
-!src/MetaProvider
-!src/renderMeta
-!src/SiteMeta
-
-# Include Rollup config
-!rollup.config.js
+types
 
 # Misc
 .DS_Store

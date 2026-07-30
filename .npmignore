@@ -2,6 +2,8 @@
 coverage
 tools
 **/*.test.js
+**/*.test.ts
+**/*.test.tsx
 
 # Docs / Site
 docs

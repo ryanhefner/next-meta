@@ -1,0 +1,277 @@
+import React from 'react'
+
+import { afterEach, describe, expect, test, vi } from 'vitest'
+
+import { cleanup, render } from '@testing-library/react'
+
+import { MetaProvider } from './MetaProvider'
+import { PageMeta } from './PageMeta'
+
+vi.mock('next/head.js', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: { children: React.ReactNode }) => {
+      return <>{children}</>
+    },
+  }
+})
+
+const renderOptions = {
+  baseElement: document.documentElement,
+  container: document.head,
+  wrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}
+
+describe('MetaProvider', () => {
+  afterEach(() => {
+    cleanup()
+    document.head.innerHTML = ''
+  })
+
+  test('renders', () => {
+    render(<MetaProvider />, renderOptions)
+    expect(document.head).toBeTruthy()
+  })
+
+  test('renders - children', () => {
+    render(
+      <MetaProvider>
+        <div>Test</div>
+      </MetaProvider>,
+      { baseElement: document.documentElement, container: document.body },
+    )
+    expect(document.body.querySelector('div')).toBeTruthy()
+  })
+
+  test('renders - skipDefaultsRender', () => {
+    render(<MetaProvider skipDefaultsRender />, renderOptions)
+    expect(document.head.querySelector('title')).toBeFalsy()
+  })
+
+  test('renders - title', () => {
+    render(<MetaProvider title="Test Title" />, renderOptions)
+    expect(document.head.querySelector('title')?.textContent).toBe('Test Title')
+  })
+
+  test('renders - og:title', () => {
+    render(<MetaProvider title="Test Title" />, renderOptions)
+    expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
+  })
+
+  test('renders defaults and PageMeta overrides', () => {
+    render(
+      <MetaProvider title="Test Title" siteName="Test Site Name">
+        <PageMeta title="Test Title Override" />
+      </MetaProvider>,
+      renderOptions,
+    )
+    expect(document.head.querySelector('title')?.textContent).toBe(
+      'Test Title Override | Test Site Name',
+    )
+  })
+
+  test('renders - defaults w/ PageMeta additions', () => {
+    render(
+      <MetaProvider
+        title="Test Title"
+        twitter={{ card: 'summary_large_image', creator: '@ryanhefner' }}
+      >
+        <PageMeta
+          description="Test Description"
+          twitter={{
+            player: {
+              url: 'https://test.com/test.mp3',
+              width: '500',
+              height: '180',
+            },
+          }}
+        />
+      </MetaProvider>,
+      renderOptions,
+    )
+    expect(document.head.querySelector('[property="og:title"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[property="og:description"]'),
+    ).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:card"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:creator"]')).toBeTruthy()
+    expect(document.head.querySelector('[name="twitter:player"]')).toBeTruthy()
+    expect(
+      document.head.querySelector('[name="twitter:player:width"]'),
+    ).toBeTruthy()
+    expect(
+      document.head.querySelector('[name="twitter:player:height"]'),
+    ).toBeTruthy()
+  })
+
+  test('deep-merges nested provider metadata with page overrides', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        twitter={{
+          card: 'summary_large_image',
+          image: {
+            url: '/provider-image.jpg',
+            alt: 'Provider image',
+          },
+          site: '@provider',
+        }}
+      >
+        <PageMeta
+          twitter={{
+            creator: '@page',
+            image: {
+              alt: 'Page image',
+            },
+          }}
+        />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    expect(
+      document.head
+        .querySelector('[name="twitter:card"]')
+        ?.getAttribute('content'),
+    ).toBe('summary_large_image')
+    expect(
+      document.head
+        .querySelector('[name="twitter:site"]')
+        ?.getAttribute('content'),
+    ).toBe('@provider')
+    expect(
+      document.head
+        .querySelector('[name="twitter:creator"]')
+        ?.getAttribute('content'),
+    ).toBe('@page')
+    expect(
+      document.head
+        .querySelector('[name="twitter:image"]')
+        ?.getAttribute('content'),
+    ).toBe('/provider-image.jpg')
+    expect(
+      document.head
+        .querySelector('[name="twitter:image:alt"]')
+        ?.getAttribute('content'),
+    ).toBe('Page image')
+  })
+
+  test('renders - absolute urls w/ baseUrl + url override', () => {
+    render(
+      <MetaProvider baseUrl="https://test.com" url="/test">
+        <PageMeta url="/test-override" />
+      </MetaProvider>,
+      renderOptions,
+    )
+    expect(
+      document.head.querySelectorAll('[property="og:url"]')[1],
+    ).toHaveProperty('content', 'https://test.com/test-override')
+  })
+
+  test('composes provider images into PageMeta when enabled', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        composeMeta={{ images: true }}
+        images={[{ url: '/default.jpg' }]}
+      >
+        <PageMeta images={[{ url: '/page.jpg' }]} />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    const images = document.head.querySelectorAll('[property="og:image"]')
+
+    expect(images).toHaveLength(2)
+    expect(images[0]).toHaveProperty('content', '/page.jpg')
+    expect(images[1]).toHaveProperty('content', '/default.jpg')
+  })
+
+  test('allows PageMeta to opt out of provider image composition', () => {
+    render(
+      <MetaProvider
+        skipDefaultsRender
+        composeMeta={{ images: true }}
+        images={[{ url: '/default.jpg' }]}
+      >
+        <PageMeta
+          composeMeta={{ images: false }}
+          images={[{ url: '/page.jpg' }]}
+        />
+      </MetaProvider>,
+      renderOptions,
+    )
+
+    const images = document.head.querySelectorAll('[property="og:image"]')
+
+    expect(images).toHaveLength(1)
+    expect(images[0]).toHaveProperty('content', '/page.jpg')
+  })
+
+  test('children rendered via PageMeta', () => {
+    render(
+      <MetaProvider twitter={{ card: 'summary_large_image' }}>
+        <PageMeta
+          title={`Episode: 001 - Podcast`}
+          description="Site Meta Description"
+          audio={[
+            { url: `https://test.com?src=allplay.fm`, type: 'audio/mpeg' },
+          ]}
+          twitter={{
+            card: 'player',
+            player: {
+              url: 'https://test.com/share',
+              width: '500',
+              height: '180',
+              stream: {
+                url: `https://test.com/test.mp3?src=twitter`,
+                contentType: 'audio/mpeg',
+              },
+            },
+          }}
+        >
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="All Play w/ Ryan Hefner"
+            href="https://feeds.transistor.fm/allplay"
+          />
+          <link
+            rel="alternate"
+            type="application/json+oembed"
+            title="Episode Title"
+            href="https://share.transistor.fm/oembed?url=https://test.com/episode/001"
+          />
+        </PageMeta>
+      </MetaProvider>,
+      renderOptions,
+    )
+    const rssLink = document.head.querySelector(
+      'link[type="application/rss+xml"]',
+    )
+    const oembedLink = document.head.querySelector(
+      'link[type="application/json+oembed"]',
+    )
+
+    expect(rssLink).toBeTruthy()
+    expect(rssLink).toHaveProperty(
+      'href',
+      'https://feeds.transistor.fm/allplay',
+    )
+    expect(oembedLink).toBeTruthy()
+    expect(oembedLink).toHaveProperty(
+      'href',
+      'https://share.transistor.fm/oembed?url=https://test.com/episode/001',
+    )
+    expect(document.head.querySelector('[property="og:audio"]')).toHaveProperty(
+      'content',
+      'https://test.com?src=allplay.fm',
+    )
+    expect(
+      document.head.querySelector('[property="og:audio:type"]'),
+    ).toHaveProperty('content', 'audio/mpeg')
+    expect(
+      document.head.querySelectorAll('[name="twitter:card"]')[1],
+    ).toHaveProperty('content', 'player')
+  })
+})
