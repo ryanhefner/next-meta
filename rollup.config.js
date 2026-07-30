@@ -1,14 +1,16 @@
-import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import { terser } from 'rollup-plugin-terser'
-
 import babel from '@rollup/plugin-babel'
-import commonjs from '@rollup/plugin-commonjs'
-import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
 
 import pkg from './package.json'
 
 const input = 'src/index.ts'
+const peerDependencies = Object.keys(pkg.peerDependencies)
+const external = (id) =>
+  peerDependencies.some(
+    (peerDependency) =>
+      id === peerDependency || id.startsWith(`${peerDependency}/`),
+  )
 
 const defaultOutputOptions = {
   name: pkg.name,
@@ -25,16 +27,15 @@ const defaultOutputOptions = {
 }
 
 const defaultPlugins = [
-  peerDepsExternal(),
-  json(),
   resolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   }),
-  commonjs(),
   babel({
     exclude: 'node_modules/**',
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    babelHelpers: 'runtime',
+    babelHelpers: 'bundled',
+    babelrc: false,
+    configFile: false,
     presets: [
       '@babel/preset-env',
       '@babel/preset-react',
@@ -47,6 +48,7 @@ export default [
   // Main package - UMD - Minified
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -59,6 +61,7 @@ export default [
   // Main package - UMD
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -71,6 +74,7 @@ export default [
   // Main package - ES
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,
@@ -83,6 +87,7 @@ export default [
   // Main package - CJS
   {
     input,
+    external,
     output: [
       {
         ...defaultOutputOptions,

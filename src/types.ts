@@ -149,11 +149,7 @@ export interface PageMetaProps {
   twitter?: Twitter
   /** @deprecated Use `twitter.card` instead. */
   twitterCard?:
-    | 'app'
-    | 'player'
-    | 'summary'
-    | 'summary_large_image'
-    | TwitterCard
+    'app' | 'player' | 'summary' | 'summary_large_image' | TwitterCard
   /** @deprecated Use `twitter.creator` instead. */
   twitterCreator?: string
   /** @deprecated Use `twitter.site` instead. */
