@@ -28,7 +28,8 @@ gh workflow run publish.yml --ref main
 ```
 
 Manual runs always execute `npm publish --dry-run`; they cannot publish the
-package. This exercises the hosted runner, frozen dependency installation,
+package. This exercises the hosted runner, lockfile-based dependency
+installation,
 publish lifecycle, and package assembly. npm trusted-publisher authentication
 can only be confirmed by an actual publish.
 
@@ -41,13 +42,14 @@ can only be confirmed by an actual publish.
    git status --short --branch
    ```
 
-3. Run the complete local verification:
+3. Run the same script-free installation used by CI, followed by the complete
+   local verification:
 
    ```sh
-   yarn install --frozen-lockfile
-   yarn verify
-   yarn test:security
-   yarn build
+   npm ci --ignore-scripts
+   npm run verify
+   npm run test:security
+   npm run build
    npm publish --dry-run
    ```
 
