@@ -79,14 +79,15 @@
     "build": "rollup -c --bundleConfigAsCjs && yarn types",
     "watch": "babel ./src -d . --ignore __mocks__,__tests__,**/*.test.js --watch",
     "prepare": "yarn build",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn verify && yarn build",
     "lint": "eslint .",
     "prettier": "prettier -c README.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
     "test": "snyk test && vitest run",
     "test:ci": "vitest run --coverage",
     "test:types": "tsc --project tsconfig.type-tests.json",
-    "types": "tsc"
+    "types": "tsc",
+    "verify": "yarn lint && yarn prettier && yarn test:types && vitest run"
   },
   "peerDependencies": {
     "next": ">=10.0.0",
