@@ -7,6 +7,11 @@ The repository uses the npm version declared by `packageManager` in
 `package.json`. Its project-level npm configuration only resolves package
 versions that have been published for at least 14 days.
 
+When the age gate blocks a known security fix, add a temporary package-specific
+`min-release-age-exclude` entry to `.npmrc`, pin the reviewed fixed version with
+an npm override, and document the advisory and removal date. Remove both the
+exception and override once the fixed version reaches 14 days.
+
 ## One-time npm setup
 
 The publish workflow uses npm trusted publishing, so it does not require a
