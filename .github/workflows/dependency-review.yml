@@ -21,3 +21,6 @@ jobs:
         with:
           fail-on-severity: high
           fail-on-scopes: development, runtime
+          # 1.1.18 backports the fix, but the advisory currently recognizes
+          # only the patched 5.x release. Remove when its ranges are updated.
+          allow-ghsas: GHSA-mh99-v99m-4gvg
