@@ -81,11 +81,11 @@
     "prepare": "yarn build",
     "prepublishOnly": "yarn build",
     "lint": "eslint .",
-    "prettier": "prettier -c README.md package.json rollup.config.js eslint.config.js tsconfig.json vite.config.ts \"src/**/*.{ts,tsx}\"",
+    "prettier": "prettier -c README.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
-    "dtslint": "dtslint types",
     "test": "snyk test && vitest run",
     "test:ci": "vitest run --coverage",
+    "test:types": "tsc --project tsconfig.type-tests.json",
     "types": "tsc"
   },
   "peerDependencies": {
@@ -119,7 +119,6 @@
     "babel-plugin-dev-expression": "^0.2.2",
     "babel-polyfill": "^6.26.0",
     "coveralls": "^3.1.1",
-    "dtslint": "^4.0.6",
     "eslint": "^9.2.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.32.0",
