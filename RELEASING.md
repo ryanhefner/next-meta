@@ -3,6 +3,10 @@
 This checklist keeps the GitHub source, CI result, git tag, and npm package on
 the same verified commit.
 
+The repository uses the npm version declared by `packageManager` in
+`package.json`. Its project-level npm configuration only resolves package
+versions that have been published for at least 14 days.
+
 ## One-time npm setup
 
 The publish workflow uses npm trusted publishing, so it does not require a
