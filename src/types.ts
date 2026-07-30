@@ -122,6 +122,7 @@ export interface PageMetaProps {
   canonical?: string
   children?: ReactNode
   composeMeta?: ComposeMetaOptions
+  /** @deprecated Retained for compatibility; this option has no effect. */
   debug?: boolean
   description?: string
   determiner?: string

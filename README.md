@@ -305,6 +305,7 @@ but new code should use the current API:
 | `audioUrl`, `audioType`                        | `audio={[{ url, type }]}`                |
 | `videoUrl`, `videoType`                        | `videos={[{ url, type }]}`               |
 | `twitterCard`, `twitterCreator`, `twitterSite` | `twitter={{ card, creator, site }}`      |
+| `debug`                                        | No replacement; the option was a no-op.  |
 
 When current and deprecated image props are both supplied, `images` takes
 precedence over `image`, and fields in `image` take precedence over their flat
@@ -326,7 +327,7 @@ or platform-specific meta tags, use `additionalMetaTags`.
 | `baseUrl?: string`                 | Base URL for all relative URLs.                          | `"https://example.com"`                         |
 | `canonical?: string`               | Canonical URL for the page.                              | `"/blog/post-1"`                                |
 | `composeMeta?: ComposeMetaOptions` | Compose repeatable provider metadata into page metadata. | `{ images: true }`                              |
-| `debug?: boolean`                  | Enable debug mode (in development).                      | `true`                                          |
+| `debug?: boolean`                  | Deprecated no-op retained for compatibility.             | `true`                                          |
 | `description?: string`             | Page description for meta tags.                          | `"Learn about our company"`                     |
 | `determiner?: string`              | Word before object's title in a sentence.                | `"the"`                                         |
 | `locale?: string`                  | Locale of site/page.                                     | `"en_US"`                                       |

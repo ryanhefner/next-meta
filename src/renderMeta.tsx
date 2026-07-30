@@ -415,7 +415,6 @@ export const renderMeta = (
     // General
     baseUrl,
     canonical,
-    debug,
     description,
     determiner,
     // Image (array)
