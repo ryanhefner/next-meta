@@ -84,8 +84,9 @@
     "lint": "eslint .",
     "prettier": "prettier -c \"*.md\" package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "push-release": "git push origin main && git push --tags",
-    "test": "snyk test && vitest run",
+    "test": "yarn test:security && vitest run",
     "test:ci": "vitest run --coverage",
+    "test:security": "snyk test --all-projects --dev",
     "test:types": "tsc --project tsconfig.type-tests.json",
     "types": "tsc",
     "verify": "yarn lint && yarn prettier && yarn test:types && vitest run"

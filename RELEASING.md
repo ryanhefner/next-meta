@@ -46,6 +46,7 @@ can only be confirmed by an actual publish.
    ```sh
    yarn install --frozen-lockfile
    yarn verify
+   yarn test:security
    yarn build
    npm publish --dry-run
    ```
