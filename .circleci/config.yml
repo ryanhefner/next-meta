@@ -29,6 +29,7 @@ jobs:
             - v3-npm-
 
       - run: npm ci --ignore-scripts
+      - run: npm run security:audit
 
       - save_cache:
           paths:
@@ -39,6 +40,8 @@ jobs:
       - run: npm run prettier
       - run: npm run test:types
       - run: npm run build
+      - run: npm run test:integration
+      - run: npm run release:smoke
 
       # run tests!
       - run: npm run test:ci

@@ -17,7 +17,7 @@ jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - name: Check out release
@@ -59,14 +59,17 @@ jobs:
           echo "version=${PACKAGE_VERSION}" >> "${GITHUB_OUTPUT}"
           echo "dist-tag=${NPM_DIST_TAG}" >> "${GITHUB_OUTPUT}"
 
+      - name: Verify packed release
+        run: npm run release:check
+
       - name: Dry-run package publish
         if: github.event_name == 'workflow_dispatch'
         env:
           NPM_DIST_TAG: ${{ steps.release.outputs.dist-tag }}
-        run: npm publish --access public --tag "${NPM_DIST_TAG}" --dry-run
+        run: npm publish --access public --tag "${NPM_DIST_TAG}" --dry-run --ignore-scripts
 
       - name: Publish package
         if: github.event_name == 'release'
         env:
           NPM_DIST_TAG: ${{ steps.release.outputs.dist-tag }}
-        run: npm publish --access public --tag "${NPM_DIST_TAG}"
+        run: npm publish --access public --tag "${NPM_DIST_TAG}" --ignore-scripts
