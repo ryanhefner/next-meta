@@ -77,6 +77,17 @@ export const siteThemeConfig = defineConfig({
     },
     slotRecipes: {
       ...siteSlotRecipes,
+      chakraDocsCallout: defineSlotRecipe({
+        slots: chakraDocsSlotRecipes.chakraDocsCallout.slots,
+        variants: {
+          status: Object.fromEntries(
+            ['info', 'warning', 'success', 'danger'].map((status) => [
+              status,
+              { root: { bg: 'transparent', color: 'fg', borderColor: 'fg' } },
+            ]),
+          ),
+        },
+      }),
       chakraDocsSearch: defineSlotRecipe({
         slots: chakraDocsSlotRecipes.chakraDocsSearch.slots,
         base: {

@@ -3,6 +3,15 @@
 import type { ReactNode } from 'react'
 
 import {
+  LuChevronDown,
+  LuCopy,
+  LuFileText,
+  LuLink,
+  LuPencil,
+} from 'react-icons/lu'
+
+import { markdownRoute, pageMarkdown } from '@/lib/page-content'
+import {
   DocsArticle,
   DocsBreadcrumbs,
   DocsLayout,
@@ -42,10 +51,40 @@ export function DocsPage({
             <Box ms="auto" flexShrink={0}>
               <DocsPageActions.Root
                 page={page}
+                markdown={pageMarkdown(page)}
+                markdownUrl={markdownRoute(page)}
                 size="sm"
                 variant="split"
                 editUrl={`https://github.com/ryanhefner/next-meta/edit/main/docs/content/${page.slug.length ? page.slug.join('/') : 'index'}.md`}
-              />
+              >
+                <DocsPageActions.CopyPage
+                  icon={<LuCopy aria-hidden="true" />}
+                  copiedLabel="Copied!"
+                />
+                <DocsPageActions.Menu
+                  ariaLabel="More page actions"
+                  indicator={<LuChevronDown aria-hidden="true" />}
+                >
+                  <DocsPageActions.CopyPage
+                    icon={<LuCopy aria-hidden="true" />}
+                    description="Copy page as Markdown"
+                    copiedLabel="Copied!"
+                  />
+                  <DocsPageActions.CopyLink
+                    icon={<LuLink aria-hidden="true" />}
+                    description="Copy a link to this page"
+                    copiedLabel="Copied!"
+                  />
+                  <DocsPageActions.ViewMarkdown
+                    icon={<LuFileText aria-hidden="true" />}
+                    description="Open this page as plain text"
+                  />
+                  <DocsPageActions.Edit
+                    icon={<LuPencil aria-hidden="true" />}
+                    description="Suggest a change on GitHub"
+                  />
+                </DocsPageActions.Menu>
+              </DocsPageActions.Root>
             </Box>
           </Flex>
         }

@@ -1,10 +1,11 @@
 'use client'
 
-import { CodeBlock, DocsArticle, DocsLayout } from '@chakra-docs/chakra'
+import { DocsArticle, DocsLayout } from '@chakra-docs/chakra'
 import type { DocsNavItem } from '@chakra-docs/core'
 import { Heading, Stack, Text } from '@chakra-ui/react'
 
 import { SiteLink } from './SiteLink'
+import { Snippet } from './Snippet'
 
 const example = `import { toMetadata } from 'next-meta/app'
 
@@ -28,7 +29,7 @@ export function Welcome({ nav }: { nav: DocsNavItem[] }) {
             Native App Router metadata. Declarative Pages Router components. One
             shared foundation for pages worth sharing.
           </Text>
-          <CodeBlock code={example} language="tsx" />
+          <Snippet code={example} language="tsx" />
           <Text>
             Set sensible site defaults, compose page-specific metadata, and let
             Next.js handle the rendering.

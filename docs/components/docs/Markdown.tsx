@@ -10,11 +10,13 @@ import {
 
 import ReactMarkdown, { type Components } from 'react-markdown'
 
-import { CodeBlock, DocsHeadingPermalink } from '@chakra-docs/chakra'
-import type { DocsPage } from '@chakra-docs/core'
+import { Callout, DocsHeadingPermalink } from '@chakra-docs/chakra'
+import { getDocsMarkdownHeadings, type DocsPage } from '@chakra-docs/core'
 import { NextLink } from '@chakra-docs/next/link'
 import { Prose, createPostkitMdxComponents } from '@postkit/react'
 import { createPostkitRemarkPlugins } from '@postkit/react/remark'
+
+import { Snippet } from './Snippet'
 
 function PostkitLink(props: ComponentProps<'a'> & { href: string }) {
   return <NextLink {...props} />
@@ -45,7 +47,7 @@ function Pre({ children }: ComponentProps<'pre'>) {
     ? code.props.className
     : undefined
   return (
-    <CodeBlock
+    <Snippet
       code={codeText(children).replace(/\n$/, '')}
       language={className?.match(/language-(\S+)/)?.[1]}
     />
@@ -53,12 +55,21 @@ function Pre({ children }: ComponentProps<'pre'>) {
 }
 
 export function Markdown({ page }: { page: DocsPage }) {
-  let headingIndex = 0
-  const mapped: Components = { ...components, pre: Pre } as Components
+  const headings = new Map(
+    getDocsMarkdownHeadings(page.body ?? '').map((heading) => [
+      heading.start,
+      heading,
+    ]),
+  )
+  const mapped: Components = {
+    ...components,
+    pre: Pre,
+    blockquote: ({ children }) => <Callout>{children}</Callout>,
+  } as Components
   for (const level of ['h2', 'h3', 'h4', 'h5', 'h6'] as const) {
     const Heading = components[level]
-    mapped[level] = ({ children, node: _node, ...props }) => {
-      const heading = page.headings?.[headingIndex++]
+    mapped[level] = ({ children, node, ...props }) => {
+      const heading = headings.get(node?.position?.start.offset ?? -1)
       return createElement(
         Heading,
         { ...props, id: heading?.id, scrollMarginTop: 'docsScrollMargin' },
