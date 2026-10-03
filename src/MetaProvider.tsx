@@ -20,6 +20,13 @@ export const MetaProvider: React.FC<MetaProviderProps> = ({
               videos: [],
               localeAlternates: [],
               additionalMetaTags: [],
+              author: [],
+              seeAlso: [],
+              tag: [],
+              restrictions: [],
+              article: { author: [], tag: [] },
+              book: { author: [], tag: [] },
+              music: { album: [], song: [], musician: [], creator: [] },
             }
           : {})}
       />

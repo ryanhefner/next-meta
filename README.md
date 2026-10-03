@@ -97,8 +97,8 @@ reusable configuration. A page title is not automatically suffixed with
 Arrays replace inherited values by default. `composeMeta` appends defaults after
 page values and deduplicates media by URL. An explicit empty array clears an
 inherited array. Both router adapters use the same core normalization, merge,
-URL resolution and Twitter fallback pipeline. App Router additionally accepts
-string image shorthand and native title objects.
+URL resolution and Twitter fallback pipeline. Both accept image URL shorthand;
+App Router additionally accepts native title objects.
 
 `toMetadata(config, { native: { robots: { index: false }, icons: '/icon.png' } })`
 accepts any native Next.js metadata. Native top-level fields replace mapped
@@ -137,8 +137,8 @@ const resolved = resolveMeta(page)
 ```
 
 `MetaConfig` and `ResolvedMeta` are router-neutral, serializable metadata models.
-The core supports string titles and image descriptors. `AppMetaConfig` adds
-native title objects and shorthand images. `normalizeMeta` handles deprecated
+The core supports string titles and image URL strings or descriptors.
+`AppMetaConfig` adds native title objects. `normalizeMeta` handles deprecated
 aliases; `mergeMeta` safely combines configurations without mutating inputs;
 `resolveMeta(config, { defaults })` additionally resolves URLs and fallbacks.
 Structured validation and expanded parent policies are reserved for later work.
@@ -171,8 +171,10 @@ for stable releases; a release tag must match that version. A manually dispatche
 publish workflow validates and dry-runs only.
 
 Strict NodeNext declaration checks allow only existing Next.js-internal missing
-Satori/Sharp/URLPattern declarations, by exact file and diagnostic.
+Satori/emoji/Sharp/URLPattern declarations, by exact file and diagnostic.
 No consumer or next-meta declaration errors are suppressed.
+The dependency-free shared-core fixture also has a cold compilation budget of
+200,000 type instantiations, checked independently of Next.js and React types.
 
 ## Pages Router
 
@@ -480,9 +482,12 @@ Provides default `PageMetaProps` to descendant `PageMeta` components.
 
 Use `<MetaProvider skipRepeatableDefaultsRender>` when pages render `PageMeta`.
 The provider still emits singleton defaults (title, description, canonical,
-etc.), and pages overwrite those named tags normally. Only the composable
+etc.), and pages overwrite those named tags normally. The composable
 `images`, `audio`, `videos`, `localeAlternates` and `additionalMetaTags` arrays
-are deferred to the page renderer. Their defaults remain in context:
+are deferred to the page renderer, along with repeatable author, tag,
+restriction, see-also and nested article/book/music fields. Their singleton
+siblings (for example article publication dates) continue rendering through
+the provider. All defaults remain in context:
 `<PageMeta />` inherits them, a supplied array replaces them, and an empty array
 clears them. Every page must render `PageMeta` to receive deferred arrays.
 

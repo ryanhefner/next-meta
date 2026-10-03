@@ -9,10 +9,10 @@ export interface PageMetaProps extends MetaConfig {
 }
 
 export interface MetaProviderProps extends PageMetaProps {
-  /** Keep singleton defaults rendered; let PageMeta own the final composable arrays. */
+  /** Keep singleton defaults rendered; let PageMeta own final repeatable fields. */
   skipRepeatableDefaultsRender?: boolean
   /**
-   * Recommended when pages render PageMeta: emit one merged head snapshot.
+   * When true, emit defaults only through each page's merged PageMeta snapshot.
    * Defaults to false for compatibility. Separate default tags cannot be
    * reliably cleared by a descendant's empty or shorter repeatable arrays.
    */
