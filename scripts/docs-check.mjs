@@ -43,6 +43,15 @@ const publicRoutes = [
   '/withoss',
   ...manifest.pages.map((page) => page.route),
 ]
+const credits = await documentFor('/withoss')
+for (const [id, title] of [
+  ['library', 'Library and packages'],
+  ['site', 'Documentation site'],
+]) {
+  const section = credits.querySelector(`section[aria-labelledby="oss-${id}"]`)
+  assert.equal(section?.querySelector('h2')?.textContent, title)
+  assert.ok(section?.querySelectorAll('li').length > 0)
+}
 for (const route of publicRoutes) {
   const document = await documentFor(route)
   assert.equal(
