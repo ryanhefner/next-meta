@@ -8,10 +8,8 @@
 ![Known Vulnerabilities](https://snyk.io/test/github/ryanhefner/next-meta/badge.svg)
 ![Twitter Follow](https://img.shields.io/twitter/follow/ryanhefner)
 
-A composable React component for managing meta tags, Open Graph, and Twitter cards in Next.js applications.
-
-**NOTE:** This package is for use with Next.js' Pages Router. Some App Router
-helpers are in the works and will live here in the future as well.
+A composable metadata layer for Next.js: native metadata objects for App Router,
+Head components for Pages Router, and a dependency-free shared core.
 
 ## Why next-meta?
 
@@ -39,7 +37,123 @@ Via [Yarn](https://yarn.pm/next-meta)
 yarn add next-meta
 ```
 
-## How to use
+## App Router (Next.js 14+)
+
+Use the server-safe `next-meta/app` entry point. It does not import React or
+`next/head` at runtime. Next.js owns rendering and streaming the returned metadata.
+
+```tsx
+// app/layout.tsx
+import { defineMeta, toMetadata, toViewport } from 'next-meta/app'
+
+export const siteMeta = defineMeta({
+  baseUrl: 'https://example.com',
+  title: { default: 'Example', template: '%s | Example' },
+  description: 'Example documentation',
+  images: ['/social/default.png'],
+  twitter: { card: 'summary_large_image', site: '@example' },
+})
+
+export const metadata = toMetadata(siteMeta)
+export const viewport = toViewport({
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+})
+```
+
+```tsx
+// app/docs/[slug]/page.tsx (Next.js 15+ asynchronous params)
+import type { Metadata, ResolvingMetadata } from 'next'
+import { toMetadata } from 'next-meta/app'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { slug } = await params
+  return toMetadata(
+    {
+      title: slug,
+      canonical: `/docs/${slug}`,
+      url: `/docs/${slug}`,
+      images: [{ url: `/social/${slug}.png`, alt: slug }],
+      composeMeta: { images: true },
+    },
+    { parent: await parent },
+  )
+}
+```
+
+`parent` explicitly supplies the parent's base URL, description, site name,
+locale and images. It does not copy the parent's already-resolved title; Next
+applies layout title templates. For other shared values, pass `defaults` with a
+reusable configuration. A page title is not automatically suffixed with
+`siteName` in App Router; declare a native layout title template instead.
+
+Arrays replace inherited values by default. `composeMeta` appends defaults after
+page values and deduplicates media by URL. An explicit empty array clears an
+inherited array. Both router adapters use the same core normalization, merge,
+URL resolution and Twitter fallback pipeline. App Router additionally accepts
+string image shorthand and native title objects.
+
+`toMetadata(config, { native: { robots: { index: false }, icons: '/icon.png' } })`
+accepts any native Next.js metadata. Native top-level fields replace mapped
+fields last, including the entire `openGraph` or `twitter` object when supplied.
+The adapter maps common social metadata, article/book/profile, music and video
+types, Twitter summary/app/player cards, and Pinterest verification. Twitter
+players must provide a player URL, stream URL and positive dimensions. Legacy
+extensions such as `payment.link`, product/location tags, arbitrary
+`additionalMetaTags`, and per-platform Twitter app names/country are Pages-only;
+use native fields where Next supports equivalents. Unsupported Open Graph
+types throw unless `native.openGraph` replaces them.
+
+Native file conventions (`opengraph-image`, `twitter-image`, icons, robots,
+sitemap and manifest) remain Next.js-owned. File-based metadata can override
+configured metadata. next-meta does not generate these files or render JSON-LD;
+use a focused structured-data library alongside it.
+
+## Shared core and focused imports
+
+```ts
+import {
+  defineMeta,
+  normalizeMeta,
+  mergeMeta,
+  resolveMeta,
+} from 'next-meta/core'
+
+const defaults = defineMeta({
+  baseUrl: 'https://example.com',
+  siteName: 'Example',
+})
+const page = mergeMeta(defaults, { title: 'Guide', canonical: '/guide' })
+const resolved = resolveMeta(page)
+// resolved.canonical === 'https://example.com/guide'
+// resolved.documentTitle === 'Guide | Example'
+```
+
+`MetaConfig` and `ResolvedMeta` are router-neutral, serializable metadata models.
+The core supports string titles and image descriptors. `AppMetaConfig` adds
+native title objects and shorthand images. `normalizeMeta` handles deprecated
+aliases; `mergeMeta` safely combines configurations without mutating inputs;
+`resolveMeta(config, { defaults })` additionally resolves URLs and fallbacks.
+Structured validation and expanded parent policies are reserved for later work.
+
+| Import            | Use                                              | Runtime dependencies      |
+| ----------------- | ------------------------------------------------ | ------------------------- |
+| `next-meta/core`  | Shared config, build scripts, resolved snapshots | None                      |
+| `next-meta/app`   | Native Metadata / Viewport on Next.js 14+        | None (Next types only)    |
+| `next-meta/pages` | Pages Router components on Next.js 10+           | React, React DOM, Next.js |
+| `next-meta`       | Existing root API, unchanged                     | React, React DOM, Next.js |
+
+Next.js 14, 15 and 16 are exercised by the packed-consumer integration matrix.
+Keep Next.js updated to a patched release independently of this library.
+
+## Pages Router
 
 ### Basic Setup
 

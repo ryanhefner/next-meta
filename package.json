@@ -69,6 +69,21 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
+    },
+    "./core": {
+      "types": "./types/core/index.d.ts",
+      "import": "./dist/esm/core.mjs",
+      "require": "./dist/cjs/core.cjs"
+    },
+    "./app": {
+      "types": "./types/app.d.ts",
+      "import": "./dist/esm/app.mjs",
+      "require": "./dist/cjs/app.cjs"
+    },
+    "./pages": {
+      "types": "./types/pages.d.ts",
+      "import": "./dist/esm/pages.mjs",
+      "require": "./dist/cjs/pages.cjs"
     }
   },
   "publishConfig": {
@@ -119,7 +134,9 @@
     "@rollup/plugin-terser": "^1.0.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.13.6",
     "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.3.0",
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",
     "@vitest/coverage-v8": "^4.1.11",
@@ -130,6 +147,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^27.4.0",
+    "next": "16.3.6",
     "prettier": "^3.9.5",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
