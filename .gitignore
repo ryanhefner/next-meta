@@ -5,6 +5,11 @@ node_modules
 coverage
 dist
 types
+docs/.next
+docs/out
+docs/next-env.d.ts
+docs/*.tsbuildinfo
+.env*.local
 
 # Misc
 .DS_Store

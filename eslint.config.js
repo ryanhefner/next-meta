@@ -106,7 +106,15 @@ const sharedRules = {
 
 export default [
   {
-    ignores: ['dist/**', 'types/**', '**/node_modules/**', 'coverage/**'],
+    ignores: [
+      'dist/**',
+      'types/**',
+      '**/node_modules/**',
+      'coverage/**',
+      'docs/.next/**',
+      'docs/out/**',
+      'docs/next-env.d.ts',
+    ],
   },
   // TypeScript files
   {

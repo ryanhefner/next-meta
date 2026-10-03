@@ -1,5 +1,8 @@
 {
   "name": "next-meta",
+  "workspaces": [
+    "docs"
+  ],
   "version": "0.4.0",
   "description": "A composable React component for managing meta tags, Open Graph, and X/Twitter cards in Next.js applications.",
   "repository": {
@@ -97,6 +100,9 @@
   "jsnext:main": "dist/esm/index.mjs",
   "types": "types",
   "scripts": {
+    "docs:dev": "npm run build && npm run dev --workspace next-meta-docs",
+    "docs:build": "npm run build && npm run build --workspace next-meta-docs",
+    "docs:typecheck": "npm run typecheck --workspace next-meta-docs",
     "clean": "rimraf dist types",
     "prebuild": "npm run clean",
     "build": "rollup -c --bundleConfigAsCjs && npm run types",
