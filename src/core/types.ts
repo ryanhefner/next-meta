@@ -88,14 +88,18 @@ export type MetaTag = {
   scheme?: string
 }
 
+export type MetaArrayMode = 'prepend' | 'append' | 'replace'
+
+export type MetaArray<T> = T[] | { items: T[]; mode: MetaArrayMode }
+
 export type ComposeMetaOptions =
   | boolean
   | {
-      additionalMetaTags?: boolean
-      audio?: boolean
-      images?: boolean
-      localeAlternates?: boolean
-      videos?: boolean
+      additionalMetaTags?: boolean | MetaArrayMode
+      audio?: boolean | MetaArrayMode
+      images?: boolean | MetaArrayMode
+      localeAlternates?: boolean | MetaArrayMode
+      videos?: boolean | MetaArrayMode
     }
 
 export type MusicReference =
@@ -125,7 +129,7 @@ export interface MetaConfig {
   determiner?: string
 
   // Image (array support)
-  images?: Image[]
+  images?: MetaArray<Image | string>
   /** @deprecated Use `images` instead. */
   image?: Image
   /** @deprecated Use `images` instead. */
@@ -268,4 +272,9 @@ export interface MetaConfig {
       secureUrl?: string
     }
   }
+}
+
+/** Normalized inputs retain array-only images for downstream renderers. */
+export interface NormalizedMeta extends Omit<MetaConfig, 'images'> {
+  images?: Image[]
 }

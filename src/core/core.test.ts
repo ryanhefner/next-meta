@@ -3,6 +3,46 @@ import { describe, expect, test } from 'vitest'
 import { defineMeta, mergeMeta, normalizeMeta, resolveMeta } from './index'
 
 describe('router-neutral core', () => {
+  test.each(['prepend', 'append', 'replace'] as const)(
+    'supports %s image policy and shorthand',
+    (mode) => {
+      const result = resolveMeta(
+        { images: { items: ['/page.png'], mode } },
+        { defaults: { images: ['/default.png'] } },
+      )
+      const expected =
+        mode === 'prepend'
+          ? ['/page.png', '/default.png']
+          : mode === 'append'
+            ? ['/default.png', '/page.png']
+            : ['/page.png']
+      expect(result.images?.map((image) => image.url)).toEqual(expected)
+      expect(
+        resolveMeta(
+          { images: { items: [], mode } },
+          { defaults: { images: ['/default.png'] } },
+        ).images,
+      ).toEqual([])
+    },
+  )
+
+  test('supports named policies across composable arrays without mutation', () => {
+    const defaults = {
+      audio: [{ url: '/default.mp3' }],
+      images: [{ url: '/same.png', alt: 'Default' }],
+    }
+    const result = mergeMeta(defaults, {
+      composeMeta: { audio: 'append' },
+      audio: [{ url: '/page.mp3' }],
+      images: { items: [{ url: '/same.png', alt: 'Page' }], mode: 'prepend' },
+    })
+    expect(result.audio?.map((audio) => audio.url)).toEqual([
+      '/default.mp3',
+      '/page.mp3',
+    ])
+    expect(result.images).toEqual([{ url: '/same.png', alt: 'Page' }])
+    expect(defaults.images[0].alt).toBe('Default')
+  })
   test('defines configurations without changing them', () => {
     const config = { title: 'Example' }
     expect(defineMeta(config)).toBe(config)

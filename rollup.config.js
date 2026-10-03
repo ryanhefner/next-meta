@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+
 import babel from '@rollup/plugin-babel'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
@@ -33,6 +36,19 @@ const defaultOutputOptions = {
 }
 
 const defaultPlugins = [
+  {
+    name: 'typescript-js-specifiers',
+    resolveId(source, importer) {
+      if (!importer || !source.startsWith('.') || !source.endsWith('.js'))
+        return null
+      const filename = path.resolve(path.dirname(importer), source.slice(0, -3))
+      return (
+        ['.ts', '.tsx']
+          .map((extension) => filename + extension)
+          .find(existsSync) ?? null
+      )
+    },
+  },
   resolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   }),

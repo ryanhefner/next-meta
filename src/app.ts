@@ -1,15 +1,23 @@
 import type { Metadata, ResolvedMetadata, Viewport } from 'next'
 
-import { getAbsoluteUrl, mergeMeta, resolveMeta } from './core'
-import type { Image, MetaConfig, MusicReference } from './core'
+import { getAbsoluteUrl, mergeMeta, resolveMeta } from './core/index.js'
+import type { Image, MetaConfig, MusicReference } from './core/index.js'
 
-export { getAbsoluteUrl, mergeMeta, normalizeMeta, resolveMeta } from './core'
-export type { MetaConfig, ResolvedMeta, ResolveMetaOptions } from './core'
+export {
+  getAbsoluteUrl,
+  mergeMeta,
+  normalizeMeta,
+  resolveMeta,
+} from './core/index.js'
+export type {
+  MetaConfig,
+  ResolvedMeta,
+  ResolveMetaOptions,
+} from './core/index.js'
 
 /** Native title templates belong to layouts, not the Pages Router title suffix. */
-export interface AppMetaConfig extends Omit<MetaConfig, 'title' | 'images'> {
+export interface AppMetaConfig extends Omit<MetaConfig, 'title'> {
   title?: Exclude<Metadata['title'], null>
-  images?: Array<string | Image>
 }
 
 export interface MetadataOptions {
@@ -32,9 +40,6 @@ const coreConfig = (config: AppMetaConfig): MetaConfig => ({
         : config.title && 'default' in config.title
           ? config.title.default
           : undefined,
-  images: config.images?.map((image) =>
-    typeof image === 'string' ? { url: image } : image,
-  ),
 })
 
 const array = <T>(value: T | T[] | null | undefined): T[] =>

@@ -153,6 +153,27 @@ Structured validation and expanded parent policies are reserved for later work.
 Next.js 14, 15 and 16 are exercised by the packed-consumer integration matrix.
 Keep Next.js updated to a patched release independently of this library.
 
+## Release checks
+
+Use Node from `.nvmrc` and the npm version in `packageManager`. Run
+`npm run release:check` before publishing: it checks the advisory budget, lint,
+formatting, types, unit coverage, builds, real Next Head behavior and a clean
+packed consumer. The packed consumer verifies server-only imports without React
+or Next installed, ESM/CommonJS exports, root/pages context identity, strict
+declarations and static/dynamic App Router plus Pages Router production HTML.
+Set `NEXT_VERSION=15 npm run release:smoke` to exercise another Next major.
+Failed smoke artifacts are retained in the printed temporary directory for
+diagnosis. CI tests Next 14/15/16; publishing runs the complete default check.
+
+The version bump and changelog remain explicit release preparation steps.
+Publish uses the package version to select `next` for prereleases and `latest`
+for stable releases; a release tag must match that version. A manually dispatched
+publish workflow validates and dry-runs only.
+
+Strict NodeNext declaration checks allow only existing Next.js-internal missing
+Satori/Sharp/URLPattern declarations, by exact file and diagnostic.
+No consumer or next-meta declaration errors are suppressed.
+
 ## Pages Router
 
 ### Basic Setup
@@ -198,7 +219,7 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
         <link rel="icon" type="image/png" href="/favicon.ico" />
       </Head>
       <MetaProvider
-        skipDefaultsRender
+        skipRepeatableDefaultsRender
         baseUrl={BASE_URL}
         canonical={metaUrl}
         description={DEFAULT_DESCRIPTION}
@@ -457,19 +478,24 @@ custom `children` such as alternate feed links.
 
 Provides default `PageMetaProps` to descendant `PageMeta` components.
 
-Use `<MetaProvider skipDefaultsRender>` and render exactly one `<PageMeta />`
-on each page, including pages that use only defaults. This produces one complete
-merged head snapshot. Next's `Head` deduplication cannot reliably remove a
-separately rendered provider image when a page supplies fewer images or an empty
-array. This affects audio, video, alternate locales and additional tags too.
-The legacy `skipDefaultsRender={false}` default remains unchanged for
-compatibility and is suitable for provider-only rendering, not array clearing.
+Use `<MetaProvider skipRepeatableDefaultsRender>` when pages render `PageMeta`.
+The provider still emits singleton defaults (title, description, canonical,
+etc.), and pages overwrite those named tags normally. Only the composable
+`images`, `audio`, `videos`, `localeAlternates` and `additionalMetaTags` arrays
+are deferred to the page renderer. Their defaults remain in context:
+`<PageMeta />` inherits them, a supplied array replaces them, and an empty array
+clears them. Every page must render `PageMeta` to receive deferred arrays.
 
-| Prop                           | Description                                                        |
-| ------------------------------ | ------------------------------------------------------------------ |
-| All `PageMetaProps`            | Default metadata inherited by descendant `PageMeta` components.    |
-| `skipDefaultsRender?: boolean` | Provide defaults without immediately rendering a separate tag set. |
-| `children?: ReactNode`         | Application or page content that receives the defaults.            |
+This prevents stale provider-array entries without skipping singleton defaults.
+`skipDefaultsRender` is still available when you prefer one renderer for all
+tags. Both flags default to false for compatibility with provider-only rendering.
+
+| Prop                                     | Description                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| All `PageMetaProps`                      | Default metadata inherited by descendant `PageMeta` components.    |
+| `skipDefaultsRender?: boolean`           | Provide defaults without immediately rendering a separate tag set. |
+| `skipRepeatableDefaultsRender?: boolean` | Render singleton defaults; defer composable arrays to pages.       |
+| `children?: ReactNode`                   | Application or page content that receives the defaults.            |
 
 ### `SiteMeta` (deprecated)
 
@@ -538,7 +564,7 @@ page-specific tags first and then append matching provider defaults, opt in with
 
 ```tsx
 <MetaProvider
-  skipDefaultsRender
+  skipRepeatableDefaultsRender
   composeMeta={{ images: true }}
   images={[{ url: '/default-og.png', alt: 'Default share image' }]}
 >
@@ -562,9 +588,29 @@ Supported composition fields are `images`, `audio`, `videos`,
 empty array, such as `images={[]}`, clears inherited values even when
 composition is enabled.
 
-When composing page-specific repeatable tags, `skipDefaultsRender` keeps the
-provider defaults from rendering separately before the composed `PageMeta`
-output.
+Use `skipRepeatableDefaultsRender` to prevent provider arrays from rendering
+separately from the final page arrays. Singleton defaults still render.
+
+Explicit `prepend`, `append` and `replace` policies work across the five
+composable arrays:
+
+```tsx
+<PageMeta composeMeta={{ images: 'append', audio: 'replace' }} images={['/page.png']} />
+// Images: provider values first, followed by page values.
+
+<PageMeta images={{ items: ['/page.png'], mode: 'prepend' }} />
+// Images: page values first, followed by provider values.
+
+<PageMeta images={{ items: ['/page.png'], mode: 'replace' }} />
+// Images: exactly the supplied list, even if the defaults had more entries.
+```
+
+Images accept URL strings and descriptors. The inline image policy takes
+precedence over `composeMeta.images`. `true` retains its existing meaning
+(`prepend`); `false` means `replace`. Media deduplication keeps the first value
+for each URL. Empty arrays clear inherited values in every mode. Null/undefined
+tags are not deletion markers; selective provider deferral makes the final
+rendered list authoritative.
 
 ### Media Properties
 

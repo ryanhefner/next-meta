@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getAbsoluteUrl, resolveMeta } from './core'
+import { getAbsoluteUrl, resolveMeta } from './core/index.js'
 import type {
   PageMetaProps,
   Image,
@@ -8,9 +8,9 @@ import type {
   Audio,
   MetaTag,
   MusicReference,
-} from './types'
+} from './types.js'
 
-export { getAbsoluteUrl } from './core'
+export { getAbsoluteUrl } from './core/index.js'
 
 const renderAdditionalMetaTag = (
   metaTag: MetaTag,

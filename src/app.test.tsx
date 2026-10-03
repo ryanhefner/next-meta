@@ -7,6 +7,14 @@ import { resolveMeta } from './core'
 import { renderMeta } from './renderMeta'
 
 describe('App Router adapter', () => {
+  test('uses the same explicit array policies as Pages Router', () => {
+    expect(
+      toMetadata(
+        { images: { items: ['/page.png'], mode: 'append' } },
+        { defaults: { images: ['/default.png'] } },
+      ).openGraph?.images,
+    ).toMatchObject([{ url: '/default.png' }, { url: '/page.png' }])
+  })
   test('preserves native layout title semantics and resolves shorthand images', () => {
     const metadata = toMetadata(
       defineMeta({

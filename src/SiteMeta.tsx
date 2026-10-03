@@ -1,4 +1,4 @@
-import { PageMeta } from './PageMeta'
+import { PageMeta } from './PageMeta.js'
 
 /**
  * @deprecated Use `PageMeta` instead.

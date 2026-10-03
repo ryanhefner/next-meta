@@ -1,6 +1,12 @@
-import type { MetaConfig, MetaTag, ComposeMetaOptions } from './types'
+import type {
+  MetaConfig,
+  NormalizedMeta,
+  MetaTag,
+  MetaArrayMode,
+  ComposeMetaOptions,
+} from './types.js'
 
-export * from './types'
+export * from './types.js'
 
 export function getAbsoluteUrl(url: string, baseUrl?: string): string
 export function getAbsoluteUrl(url: undefined, baseUrl?: string): undefined
@@ -40,7 +46,7 @@ const COMPOSE_META_KEYS = [
 ] as const
 
 type ComposeMetaKey = (typeof COMPOSE_META_KEYS)[number]
-type ResolvedComposeMetaOptions = Record<ComposeMetaKey, boolean>
+type ResolvedComposeMetaOptions = Record<ComposeMetaKey, MetaArrayMode>
 type MergeableObject = Record<string, unknown>
 
 const DANGEROUS_MERGE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
@@ -90,15 +96,15 @@ const mergeObjects = (
 }
 
 const mergeMetaProps = (
-  ...sources: Array<MetaConfig | Pick<MetaConfig, 'siteNameDelimiter'>>
-): MetaConfig =>
+  ...sources: Array<NormalizedMeta | Pick<MetaConfig, 'siteNameDelimiter'>>
+): NormalizedMeta =>
   sources.reduce<MergeableObject>(
     (mergedProps, source) =>
       mergeObjects(mergedProps, source as MergeableObject),
     {},
-  ) as MetaConfig
+  ) as NormalizedMeta
 
-export const normalizeMeta = (source: MetaConfig): MetaConfig => {
+export const normalizeMeta = (source: MetaConfig): NormalizedMeta => {
   const normalized = { ...source }
 
   if (source.images === undefined) {
@@ -150,7 +156,21 @@ export const normalizeMeta = (source: MetaConfig): MetaConfig => {
     }
   }
 
-  return normalized
+  const images = normalized.images
+  if (images != null) {
+    const items = Array.isArray(images) ? images : images.items
+    normalized.images = items.map((image) =>
+      typeof image === 'string' ? { url: image } : image,
+    )
+    if (!Array.isArray(images)) {
+      normalized.composeMeta = {
+        ...normalizeComposeMeta(source.composeMeta),
+        images: images.mode,
+      }
+    }
+  }
+
+  return normalized as NormalizedMeta
 }
 
 const normalizeComposeMeta = (
@@ -163,31 +183,47 @@ const normalizeComposeMeta = (
   if (typeof composeMeta === 'boolean') {
     return COMPOSE_META_KEYS.reduce<ResolvedComposeMetaOptions>(
       (options, key) => {
-        options[key] = composeMeta
+        options[key] = composeMeta ? 'prepend' : 'replace'
         return options
       },
       {
-        additionalMetaTags: false,
-        audio: false,
-        images: false,
-        localeAlternates: false,
-        videos: false,
+        additionalMetaTags: 'replace',
+        audio: 'replace',
+        images: 'replace',
+        localeAlternates: 'replace',
+        videos: 'replace',
       },
     )
   }
 
-  return composeMeta
+  return Object.fromEntries(
+    COMPOSE_META_KEYS.flatMap((key) => {
+      const value = composeMeta[key]
+      return value === undefined
+        ? []
+        : [
+            [
+              key,
+              typeof value === 'boolean'
+                ? value
+                  ? 'prepend'
+                  : 'replace'
+                : value,
+            ],
+          ]
+    }),
+  )
 }
 
 const resolveComposeMeta = (
   contextComposeMeta: ComposeMetaOptions | undefined,
   propsComposeMeta: ComposeMetaOptions | undefined,
 ): ResolvedComposeMetaOptions => ({
-  additionalMetaTags: false,
-  audio: false,
-  images: false,
-  localeAlternates: false,
-  videos: false,
+  additionalMetaTags: 'replace',
+  audio: 'replace',
+  images: 'replace',
+  localeAlternates: 'replace',
+  videos: 'replace',
   ...normalizeComposeMeta(contextComposeMeta),
   ...normalizeComposeMeta(propsComposeMeta),
 })
@@ -196,10 +232,10 @@ const composeRepeatableMeta = <T>(
   propsValue: T[] | undefined,
   contextValue: T[] | undefined,
   mergedValue: T[] | undefined,
-  shouldCompose: boolean,
+  mode: MetaArrayMode,
   getKey?: (value: T) => string | undefined,
 ): T[] | undefined => {
-  if (!shouldCompose || propsValue === undefined) {
+  if (mode === 'replace' || propsValue === undefined) {
     return mergedValue
   }
 
@@ -207,7 +243,10 @@ const composeRepeatableMeta = <T>(
     return []
   }
 
-  const composedValue = [...propsValue, ...(contextValue ?? [])]
+  const composedValue =
+    mode === 'append'
+      ? [...(contextValue ?? []), ...propsValue]
+      : [...propsValue, ...(contextValue ?? [])]
 
   if (!getKey) {
     return composedValue
@@ -260,7 +299,10 @@ const getAdditionalMetaTagKey = (metaTag: MetaTag): string | undefined => {
 /** A typed identity helper; no React or Next.js runtime is required. */
 export const defineMeta = <T extends MetaConfig>(config: T): T => config
 
-const mergePair = (defaults: MetaConfig, config: MetaConfig): MetaConfig => {
+const mergePair = (
+  defaults: MetaConfig,
+  config: MetaConfig,
+): NormalizedMeta => {
   const context = normalizeMeta(defaults)
   const props = normalizeMeta(config)
   const merged = mergeMetaProps(DEFAULTS, context, props)
@@ -305,14 +347,14 @@ const mergePair = (defaults: MetaConfig, config: MetaConfig): MetaConfig => {
 }
 
 /** Later configurations replace arrays unless composeMeta explicitly enables composition. */
-export const mergeMeta = (...configs: MetaConfig[]): MetaConfig =>
-  configs.reduce(mergePair, {})
+export const mergeMeta = (...configs: MetaConfig[]): NormalizedMeta =>
+  configs.reduce<NormalizedMeta>(mergePair, {})
 
 export interface ResolveMetaOptions {
   defaults?: MetaConfig
 }
 
-export interface ResolvedMeta extends MetaConfig {
+export interface ResolvedMeta extends NormalizedMeta {
   /** The Pages Router document title, including the optional site suffix. */
   documentTitle?: string
 }

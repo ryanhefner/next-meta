@@ -4,10 +4,12 @@ import { createRequire } from 'node:module'
 // Use the actual built package and Next Head, never the unit-test fragment mock.
 const require = createRequire(import.meta.url)
 const React = require('react')
-const { renderToString } = require('react-dom/server')
+
 const {
   HeadManagerContext,
 } = require('next/dist/shared/lib/head-manager-context.shared-runtime.js')
+const { renderToString } = require('react-dom/server')
+
 const root = require('../dist/cjs/index.cjs')
 const pages = require('../dist/cjs/pages.cjs')
 
@@ -17,7 +19,11 @@ assert.equal(
   'root/pages must share context',
 )
 
-function headFor(props, skipDefaultsRender = true) {
+function headFor(
+  props,
+  skipDefaultsRender = false,
+  skipRepeatableDefaultsRender = true,
+) {
   let head = []
   const manager = {
     mountedInstances: new Set(),
@@ -33,7 +39,9 @@ function headFor(props, skipDefaultsRender = true) {
         root.MetaProvider,
         {
           skipDefaultsRender,
+          skipRepeatableDefaultsRender,
           title: 'Default',
+          description: 'Default description',
           baseUrl: 'https://example.com',
           images: [{ url: '/one.png' }, { url: '/two.png' }],
           audio: [{ url: '/one.mp3' }, { url: '/two.mp3' }],
@@ -55,6 +63,34 @@ const values = (head, property) =>
   head
     .filter((tag) => tag.props.property === property)
     .map((tag) => tag.props.content)
+assert.equal(
+  headFor({}).find((tag) => tag.type === 'title')?.props.children,
+  'Default',
+)
+assert.equal(
+  headFor({ description: 'Page description' }).find(
+    (tag) => tag.props.name === 'description',
+  )?.props.content,
+  'Page description',
+)
+assert.deepEqual(
+  values(
+    headFor({ images: { items: ['/page.png'], mode: 'append' } }),
+    'og:image',
+  ),
+  [
+    'https://example.com/one.png',
+    'https://example.com/two.png',
+    'https://example.com/page.png',
+  ],
+)
+assert.deepEqual(
+  values(
+    headFor({ images: { items: ['/page.png'], mode: 'replace' } }),
+    'og:image',
+  ),
+  ['https://example.com/page.png'],
+)
 const empty = headFor({
   images: [],
   audio: [],
@@ -93,7 +129,7 @@ assert.deepEqual(values(headFor({}), 'og:image'), [
   'https://example.com/two.png',
 ])
 // Capture the compatibility limitation explicitly rather than hiding it in mocks.
-assert.deepEqual(values(headFor({ images: [] }, false), 'og:image'), [
+assert.deepEqual(values(headFor({ images: [] }, false, false), 'og:image'), [
   'https://example.com/one.png',
   'https://example.com/two.png',
 ])

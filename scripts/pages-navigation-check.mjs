@@ -15,12 +15,15 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const require = createRequire(import.meta.url)
 const React = require('react')
-const { createRoot } = require('react-dom/client')
+
 const {
   HeadManagerContext,
 } = require('next/dist/shared/lib/head-manager-context.shared-runtime.js')
+const { createRoot } = require('react-dom/client')
+
 const { MetaProvider } = require('../dist/cjs/index.cjs')
 const { PageMeta } = require('../dist/cjs/pages.cjs')
+
 let head = []
 const manager = {
   mountedInstances: new Set(),
@@ -36,7 +39,7 @@ const renderPage = (props) =>
     React.createElement(
       MetaProvider,
       {
-        skipDefaultsRender: true,
+        skipRepeatableDefaultsRender: true,
         images: [{ url: '/one.png' }, { url: '/two.png' }],
       },
       React.createElement(PageMeta, props),
