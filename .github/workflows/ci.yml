@@ -24,6 +24,8 @@ jobs:
       - run: npm run test:ci
       - run: npm run build
       - run: npm run test:integration
+      - run: npm run build --workspace next-meta-docs
+      - run: npm run docs:check
 
   packed-consumer:
     runs-on: ubuntu-latest

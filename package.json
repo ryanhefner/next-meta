@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/ryanhefner/next-meta/issues"
   },
-  "homepage": "https://github.com/ryanhefner/next-meta#readme",
+  "homepage": "https://next-meta.dev",
   "funding": [
     {
       "type": "github",
@@ -101,7 +101,8 @@
   "types": "types",
   "scripts": {
     "docs:dev": "npm run build && npm run dev --workspace next-meta-docs",
-    "docs:build": "npm run build && npm run build --workspace next-meta-docs",
+    "docs:build": "npm run build && npm run build --workspace next-meta-docs && npm run docs:check",
+    "docs:check": "node scripts/docs-check.mjs",
     "docs:typecheck": "npm run typecheck --workspace next-meta-docs",
     "clean": "rimraf dist types",
     "prebuild": "npm run clean",
@@ -110,7 +111,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run release:check",
     "lint": "eslint .",
-    "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\"",
+    "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\" \"docs/{app,components,lib}/**/*.{ts,tsx}\" \"docs/content/*.md\" docs/DEPLOYMENT.md docs/package.json docs/tsconfig.json docs/next.config.mjs docs/vercel.json",
     "push-release": "git push origin main && git push --tags",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",

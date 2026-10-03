@@ -93,6 +93,7 @@ export const siteThemeConfig = defineConfig({
         base: {
           trigger: { minW: { base: 0, md: '13rem' }, flexShrink: 0 },
           root: { borderRadius: 'xl' },
+          shortcut: { display: { base: 'none', md: 'inline-flex' } },
           input: {
             _focusVisible: {
               outline: '1px solid',
@@ -114,10 +115,11 @@ export const siteThemeConfig = defineConfig({
             _dark: { bg: 'gray.900' },
           },
           header: { borderColor: 'gray.800' },
+          title: { color: 'gray.400' },
           language: { color: 'gray.400' },
           copyTrigger: {
             color: 'white',
-            _hover: { bg: 'whiteAlpha.200' },
+            _hover: { bg: 'whiteAlpha.200', color: 'white' },
             _focusVisible: { outlineColor: 'white' },
           },
         },

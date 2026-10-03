@@ -1,5 +1,8 @@
 'use client'
 
+import { useSyncExternalStore } from 'react'
+
+import { useTheme } from 'next-themes'
 import { LuCheck, LuCopy } from 'react-icons/lu'
 
 import {
@@ -10,6 +13,8 @@ import {
   useSlotRecipe,
 } from '@chakra-ui/react'
 
+const subscribe = () => () => {}
+
 // Use the shared Docs recipe and provider adapter, with explicit icon elements.
 export function Snippet({
   code,
@@ -18,11 +23,22 @@ export function Snippet({
   code: string
   language?: string
 }) {
+  const { resolvedTheme } = useTheme()
+  const colorScheme = useSyncExternalStore(
+    subscribe,
+    () => (resolvedTheme === 'dark' ? 'dark' : 'light'),
+    () => 'light',
+  )
   const styles = useSlotRecipe({ key: 'chakraDocsCodeBlock' })({
     variant: 'outline',
   })
   return (
-    <CodeBlock.Root code={code} language={language} css={styles.root}>
+    <CodeBlock.Root
+      code={code}
+      language={language}
+      meta={{ colorScheme }}
+      css={styles.root}
+    >
       <CodeBlock.Header css={styles.header}>
         <CodeBlock.Title css={styles.title}>{language}</CodeBlock.Title>
         <CodeBlock.Control css={styles.control}>

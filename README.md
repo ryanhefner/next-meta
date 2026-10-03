@@ -11,6 +11,10 @@
 A composable metadata layer for Next.js: native metadata objects for App Router,
 Head components for Pages Router, and a dependency-free shared core.
 
+[Documentation](https://next-meta.dev) · [Getting started](https://next-meta.dev/docs/getting-started) · [API reference](https://next-meta.dev/docs/reference)
+
+The documentation site lives in the private `docs` workspace. Run `npm run docs:dev` for local development or `npm run docs:build` to verify the static export. See [deployment guidance](docs/DEPLOYMENT.md) for `next-meta.dev`, Springbar, and social-image capture routes.
+
 ## Why next-meta?
 
 Managing meta tags, Open Graph, and Twitter cards in Next.js applications can be tedious and error-prone. next-meta provides a simple, composable solution that:

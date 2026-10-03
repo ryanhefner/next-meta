@@ -1,0 +1,24 @@
+[workspace]
+name = "next-meta"
+tld = "test"
+root_domain = "next-meta"
+
+[workspace.service_defaults]
+package_manager = "npm"
+mode = "lazy"
+
+[workspace.service_defaults.runtime]
+kind = "node"
+version = "24.18.0"
+manager = "nvm"
+
+[[unit]]
+name = "next-meta-docs"
+working_dir = "."
+command = "npm run docs:dev"
+hostnames = ["next-meta.test"]
+mode = "lazy"
+subtype = "app"
+role = "site"
+source = "byo"
+enabled = true

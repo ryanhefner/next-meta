@@ -76,6 +76,7 @@ export function DocsPage({
                     copiedLabel="Copied!"
                   />
                   <DocsPageActions.ViewMarkdown
+                    slotProps={{ target: '_blank', rel: 'noopener noreferrer' }}
                     icon={<LuFileText aria-hidden="true" />}
                     description="Open this page as plain text"
                   />
