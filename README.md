@@ -198,6 +198,7 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
         <link rel="icon" type="image/png" href="/favicon.ico" />
       </Head>
       <MetaProvider
+        skipDefaultsRender
         baseUrl={BASE_URL}
         canonical={metaUrl}
         description={DEFAULT_DESCRIPTION}
@@ -455,6 +456,14 @@ custom `children` such as alternate feed links.
 ### `MetaProvider`
 
 Provides default `PageMetaProps` to descendant `PageMeta` components.
+
+Use `<MetaProvider skipDefaultsRender>` and render exactly one `<PageMeta />`
+on each page, including pages that use only defaults. This produces one complete
+merged head snapshot. Next's `Head` deduplication cannot reliably remove a
+separately rendered provider image when a page supplies fewer images or an empty
+array. This affects audio, video, alternate locales and additional tags too.
+The legacy `skipDefaultsRender={false}` default remains unchanged for
+compatibility and is suitable for provider-only rendering, not array clearing.
 
 | Prop                           | Description                                                        |
 | ------------------------------ | ------------------------------------------------------------------ |

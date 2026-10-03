@@ -9,6 +9,11 @@ export interface PageMetaProps extends MetaConfig {
 }
 
 export interface MetaProviderProps extends PageMetaProps {
+  /**
+   * Recommended when pages render PageMeta: emit one merged head snapshot.
+   * Defaults to false for compatibility. Separate default tags cannot be
+   * reliably cleared by a descendant's empty or shorter repeatable arrays.
+   */
   skipDefaultsRender?: boolean
 }
 
