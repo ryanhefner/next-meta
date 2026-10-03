@@ -207,7 +207,12 @@ export const siteSlotRecipes = {
         minW: 0,
         flex: { base: '1 1 auto', xl: '1 1 28rem' },
       },
-      projects: { mt: { base: 12, md: 24 }, gap: { base: 16, md: 24 } },
+      projects: {
+        display: 'flex',
+        flexDirection: 'column',
+        mt: { base: 12, md: 24 },
+        gap: { base: 16, md: 24 },
+      },
       sectionDescription: { color: 'fg.muted', mt: 3, mb: 6 },
       sectionTitle: {
         fontSize: 'xl',
@@ -215,7 +220,14 @@ export const siteSlotRecipes = {
         borderBottomWidth: '2px',
         borderColor: 'fg',
       },
-      list: { gap: 0, listStyle: 'none', p: 0, m: 0 },
+      list: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
+        listStyle: 'none',
+        p: 0,
+        m: 0,
+      },
       row: {
         gridTemplateColumns: {
           base: 'minmax(0, 1fr)',

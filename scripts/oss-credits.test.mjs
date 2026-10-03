@@ -68,4 +68,7 @@ test('OSS credits separate published dependencies from documentation dependencie
   assert.match(component, /as="section"/)
   assert.match(component, /aria-labelledby=\{`oss-\$\{group.id\}`\}/)
   assert.match(component, /css=\{styles.sectionDescription\}/)
+  // Stack's implicit gap prop overrides the recipe's responsive spacing.
+  assert.match(component, /<Box css=\{styles.projects\}>/)
+  assert.match(component, /<Box as="ul" css=\{styles.list\}>/)
 })
