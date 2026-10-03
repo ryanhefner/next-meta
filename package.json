@@ -100,29 +100,30 @@
   "jsnext:main": "dist/esm/index.mjs",
   "types": "types",
   "scripts": {
-    "docs:dev": "npm run build && npm run dev --workspace next-meta-docs",
-    "docs:build": "npm run build && npm run build --workspace next-meta-docs && npm run docs:check",
+    "docs:dev": "pnpm run build && pnpm --filter next-meta-docs dev",
+    "docs:build": "pnpm run build && pnpm --filter next-meta-docs build && pnpm run docs:check",
     "docs:check": "node scripts/docs-check.mjs",
-    "docs:typecheck": "npm run typecheck --workspace next-meta-docs",
+    "docs:typecheck": "pnpm --filter next-meta-docs typecheck",
     "clean": "rimraf dist types",
-    "prebuild": "npm run clean",
-    "build": "rollup -c --bundleConfigAsCjs && npm run types",
+    "prebuild": "pnpm run clean",
+    "build": "rollup -c --bundleConfigAsCjs && pnpm run types",
     "watch": "rollup -c --bundleConfigAsCjs --watch",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run release:check",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run release:check",
     "lint": "eslint .",
     "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\" \"docs/{app,components,lib}/**/*.{ts,tsx}\" \"docs/content/*.md\" docs/DEPLOYMENT.md docs/package.json docs/tsconfig.json docs/next.config.mjs docs/vercel.json",
     "push-release": "git push origin main && git push --tags",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "test:security": "snyk test --all-projects --dev --strict-out-of-sync=false",
-    "security:audit": "npm audit --audit-level=high",
+    "security:audit": "pnpm audit --audit-level=high",
     "test:types": "tsc --project tsconfig.type-tests.json",
     "test:integration": "node scripts/pages-head-check.mjs && node scripts/pages-navigation-check.mjs",
     "release:smoke": "node scripts/release-smoke.mjs",
-    "release:check": "npm run verify && npm run test:ci && npm run build && npm run test:integration && npm run release:smoke",
+    "release:check": "pnpm run verify && pnpm run test:ci && pnpm run build && pnpm run test:integration && pnpm run release:smoke",
     "types": "tsc",
-    "verify": "npm run security:audit && npm run lint && npm run prettier && npm run test:types && vitest run"
+    "verify": "pnpm run security:audit && pnpm run lint && pnpm run prettier && pnpm run test:tooling && pnpm run test:types && vitest run",
+    "test:tooling": "node --test scripts/tooling.spec.mjs"
   },
   "peerDependencies": {
     "next": ">=10.0.0",
@@ -135,6 +136,7 @@
     }
   },
   "devDependencies": {
+    "@chakra-docs/source-filesystem": "0.2.0",
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
@@ -168,10 +170,5 @@
     "vite": "^8.1.5",
     "vitest": "^4.1.11"
   },
-  "overrides": {
-    "brace-expansion@^1.1.7": "1.1.21",
-    "brace-expansion@^5.0.5": "5.0.12",
-    "serialize-javascript": "7.1.2"
-  },
-  "packageManager": "npm@11.17.0"
+  "packageManager": "pnpm@11.25.0"
 }

@@ -1,14 +1,20 @@
 {
-  "installCommand": "cd .. && npx --yes npm@11.17.0 ci --ignore-scripts",
-  "buildCommand": "cd .. && npm run docs:build",
+  "installCommand": "cd .. && corepack enable && pnpm install --frozen-lockfile --ignore-scripts",
+  "buildCommand": "cd .. && pnpm run docs:build",
   "outputDirectory": "out",
   "cleanUrls": true,
   "headers": [
     {
       "source": "/markdown/:path*",
       "headers": [
-        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
       ]
     }
   ]

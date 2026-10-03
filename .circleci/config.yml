@@ -15,36 +15,33 @@ jobs:
       - checkout
 
       - run:
-          name: Use repository npm version
-          command: |
-            npm install --global npm@11.17.0 --prefix "${HOME}/.local"
-            echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${BASH_ENV}"
-            "${HOME}/.local/bin/npm" --version
+          name: Enable pinned pnpm
+          command: corepack enable
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v3-npm-{{ checksum "package-lock.json" }}
+            - v4-pnpm-{{ checksum "pnpm-lock.yaml" }}
             # fallback to using the latest cache if no exact match is found
-            - v3-npm-
+            - v4-pnpm-
 
-      - run: npm ci --ignore-scripts
-      - run: npm run security:audit
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm run security:audit
 
       - save_cache:
           paths:
-            - ~/.npm
-          key: v3-npm-{{ checksum "package-lock.json" }}
+            - ~/.local/share/pnpm/store
+          key: v4-pnpm-{{ checksum "pnpm-lock.yaml" }}
 
-      - run: npm run lint
-      - run: npm run prettier
-      - run: npm run test:types
-      - run: npm run build
-      - run: npm run test:integration
-      - run: npm run release:smoke
+      - run: pnpm run lint
+      - run: pnpm run prettier
+      - run: pnpm run test:types
+      - run: pnpm run build
+      - run: pnpm run test:integration
+      - run: pnpm run release:smoke
 
       # run tests!
-      - run: npm run test:ci
+      - run: pnpm run test:ci
 
       - codecov/upload:
           disable_search: true

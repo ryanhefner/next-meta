@@ -13,7 +13,7 @@ Head components for Pages Router, and a dependency-free shared core.
 
 [Documentation](https://next-meta.dev) · [Getting started](https://next-meta.dev/docs/getting-started) · [API reference](https://next-meta.dev/docs/reference)
 
-The documentation site lives in the private `docs` workspace. Run `npm run docs:dev` for local development or `npm run docs:build` to verify the static export. See [deployment guidance](docs/DEPLOYMENT.md) for `next-meta.dev`, Springbar, and social-image capture routes.
+The documentation site lives in the private `docs` workspace. Run `pnpm run docs:dev` for local development or `pnpm run docs:build` to verify the static export. See [deployment guidance](docs/DEPLOYMENT.md) for `next-meta.dev`, Springbar, and social-image capture routes.
 
 ## Why next-meta?
 
@@ -159,13 +159,13 @@ Keep Next.js updated to a patched release independently of this library.
 
 ## Release checks
 
-Use Node from `.nvmrc` and the npm version in `packageManager`. Run
-`npm run release:check` before publishing: it checks the advisory budget, lint,
+Use Node from `.nvmrc` and the pnpm version in `packageManager`. Run
+`pnpm run release:check` before publishing: it checks the advisory budget, lint,
 formatting, types, unit coverage, builds, real Next Head behavior and a clean
 packed consumer. The packed consumer verifies server-only imports without React
 or Next installed, ESM/CommonJS exports, root/pages context identity, strict
 declarations and static/dynamic App Router plus Pages Router production HTML.
-Set `NEXT_VERSION=15 npm run release:smoke` to exercise another Next major.
+Set `NEXT_VERSION=15 pnpm run release:smoke` to exercise another Next major.
 Failed smoke artifacts are retained in the printed temporary directory for
 diagnosis. CI tests Next 14/15/16; publishing runs the complete default check.
 

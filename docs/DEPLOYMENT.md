@@ -1,14 +1,15 @@
 # next-meta.dev
 
-This private npm workspace exports a static site to `docs/out`. It uses published Chakra Docs and Postkit packages; it does not require yalc. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
+This private pnpm workspace exports a static site to `docs/out`. It uses published Chakra Docs and Postkit packages; it does not require yalc. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
 
 ## Local development
 
-Use the Node version from `.nvmrc` and npm version from the root `packageManager` field.
+Use the Node version from `.nvmrc` and pnpm version from the root `packageManager` field.
 
 ```sh
-npm ci --ignore-scripts
-npm run docs:dev
+corepack enable
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm run docs:dev
 ```
 
 Springbar imports `springbar.toml` and lazily starts the site at `https://next-meta.test`. The launcher builds the library first and honors Springbar's injected `PORT`. No fixed port is committed.
@@ -16,7 +17,7 @@ Springbar imports `springbar.toml` and lazily starts the site at `https://next-m
 ## Production build
 
 ```sh
-npm run docs:build
+pnpm run docs:build
 ```
 
 The build includes TypeScript validation and `docs:check`: rendered canonical/social metadata, single page headings, heading anchors, internal links, Markdown exports, shared footer assets, and capture-route isolation. CI runs the same checks.

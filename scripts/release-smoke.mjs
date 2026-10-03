@@ -13,9 +13,10 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'))
 const directory = await mkdtemp(path.join(tmpdir(), 'next-meta-consumer-'))
 const consumer = path.join(directory, 'consumer')
-const npmCli = process.env.npm_execpath
+// Deliberately use npm for the clean consumer, not npm_execpath: pnpm sets
+// that variable to its own CLI, which has different pack/install semantics.
 const npm = (args, cwd = consumer) =>
-  run(npmCli ? process.execPath : 'npm', npmCli ? [npmCli, ...args] : args, cwd)
+  run(process.platform === 'win32' ? 'npm.cmd' : 'npm', args, cwd)
 
 async function run(command, args, cwd) {
   try {
