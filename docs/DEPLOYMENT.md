@@ -1,6 +1,6 @@
 # next-meta.dev
 
-This private pnpm workspace exports a static site to `docs/out`. It uses published Chakra Docs and Postkit packages; it does not require yalc. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
+This private pnpm workspace exports a static site to `docs/out`. It uses published Chakra Docs and Postkit packages. React Fathom temporarily uses its fixed local yalc build until the next npm release. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
 
 ## Local development
 
@@ -25,6 +25,19 @@ The build includes TypeScript validation and `docs:check`: rendered canonical/so
 For a Vercel project with Root Directory `docs`, select Node 24, enable access to files outside that directory, and use the committed `vercel.json`. Other static hosts can install/build at the repository root using Node 24 and publish `docs/out`. Use clean URLs (`/docs/app-router` serves `/docs/app-router.html`), preserve the generated Next.js navigation payload files, and serve Markdown files with `text/markdown; charset=utf-8` and `X-Content-Type-Options: nosniff`.
 
 Canonical URLs, sitemap, and social metadata use `https://next-meta.dev`. Configure the production domain in the host before launch. Preview hosts should disable indexing at the hosting layer; do not change the production canonical origin.
+
+## Analytics
+
+Set `NEXT_PUBLIC_FATHOM_SITE_ID` and optionally
+`NEXT_PUBLIC_FATHOM_CUSTOM_DOMAIN` at build time. React Fathom tracks initial
+loads, App Router navigation, and docs interactions. Without an ID no analytics
+script is loaded. Capture pages are untracked, URLs omit query strings and
+fragments, and events never contain search or clipboard text.
+
+Before a clean CI/deployment install, replace `file:.yalc/react-fathom` in
+`docs/package.json` with the new immutable npm release, refresh the lockfile,
+and run the docs checks. Publish Chakra Docs packages first, then React Fathom;
+these site dependencies do not create a circular dependency between libraries.
 
 ## Fonts
 

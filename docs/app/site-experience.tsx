@@ -9,6 +9,7 @@ import { Navbar } from '@/components/docs/Navbar'
 import { SiteFooter } from '@/components/docs/SiteFooter'
 import type { DocsSearchRecord } from '@chakra-docs/core'
 
+import { Analytics } from './analytics'
 import { Provider } from './provider'
 
 export function SiteExperience({
@@ -23,22 +24,25 @@ export function SiteExperience({
   siteUrl: string
 }) {
   const pathname = usePathname()
+  const route = pathname.replace(/\/+$/, '') || '/'
   const capture =
-    pathname === '/og-image' ||
-    pathname.startsWith('/og-image/') ||
-    pathname.endsWith('/social-image')
+    route === '/og-image' ||
+    route.startsWith('/og-image/') ||
+    route.endsWith('/social-image')
   return (
-    <Provider siteUrl={siteUrl}>
-      {capture ? (
-        children
-      ) : (
-        <>
-          <Navbar records={records} />
-          {children}
-          <SiteFooter year={year} />
-          <CommuneFooter />
-        </>
-      )}
-    </Provider>
+    <Analytics enabled={!capture}>
+      <Provider siteUrl={siteUrl}>
+        {capture ? (
+          children
+        ) : (
+          <>
+            <Navbar records={records} />
+            {children}
+            <SiteFooter year={year} />
+            <CommuneFooter />
+          </>
+        )}
+      </Provider>
+    </Analytics>
   )
 }

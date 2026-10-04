@@ -1,5 +1,7 @@
 # Modules
 node_modules
+**/.yalc
+**/yalc.lock
 
 # Build / Test files
 coverage

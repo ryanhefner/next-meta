@@ -73,6 +73,13 @@ export const ossProjectGroups = [
         href: 'https://github.com/pacocoursey/next-themes',
       },
       {
+        name: 'react-fathom',
+        packages: ['react-fathom', 'fathom-client'],
+        description:
+          'Privacy-focused pageviews and documentation interaction events.',
+        href: 'https://react-fathom.dev/',
+      },
+      {
         name: 'React Icons',
         packages: ['react-icons'],
         description: 'Consistent SVG icons across the interface.',

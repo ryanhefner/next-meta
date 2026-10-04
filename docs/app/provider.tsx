@@ -10,6 +10,7 @@ import { createChakraDocsShikiAdapter } from '@chakra-docs/shiki'
 import { ChakraProvider } from '@chakra-ui/react'
 import { PostkitProvider } from '@postkit/react'
 
+import { useDocsAnalytics } from './analytics'
 import { siteSystem } from './system'
 
 const codeBlockAdapter = createChakraDocsShikiAdapter({
@@ -23,6 +24,7 @@ export function Provider({
   children: ReactNode
   siteUrl: string
 }) {
+  const analytics = useDocsAnalytics()
   return (
     <ThemeProvider
       attribute="class"
@@ -39,6 +41,7 @@ export function Provider({
         >
           <DocsProvider
             config={{
+              analytics,
               title: 'next-meta',
               siteUrl,
               linkComponent: NextLink,
