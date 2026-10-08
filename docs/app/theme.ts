@@ -1,4 +1,5 @@
 import { chakraDocsSlotRecipes } from '@chakra-docs/chakra/theme'
+import type { SystemStyleObject } from '@chakra-ui/react'
 import { defineConfig, defineRecipe, defineSlotRecipe } from '@chakra-ui/react'
 import { createPostkitTheme } from '@postkit/react/theme'
 
@@ -17,6 +18,55 @@ export const postkitThemeConfig = createPostkitTheme({
     },
   },
 })
+
+// Apply these through slotProps as well as the recipe: unlayered Dialog and
+// Button styles otherwise take precedence over the recipe cascade layer.
+export const siteMobileNavigationStyles = {
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minH: '56px',
+    gap: 3,
+    px: 4,
+    pt: 'calc(env(safe-area-inset-top, 0px) + 6px)',
+    pb: '6px',
+  },
+  title: { flex: 1, minW: 0, m: 0, lineHeight: '24px' },
+  closeTrigger: {
+    // asChild merges Dialog.CloseTrigger styles after the Button styles.
+    '&&': { position: 'static', inset: 'auto' },
+    flexShrink: 0,
+    p: 0,
+    boxSize: '44px',
+    minW: '44px',
+    minH: '44px',
+    _icon: { boxSize: '24px', display: 'block' },
+  },
+  search: {
+    minW: 0,
+    p: 0,
+    '& button[data-scope="dialog"][data-part="trigger"]': {
+      w: '100%',
+      minW: 0,
+      maxW: '100%',
+      minH: '56px',
+      borderWidth: 0,
+      borderRadius: 0,
+      bg: 'transparent',
+      boxShadow: 'none',
+      px: 4,
+      justifyContent: 'space-between',
+      _hover: { bg: 'bg.subtle' },
+      _focusVisible: {
+        outline: '2px solid',
+        outlineColor: 'fg',
+        outlineOffset: '-2px',
+      },
+    },
+  },
+} satisfies Record<string, SystemStyleObject>
 
 export const siteThemeConfig = defineConfig({
   globalCss: {
@@ -123,33 +173,7 @@ export const siteThemeConfig = defineConfig({
             boxShadow: 'none',
             overflow: 'hidden',
           },
-          header: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            minH: '56px',
-            gap: 3,
-            px: 4,
-            pt: 'calc(env(safe-area-inset-top, 0px) + 6px)',
-            pb: '6px',
-          },
-          title: { flex: 1, minW: 0, m: 0, lineHeight: '24px' },
-          closeTrigger: {
-            // Dialog.CloseTrigger adds its own positioning through asChild.
-            '&&': { position: 'static', inset: 'auto' },
-            flexShrink: 0,
-            p: 0,
-            boxSize: '44px',
-            minW: '44px',
-            minH: '44px',
-            _icon: { boxSize: '24px', display: 'block' },
-          },
-          search: {
-            // Keep the site header compact; only the drawer search fills its row.
-            minW: 0,
-            '& > button': { w: '100%', minW: 0, maxW: '100%' },
-          },
+          ...siteMobileNavigationStyles,
           body: {
             flex: 1,
             minH: 0,

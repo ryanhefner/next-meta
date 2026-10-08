@@ -7,6 +7,7 @@ import { DocsSearch } from '@chakra-docs/chakra'
 import { chakraDocsThemeConfig } from '@chakra-docs/chakra/theme'
 import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react'
 
+import { siteSystem } from '../app/system'
 import { siteThemeConfig } from '../app/theme'
 import { DocsMobileControls } from '../components/docs/DocsMobileControls'
 
@@ -51,6 +52,48 @@ afterEach(async () => {
   await act(() => root.unmount())
   container.remove()
   vi.unstubAllGlobals()
+})
+
+test('drawer layout overrides outrank recipes with production cascade layers enabled', async () => {
+  await act(() =>
+    root.render(
+      <ChakraProvider value={siteSystem}>
+        <DocsMobileControls nav={[]} search={<DocsSearch records={[]} />} />
+      </ChakraProvider>,
+    ),
+  )
+  const trigger = container.querySelector<HTMLButtonElement>(
+    'button[aria-label="Open navigation"]',
+  )
+  if (!trigger) throw new Error('Missing navigation trigger')
+  await act(async () => trigger.click())
+  const dialog = document.querySelector('[role="dialog"][data-state="open"]')
+  const header = dialog?.querySelector('.chakra-dialog__header')
+  const close = dialog?.querySelector('button[aria-label="Close navigation"]')
+  const search = dialog?.querySelector(
+    'button[data-scope="dialog"][data-part="trigger"]',
+  )
+  if (!header || !close || !search) throw new Error('Missing drawer controls')
+  // jsdom does not resolve cascade layers. Check the emitted, unlayered rules
+  // instead of disabling the production layers and hiding precedence bugs.
+  const rules = Array.from(document.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .filter((rule): rule is CSSStyleRule => rule.type === 1)
+  const matchingRules = (element: Element) =>
+    rules.filter((rule) => element.matches(rule.selectorText))
+  expect(
+    matchingRules(header).some((rule) => rule.style.alignItems === 'center'),
+  ).toBe(true)
+  expect(
+    matchingRules(close).some((rule) => rule.style.position === 'static'),
+  ).toBe(true)
+  expect(
+    matchingRules(search).some(
+      (rule) =>
+        rule.style.width === '100%' &&
+        Number.parseFloat(rule.style.borderWidth) === 0,
+    ),
+  ).toBe(true)
 })
 
 test('the mobile docs menu opens edge-to-edge and closes accessibly', async () => {
@@ -153,6 +196,12 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   if (!searchTrigger) throw new Error('Missing drawer search trigger')
   expect(getComputedStyle(searchTrigger).width).toBe('100%')
   expect(getComputedStyle(searchTrigger).maxWidth).toBe('100%')
+  expect(getComputedStyle(searchTrigger).borderWidth).toBe('0px')
+  expect(Number.parseFloat(getComputedStyle(searchTrigger).borderRadius)).toBe(
+    0,
+  )
+  if (!searchTrigger.parentElement) throw new Error('Missing search row')
+  expect(getComputedStyle(searchTrigger.parentElement).padding).toBe('0px')
   expect(Number.parseFloat(getComputedStyle(searchTrigger).minWidth)).toBe(0)
   await act(() => close.click())
   expect(
