@@ -63,6 +63,7 @@ test('mobile recipes fill the viewport and retain tablet and desktop controls', 
     theme,
     /content: \{\s*w: '100dvw',\s*maxW: 'none',\s*h: '100dvh',\s*maxH: '100dvh'/,
   )
-  assert.match(theme, /header: \{ pt: 'env\(safe-area-inset-top\)' \}/)
+  assert.match(theme, /pt: 'calc\(env\(safe-area-inset-top, 0px\) \+ 6px\)'/)
+  assert.match(theme, /pb: '6px'/)
   assert.match(theme, /pb: 'max\(1rem, env\(safe-area-inset-bottom\)\)'/)
 })

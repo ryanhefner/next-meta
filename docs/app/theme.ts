@@ -123,12 +123,32 @@ export const siteThemeConfig = defineConfig({
             boxShadow: 'none',
             overflow: 'hidden',
           },
-          header: { pt: 'env(safe-area-inset-top)' },
+          header: {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            minH: '56px',
+            gap: 3,
+            px: 4,
+            pt: 'calc(env(safe-area-inset-top, 0px) + 6px)',
+            pb: '6px',
+          },
+          title: { flex: 1, minW: 0, m: 0, lineHeight: '24px' },
           closeTrigger: {
+            // Dialog.CloseTrigger adds its own positioning through asChild.
+            '&&': { position: 'static', inset: 'auto' },
+            flexShrink: 0,
+            p: 0,
             boxSize: '44px',
             minW: '44px',
             minH: '44px',
             _icon: { boxSize: '24px', display: 'block' },
+          },
+          search: {
+            // Keep the site header compact; only the drawer search fills its row.
+            minW: 0,
+            '& > button': { w: '100%', minW: 0, maxW: '100%' },
           },
           body: {
             flex: 1,

@@ -3,6 +3,7 @@ import React, { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
+import { DocsSearch } from '@chakra-docs/chakra'
 import { chakraDocsThemeConfig } from '@chakra-docs/chakra/theme'
 import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react'
 
@@ -56,7 +57,11 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   await act(() =>
     root.render(
       <ChakraProvider value={system}>
-        <DocsMobileControls nav={[]} />
+        <DocsSearch
+          records={[]}
+          triggerSlotProps={{ 'data-testid': 'header-search' }}
+        />
+        <DocsMobileControls nav={[]} search={<DocsSearch records={[]} />} />
       </ChakraProvider>,
     ),
   )
@@ -66,6 +71,9 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   expect(trigger).not.toBeNull()
   if (!trigger) throw new Error('Missing accessible navigation trigger')
   const triggerStyle = getComputedStyle(trigger)
+  const headerSearch = document.querySelector('[data-testid="header-search"]')
+  if (!headerSearch) throw new Error('Missing compact header search')
+  expect(getComputedStyle(headerSearch).width).not.toBe('100%')
   expect(triggerStyle.borderWidth).toBe('0px')
   expect(triggerStyle.width).toBe('44px')
   expect(triggerStyle.height).toBe('44px')
@@ -104,6 +112,18 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   expect(positioner.width).toBe('100dvw')
   expect(positioner.height).toBe('100dvh')
   expect(positioner.overflow).toBe('hidden')
+  const header = dialog.querySelector<HTMLElement>('.chakra-dialog__header')
+  if (!header) throw new Error('Missing mobile navigation header')
+  const headerStyle = getComputedStyle(header)
+  expect(headerStyle.display).toBe('flex')
+  expect(headerStyle.flexDirection).toBe('row')
+  expect(headerStyle.alignItems).toBe('center')
+  expect(headerStyle.justifyContent).toBe('space-between')
+  expect(headerStyle.minHeight).toBe('56px')
+  expect(headerStyle.paddingBottom).toBe('6px')
+  const title = header.querySelector<HTMLElement>('.chakra-dialog__title')
+  if (!title) throw new Error('Missing navigation title')
+  expect(getComputedStyle(title).lineHeight).toBe('24px')
   const body = dialog.querySelector<HTMLElement>('.chakra-dialog__body')
   expect(body).not.toBeNull()
   if (!body) throw new Error('Missing navigation scroll area')
@@ -116,6 +136,8 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   )
   expect(close).not.toBeNull()
   if (!close) throw new Error('Missing accessible navigation close button')
+  expect(close.parentElement).toBe(header)
+  expect(getComputedStyle(close).position).toBe('static')
   expect(getComputedStyle(close).width).toBe('44px')
   expect(getComputedStyle(close).height).toBe('44px')
   expect(close.textContent).not.toContain('×')
@@ -125,6 +147,13 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   expect(getComputedStyle(closeIcon).width).toBe('24px')
   expect(getComputedStyle(closeIcon).height).toBe('24px')
   expect(getComputedStyle(closeIcon).display).toBe('block')
+  const searchTrigger = dialog.querySelector<HTMLButtonElement>(
+    'button[data-scope="dialog"][data-part="trigger"]',
+  )
+  if (!searchTrigger) throw new Error('Missing drawer search trigger')
+  expect(getComputedStyle(searchTrigger).width).toBe('100%')
+  expect(getComputedStyle(searchTrigger).maxWidth).toBe('100%')
+  expect(Number.parseFloat(getComputedStyle(searchTrigger).minWidth)).toBe(0)
   await act(() => close.click())
   expect(
     document.querySelector('[role="dialog"][data-state="open"]'),
