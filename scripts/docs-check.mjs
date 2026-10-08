@@ -25,6 +25,20 @@ const manifest = await buildFilesystemManifest({
 })
 const origin = 'https://next-meta.dev'
 
+const llmsIndex = await fs.readFile(path.join(output, 'llms.txt'), 'utf8')
+const llmsFull = await fs.readFile(path.join(output, 'llms-full.txt'), 'utf8')
+assert.ok(llmsIndex.startsWith('# next-meta\n'))
+assert.ok(llmsIndex.includes(`${origin}/llms-full.txt`))
+for (const page of manifest.pages) {
+  if (page.frontmatter.draft || page.frontmatter.hidden) continue
+  const markdownPath = `/markdown/${page.slug.join('/') || 'index'}.md`
+  const url = `${origin}${markdownPath}`
+  assert.ok(llmsIndex.includes(`](${url})`), page.route)
+  assert.ok(llmsFull.includes(`Source: ${url}`), page.route)
+  assert.ok(llmsFull.includes(page.body.trim()), page.route)
+  await fs.access(path.join(output, markdownPath.slice(1)))
+}
+
 function htmlPath(route) {
   return path.join(
     output,

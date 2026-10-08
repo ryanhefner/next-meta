@@ -26,6 +26,14 @@ For a Vercel project with Root Directory `docs`, select Node 24, enable access t
 
 Canonical URLs, sitemap, and social metadata use `https://next-meta.dev`. Configure the production domain in the host before launch. Preview hosts should disable indexing at the hosting layer; do not change the production canonical origin.
 
+## LLM documentation
+
+`/llms.txt` indexes published docs using the real `/markdown/<slug>.md`
+endpoints. `/llms-full.txt` includes their complete Markdown bodies. Both files
+are generated from the docs manifest into `docs/out` at build time and exclude
+draft and hidden content. `docs:check` verifies the exported files and their
+links. Rebuild and deploy the site to update them; no npm publish is needed.
+
 ## Analytics
 
 Set `NEXT_PUBLIC_FATHOM_SITE_ID` and optionally
