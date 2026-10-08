@@ -13,7 +13,7 @@ npm install next-meta
 
 Using another package manager? Run `pnpm add next-meta`, `yarn add next-meta`, or `bun add next-meta` instead. Your application provides React, React DOM, and Next.js.
 
-> This documentation follows the upcoming v0.5.0 release. The focused `/app`, `/core`, and `/pages` entry points and explicit array policies are new in that release. Until it is published, use the root import for the released Pages Router API.
+> The focused `/app`, `/core`, and `/pages` entry points and explicit array policies require v0.5.0 or newer. For v0.4.x, use the root Pages Router API. See the [migration guide](/docs/migration) when upgrading.
 
 ## App Router
 
