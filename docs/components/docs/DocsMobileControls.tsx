@@ -1,6 +1,6 @@
 'use client'
 
-import { LuChevronDown } from 'react-icons/lu'
+import { LuChevronDown, LuMenu, LuX } from 'react-icons/lu'
 
 import {
   DocsMobileNavigation,
@@ -30,7 +30,21 @@ export function DocsMobileControls({
         {...navigationProps}
         page={page}
         slotProps={{ css: styles.navigation }}
-      />
+      >
+        <DocsMobileNavigation.Trigger
+          icon={<LuMenu size={24} aria-hidden="true" focusable="false" />}
+        />
+        <DocsMobileNavigation.Content>
+          <DocsMobileNavigation.Header>
+            <DocsMobileNavigation.Title />
+            <DocsMobileNavigation.CloseTrigger>
+              <LuX size={24} aria-hidden="true" focusable="false" />
+            </DocsMobileNavigation.CloseTrigger>
+          </DocsMobileNavigation.Header>
+          <DocsMobileNavigation.Search />
+          <DocsMobileNavigation.Body />
+        </DocsMobileNavigation.Content>
+      </DocsMobileNavigation.Root>
       <DocsMobileTableOfContents
         headings={page?.headings}
         indicator={<LuChevronDown size={16} aria-hidden="true" />}

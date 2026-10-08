@@ -31,7 +31,10 @@ test('all documentation layouts share compact mobile controls, including home', 
 test('On this page uses the same chevron as the PageActions menu', () => {
   const controls = read('docs/components/docs/DocsMobileControls.tsx')
   const page = read('docs/components/docs/DocsPage.tsx')
-  assert.match(controls, /import \{ LuChevronDown \} from 'react-icons\/lu'/)
+  assert.match(
+    controls,
+    /import \{[^}]*\bLuChevronDown\b[^}]*\} from 'react-icons\/lu'/,
+  )
   assert.match(
     controls,
     /indicator=\{<LuChevronDown size=\{16\} aria-hidden="true" \/>\}/,

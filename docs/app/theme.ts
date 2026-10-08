@@ -92,8 +92,16 @@ export const siteThemeConfig = defineConfig({
             px: 0,
             gap: 0,
             justifyContent: 'center',
+            _icon: { boxSize: '24px' },
           },
-          triggerIcon: { fontSize: '24px', lineHeight: 1 },
+          triggerIcon: {
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxSize: '24px',
+            lineHeight: 1,
+            '& svg': { display: 'block' },
+          },
           triggerLabel: { display: 'none' },
           positioner: {
             position: 'fixed',
@@ -116,6 +124,12 @@ export const siteThemeConfig = defineConfig({
             overflow: 'hidden',
           },
           header: { pt: 'env(safe-area-inset-top)' },
+          closeTrigger: {
+            boxSize: '44px',
+            minW: '44px',
+            minH: '44px',
+            _icon: { boxSize: '24px', display: 'block' },
+          },
           body: {
             flex: 1,
             minH: 0,
