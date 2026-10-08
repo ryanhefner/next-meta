@@ -26,8 +26,8 @@ importers:
         specifier: ^7.29.7
         version: 7.29.7(@babel/core@7.29.7(supports-color@7.2.0))(supports-color@7.2.0)
       '@chakra-docs/source-filesystem':
-        specifier: 0.2.0
-        version: 0.2.0(supports-color@7.2.0)
+        specifier: 0.3.0
+        version: 0.3.0(supports-color@7.2.0)
       '@rollup/plugin-babel':
         specifier: ^7.1.0
         version: 7.1.0(@babel/core@7.29.7(supports-color@7.2.0))(rollup@4.63.4)(supports-color@7.2.0)
@@ -116,20 +116,20 @@ importers:
   docs:
     dependencies:
       '@chakra-docs/chakra':
-        specifier: 0.2.0
-        version: 0.2.0(@chakra-ui/react@3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)
+        specifier: 0.3.0
+        version: 0.3.0(@chakra-ui/react@3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)
       '@chakra-docs/core':
-        specifier: 0.2.0
-        version: 0.2.0(supports-color@7.2.0)
+        specifier: 0.3.0
+        version: 0.3.0(supports-color@7.2.0)
       '@chakra-docs/next':
-        specifier: 0.2.0
-        version: 0.2.0(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)
+        specifier: 0.3.0
+        version: 0.3.0(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)
       '@chakra-docs/shiki':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0
       '@chakra-docs/source-filesystem':
-        specifier: 0.2.0
-        version: 0.2.0(supports-color@7.2.0)
+        specifier: 0.3.0
+        version: 0.3.0(supports-color@7.2.0)
       '@chakra-ui/react':
         specifier: ^3.36.0
         version: 3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -756,8 +756,8 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@chakra-docs/chakra@0.2.0':
-    resolution: {integrity: sha512-kx36umXi0AKnNR2Qch5INg3+FMz2PWY9CKhqncL+XpOoke3HGr5l74rpdiTt+cixt+jAY0AtzD6A4hB6XcI25A==}
+  '@chakra-docs/chakra@0.3.0':
+    resolution: {integrity: sha512-U4c+SSN9VhDWHDXws3NkhKcDKzceghpHvc60opi15TGsdDjsvahFM4qyoePsc3Hs9UG8ad41nmTMxn811i3Vug==}
     engines: {node: '>=22.22.0'}
     peerDependencies:
       '@chakra-ui/react': '>=3.36 <4'
@@ -765,28 +765,28 @@ packages:
       react: '>=18 <20'
       react-dom: '>=18 <20'
 
-  '@chakra-docs/core@0.2.0':
-    resolution: {integrity: sha512-36/oLi2z3w0ihCqsovRtSTEgyGoBCAnv9vQsS1q+//0UxXIrLsvxzxceQs6yewze0vVMtD+3zWU4P57eX1QH8w==}
+  '@chakra-docs/core@0.3.0':
+    resolution: {integrity: sha512-Wtyv7Gns3mpQ2ctbA+2UcsOV3Tqp9i9L2WWSQsikbbRmSfZ4XDlqg8Lf6wrTWhFNsJnnSX+S7wGfvHUpet7dFw==}
     engines: {node: '>=22.22.0'}
 
-  '@chakra-docs/next@0.2.0':
-    resolution: {integrity: sha512-PDGuS92ItCHoi85PREOoKC8eDAhyL/f7WsNDvTgXC8QIFdONCAUCKUuksdq/tQG/5patx6awRFYWjCcIGeNu7Q==}
+  '@chakra-docs/next@0.3.0':
+    resolution: {integrity: sha512-CWPgLfw42vSmBoxx7ZTrc9KE7/5wN4W32xsrQuyFyC+3x0roimcVpNbKp5F7W12qwGTKZnF9c4uXSirFFw4RRg==}
     engines: {node: '>=22.22.0'}
     peerDependencies:
-      next: '>=15.5.24 <16 || >=16.3.3 <17'
+      next: '>=15.5.24 <16 || >=16.3.6 <17'
       react: '>=18 <20'
       react-dom: '>=18 <20'
 
-  '@chakra-docs/search@0.2.0':
-    resolution: {integrity: sha512-f5hnIiNOw9xiqZ75ekCWGofT9sDGlIYsXc9Jt8cAlrhmYLh5tLBdntODAYrbtfE7/FHukCvc9iRqFONdRghC+Q==}
+  '@chakra-docs/search@0.3.0':
+    resolution: {integrity: sha512-LCTlBZMhS/gfD3MOeYdfiKSnX1HzE71OEaEAy/UoJxTe6QmTpa/bKoeAlYcAbpeoG4rds5gbd0K5tQk6HnQKsQ==}
     engines: {node: '>=22.22.0'}
 
-  '@chakra-docs/shiki@0.2.0':
-    resolution: {integrity: sha512-LRK6tzUXxfEMFVicuSFD5THG/Mmar3OSitQeM4hyDoJih768L2kHf9wwGmJT0YitSx2hfJLzZtW+25fjffqtRw==}
+  '@chakra-docs/shiki@0.3.0':
+    resolution: {integrity: sha512-+QHHs5bOlYgBGjyI+P18j13+rCQ6YHO5/29kAVyxK5YyD3KSBGb31XiBUGNmystI3Xhj9hLS/tTun3CFC2qPPw==}
     engines: {node: '>=22.22.0'}
 
-  '@chakra-docs/source-filesystem@0.2.0':
-    resolution: {integrity: sha512-RUMnNxJADY/gFZ4xoOA21n818vpxyFAB6Vum/Dtopma8znJAHfh8MjtcKQ06aAFE01xAGY9u8c3JpINSGdHIkw==}
+  '@chakra-docs/source-filesystem@0.3.0':
+    resolution: {integrity: sha512-2/f/LGK+JGsHdR3XzsXzxoswcNDYfmEmDmRqFYFpyf0xo1sbbFCWWeQOpqUPFJjWb719838eEYx8mW781tMI4w==}
     engines: {node: '>=22.22.0'}
 
   '@chakra-ui/react@3.37.0':
@@ -4908,10 +4908,10 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@chakra-docs/chakra@0.2.0(@chakra-ui/react@3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)':
+  '@chakra-docs/chakra@0.3.0(@chakra-ui/react@3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)':
     dependencies:
-      '@chakra-docs/core': 0.2.0(supports-color@7.2.0)
-      '@chakra-docs/search': 0.2.0(supports-color@7.2.0)
+      '@chakra-docs/core': 0.3.0(supports-color@7.2.0)
+      '@chakra-docs/search': 0.3.0(supports-color@7.2.0)
       '@chakra-ui/react': 3.37.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0)
       react: 19.3.0
@@ -4923,7 +4923,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@chakra-docs/core@0.2.0(supports-color@7.2.0)':
+  '@chakra-docs/core@0.3.0(supports-color@7.2.0)':
     dependencies:
       mdast-util-from-markdown: 2.0.3(supports-color@7.2.0)
       mdast-util-gfm: 3.1.0(supports-color@7.2.0)
@@ -4932,10 +4932,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chakra-docs/next@0.2.0(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)':
+  '@chakra-docs/next@0.3.0(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)':
     dependencies:
-      '@chakra-docs/core': 0.2.0(supports-color@7.2.0)
-      '@chakra-docs/search': 0.2.0(supports-color@7.2.0)
+      '@chakra-docs/core': 0.3.0(supports-color@7.2.0)
+      '@chakra-docs/search': 0.3.0(supports-color@7.2.0)
       next: 16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
@@ -4943,22 +4943,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chakra-docs/search@0.2.0(supports-color@7.2.0)':
+  '@chakra-docs/search@0.3.0(supports-color@7.2.0)':
     dependencies:
-      '@chakra-docs/core': 0.2.0(supports-color@7.2.0)
+      '@chakra-docs/core': 0.3.0(supports-color@7.2.0)
       minisearch: 7.2.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@chakra-docs/shiki@0.2.0':
+  '@chakra-docs/shiki@0.3.0':
     dependencies:
       shiki: 4.4.3
       tslib: 2.8.1
 
-  '@chakra-docs/source-filesystem@0.2.0(supports-color@7.2.0)':
+  '@chakra-docs/source-filesystem@0.3.0(supports-color@7.2.0)':
     dependencies:
-      '@chakra-docs/core': 0.2.0(supports-color@7.2.0)
+      '@chakra-docs/core': 0.3.0(supports-color@7.2.0)
       js-yaml: 4.3.2
       tinyglobby: 0.2.17
       tslib: 2.8.1

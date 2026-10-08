@@ -8,6 +8,7 @@ import { CommuneFooter } from '@/components/docs/CommuneFooter'
 import { Navbar } from '@/components/docs/Navbar'
 import { SiteFooter } from '@/components/docs/SiteFooter'
 import type { DocsSearchRecord } from '@chakra-docs/core'
+import { Box } from '@chakra-ui/react'
 
 import { Analytics } from './analytics'
 import { Provider } from './provider'
@@ -36,9 +37,18 @@ export function SiteExperience({
           children
         ) : (
           <>
-            <Navbar records={records} />
-            {children}
-            <SiteFooter year={year} />
+            <Box
+              className="site-wrapper"
+              display="flex"
+              flexDirection="column"
+              minH="100dvh"
+            >
+              <Navbar records={records} />
+              <Box className="site-content" flexGrow="1">
+                {children}
+              </Box>
+              <SiteFooter year={year} />
+            </Box>
             <CommuneFooter />
           </>
         )}

@@ -21,6 +21,8 @@ import {
 import type { DocsNavItem, DocsPage as DocsPageModel } from '@chakra-docs/core'
 import { Box, Flex } from '@chakra-ui/react'
 
+import { DocsMobileControls } from './DocsMobileControls'
+
 export function DocsPage({
   page,
   nav,
@@ -35,9 +37,12 @@ export function DocsPage({
       nav={nav}
       page={page}
       headings={page.headings}
+      mobileNavigation={false}
+      mobileToc={false}
       sidebarCollapsible
       sidebarDefaultExpanded="active"
     >
+      <DocsMobileControls nav={nav} page={page} />
       <DocsArticle
         page={page}
         breadcrumbs={

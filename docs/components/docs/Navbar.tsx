@@ -1,5 +1,7 @@
 'use client'
 
+import { useMemo } from 'react'
+
 import { useRouter } from 'next/navigation'
 import { SiGithub } from 'react-icons/si'
 
@@ -16,22 +18,34 @@ import {
 } from '@chakra-ui/react'
 
 import { SiteLink } from './SiteLink'
+import { getRecommendedSearchResults } from '../../lib/search-recommendations'
 
 export function Navbar({ records }: { records: readonly DocsSearchRecord[] }) {
   const router = useRouter()
+  const recommendedSearchResults = useMemo(
+    () => getRecommendedSearchResults(records),
+    [records],
+  )
   const styles = useSlotRecipe({ key: 'siteNavbar' })()
   return (
     <Box as="header" css={styles.root}>
       <Container css={styles.container}>
         <Flex h="full" align="center" justify="space-between" gap={4}>
-          <SiteLink href="/" css={styles.brand}>
-            next-meta
-          </SiteLink>
+          <Flex css={styles.brandGroup}>
+            <SiteLink href="/" css={styles.brand}>
+              next-meta
+            </SiteLink>
+            <Box as="span" css={styles.version}>
+              v0.5.0
+            </Box>
+          </Flex>
           <Flex align="center" gap={2} minW={0}>
             <DocsSearch
               records={records}
+              defaultResults={recommendedSearchResults}
+              defaultResultsLabel="Recommended"
+              popularLimit={6}
               onNavigate={(href) => router.push(href)}
-              prefetch="intent"
             />
             <Tooltip.Root>
               <Tooltip.Trigger asChild>

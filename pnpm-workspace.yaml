@@ -5,6 +5,13 @@ autoInstallPeers: false
 verifyDepsBeforeRun: false
 minimumReleaseAge: 20160
 minimumReleaseAgeExclude:
+  # Explicitly selected Chakra Docs release; retain the age gate for other packages.
+  - '@chakra-docs/chakra@0.3.0'
+  - '@chakra-docs/core@0.3.0'
+  - '@chakra-docs/next@0.3.0'
+  - '@chakra-docs/search@0.3.0'
+  - '@chakra-docs/shiki@0.3.0'
+  - '@chakra-docs/source-filesystem@0.3.0'
   # Explicit security-patch exceptions retained from the npm configuration.
   - serialize-javascript
   - next

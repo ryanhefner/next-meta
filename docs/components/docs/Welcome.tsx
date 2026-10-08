@@ -4,6 +4,7 @@ import { DocsArticle, DocsLayout } from '@chakra-docs/chakra'
 import type { DocsNavItem } from '@chakra-docs/core'
 import { Heading, Stack, Text } from '@chakra-ui/react'
 
+import { DocsMobileControls } from './DocsMobileControls'
 import { SiteLink } from './SiteLink'
 import { Snippet } from './Snippet'
 
@@ -19,7 +20,14 @@ export const metadata = toMetadata({
 
 export function Welcome({ nav }: { nav: DocsNavItem[] }) {
   return (
-    <DocsLayout nav={nav} sidebarCollapsible sidebarDefaultExpanded="active">
+    <DocsLayout
+      nav={nav}
+      sidebarCollapsible
+      sidebarDefaultExpanded="active"
+      mobileNavigation={false}
+      mobileToc={false}
+    >
+      <DocsMobileControls nav={nav} />
       <DocsArticle>
         <Stack gap={6}>
           <Heading as="h1" size="4xl">

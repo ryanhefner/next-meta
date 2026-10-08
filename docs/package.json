@@ -11,11 +11,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chakra-docs/chakra": "0.2.0",
-    "@chakra-docs/core": "0.2.0",
-    "@chakra-docs/next": "0.2.0",
-    "@chakra-docs/shiki": "0.2.0",
-    "@chakra-docs/source-filesystem": "0.2.0",
+    "@chakra-docs/chakra": "0.3.0",
+    "@chakra-docs/core": "0.3.0",
+    "@chakra-docs/next": "0.3.0",
+    "@chakra-docs/shiki": "0.3.0",
+    "@chakra-docs/source-filesystem": "0.3.0",
     "@chakra-ui/react": "^3.36.0",
     "@emotion/react": "^11.14.0",
     "@postkit/react": "0.2.0",

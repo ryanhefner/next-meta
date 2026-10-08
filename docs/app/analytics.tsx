@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useMemo, type ReactNode } from 'react'
+import { Suspense, useEffect, useMemo, type ReactNode } from 'react'
 
 import { FathomProvider, useFathom } from 'react-fathom'
 import { NextFathomTrackViewApp } from 'react-fathom/next'
@@ -39,11 +39,13 @@ export function Analytics({
 
 export function useDocsAnalytics() {
   const { client, trackEvent } = useFathom()
-  return useMemo(
+  const analytics = useMemo(
     () =>
       createDocsAnalytics((event) => {
         if (client) trackEvent(event)
       }),
     [client, trackEvent],
   )
+  useEffect(() => analytics.cancelPendingSearchTracking, [analytics])
+  return analytics
 }

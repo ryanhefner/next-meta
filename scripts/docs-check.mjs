@@ -87,6 +87,21 @@ for (const route of publicRoutes) {
     `${route}: persistent font kit`,
   )
   assert.ok(document.querySelector('footer'), `${route}: semantic footer`)
+  const wrapper = document.querySelector('.site-wrapper')
+  const content = document.querySelector('.site-content')
+  const footer = document.querySelector('footer')
+  const commune = document.querySelector('[aria-label="By Commune Software"]')
+  assert.ok(wrapper, `${route}: viewport-height site wrapper`)
+  assert.ok(content && wrapper.contains(content), `${route}: growing content`)
+  assert.ok(footer && wrapper.contains(footer), `${route}: footer in wrapper`)
+  assert.ok(
+    commune && !wrapper.contains(commune),
+    `${route}: Commune section outside wrapper`,
+  )
+  let nextSection = wrapper.nextElementSibling
+  while (nextSection?.tagName === 'STYLE')
+    nextSection = nextSection.nextElementSibling
+  assert.equal(nextSection, commune, `${route}: Commune follows wrapper`)
   assert.ok(
     document.querySelector(
       'a[href="https://commune.software"] img[src="/assets/commune-software-wordmark.svg"]',

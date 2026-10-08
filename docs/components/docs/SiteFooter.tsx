@@ -16,11 +16,10 @@ export function SiteFooter({ year }: SiteFooterProps) {
       <Container css={styles.container}>
         <Flex css={styles.content}>
           <Text>
-            © {year > 2021 ? `2021–${year}` : year}{' '}
+            © {year > 2021 ? `2021–${year}` : year} —{' '}
             <SiteLink href="https://www.ryanhefner.com" css={styles.creditLink}>
               Ryan Hefner
             </SiteLink>
-            .
           </Text>
           <Flex css={styles.links}>
             <SiteLink

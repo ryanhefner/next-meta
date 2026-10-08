@@ -38,8 +38,29 @@ export function getAnalyticsUrl(value: string): string | null {
 /** Event names only: no queries, clipboard contents, feedback text, or URLs. */
 export function createDocsAnalytics(
   track: (event: string) => void,
-): DocsAnalyticsCallbacks {
+): DocsAnalyticsCallbacks & { cancelPendingSearchTracking: () => void } {
+  let searchTimer: ReturnType<typeof setTimeout> | undefined
+  const pendingSearchEvents = new Set<string>()
+
+  const cancelPendingSearchTracking = () => {
+    clearTimeout(searchTimer)
+    searchTimer = undefined
+    pendingSearchEvents.clear()
+  }
+  const flushPendingSearchTracking = () => {
+    const events = [...pendingSearchEvents]
+    cancelPendingSearchTracking()
+    for (const event of events) track(event)
+  }
+  // Coalesce query and result updates without delaying the search UI.
+  const scheduleSearchTracking = (event: string) => {
+    clearTimeout(searchTimer)
+    pendingSearchEvents.add(event)
+    searchTimer = setTimeout(flushPendingSearchTracking, 500)
+  }
+
   return {
+    cancelPendingSearchTracking,
     onCodeCopy: () => track('docs-code-copy'),
     onHeadingLinkCopy: () => track('docs-heading-link-copy'),
     onPackageCommandCopy: ({ manager }) => {
@@ -52,13 +73,25 @@ export function createDocsAnalytics(
     onPageCopy: ({ format }) => track(`docs-page-copy-${format}`),
     onPageFeedback: ({ value }) => track(`docs-page-feedback-${value}`),
     onSearch: (query) => {
-      if (query) track('docs-search-query')
+      cancelPendingSearchTracking()
+      if (query.trim()) scheduleSearchTracking('docs-search-query')
     },
-    onSearchClose: ({ reason }) => track(`docs-search-close-${reason}`),
-    onSearchError: () => track('docs-search-error'),
+    onSearchClose: ({ reason }) => {
+      cancelPendingSearchTracking()
+      track(`docs-search-close-${reason}`)
+    },
+    onSearchError: () => {
+      cancelPendingSearchTracking()
+      track('docs-search-error')
+    },
     onSearchOpen: () => track('docs-search-open'),
-    onSearchResults: () => track('docs-search-results'),
-    onSearchResultSelect: (_result, { interaction }) =>
-      track(`docs-search-result-select-${interaction}`),
+    onSearchResults: ({ query }) => {
+      if (!query.trim()) cancelPendingSearchTracking()
+      scheduleSearchTracking('docs-search-results')
+    },
+    onSearchResultSelect: (_result, { interaction }) => {
+      flushPendingSearchTracking()
+      track(`docs-search-result-select-${interaction}`)
+    },
   }
 }
