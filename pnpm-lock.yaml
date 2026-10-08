@@ -155,8 +155,8 @@ importers:
         specifier: ^19.2.7
         version: 19.3.0(react@19.3.0)
       react-fathom:
-        specifier: file:.yalc/react-fathom
-        version: file:docs/.yalc/react-fathom(fathom-client@3.7.2)(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: 0.3.0
+        version: 0.3.0(fathom-client@3.7.2)(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-icons:
         specifier: ^5.7.0
         version: 5.7.0(react@19.3.0)
@@ -3420,8 +3420,8 @@ packages:
     peerDependencies:
       react: ^19.3.0
 
-  react-fathom@file:docs/.yalc/react-fathom:
-    resolution: {directory: docs/.yalc/react-fathom, type: directory}
+  react-fathom@0.3.0:
+    resolution: {integrity: sha512-+J1WJfdtqho6JE5mVklGfeRozyOHAXX7P7siCOV28n886icZb358t4SK073lPSK+bMKFl8z/1Pvd5PpQBYtZUw==}
     engines: {node: '>=20'}
     peerDependencies:
       '@reach/router': '>=1.3.0'
@@ -8348,7 +8348,7 @@ snapshots:
       react: 19.3.0
       scheduler: 0.28.0
 
-  react-fathom@file:docs/.yalc/react-fathom(fathom-client@3.7.2)(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-fathom@0.3.0(fathom-client@3.7.2)(next@16.3.6(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.13.6)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       '@babel/runtime': 7.29.7
       fathom-client: 3.7.2

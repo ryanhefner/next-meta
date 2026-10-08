@@ -1,6 +1,6 @@
 # next-meta.dev
 
-This private pnpm workspace exports a static site to `docs/out`. It uses published Chakra Docs and Postkit packages. React Fathom temporarily uses its fixed local yalc build until the next npm release. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
+This private pnpm workspace exports a static site to `docs/out`. It uses published Chakra Docs, Postkit, and React Fathom packages. The site imports the locally built `next-meta/app` adapter through the Next.js alias and its emitted declarations through TypeScript paths.
 
 ## Local development
 
@@ -34,10 +34,10 @@ loads, App Router navigation, and docs interactions. Without an ID no analytics
 script is loaded. Capture pages are untracked, URLs omit query strings and
 fragments, and events never contain search or clipboard text.
 
-Before a clean CI/deployment install, replace `file:.yalc/react-fathom` in
-`docs/package.json` with the new immutable npm release, refresh the lockfile,
-and run the docs checks. Publish Chakra Docs packages first, then React Fathom;
-these site dependencies do not create a circular dependency between libraries.
+The site pins the published `react-fathom@0.3.0` and Chakra Docs `0.3.0` releases.
+No local yalc copies of these packages are needed for a clean CI or deployment
+install. These site dependencies do not create a circular dependency between
+libraries.
 
 ## Fonts
 

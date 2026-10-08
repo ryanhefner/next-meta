@@ -5,6 +5,7 @@ autoInstallPeers: false
 verifyDepsBeforeRun: false
 minimumReleaseAge: 20160
 minimumReleaseAgeExclude:
+  - react-fathom@0.3.0
   # Explicitly selected Chakra Docs release; retain the age gate for other packages.
   - '@chakra-docs/chakra@0.3.0'
   - '@chakra-docs/core@0.3.0'
