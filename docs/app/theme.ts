@@ -93,6 +93,7 @@ export const siteThemeConfig = defineConfig({
             gap: 0,
             justifyContent: 'center',
           },
+          triggerIcon: { fontSize: '24px', lineHeight: 1 },
           triggerLabel: { display: 'none' },
           positioner: {
             position: 'fixed',

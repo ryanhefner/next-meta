@@ -16,6 +16,8 @@ const system = createSystem(
   siteThemeConfig,
   {
     disableLayers: true,
+    // jsdom cannot resolve the preflight font shorthand's inherited values.
+    preflight: false,
   },
 )
 let root: Root
@@ -71,7 +73,11 @@ test('the mobile docs menu opens edge-to-edge and closes accessibly', async () =
   const label = trigger.querySelector('span:not([aria-hidden])')
   if (!label) throw new Error('Missing navigation label slot')
   expect(getComputedStyle(label).display).toBe('none')
-  expect(trigger.querySelector('[aria-hidden="true"]')?.textContent).toBe('☰')
+  const icon = trigger.querySelector('[aria-hidden="true"]')
+  if (!icon) throw new Error('Missing decorative navigation icon')
+  expect(icon.textContent).toBe('☰')
+  expect(getComputedStyle(icon).fontSize).toBe('24px')
+  expect(getComputedStyle(icon).lineHeight).toBe('1')
   expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
   expect(trigger.getAttribute('aria-expanded')).toBe('false')
   await act(async () => trigger.click())
