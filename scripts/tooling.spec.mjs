@@ -42,3 +42,20 @@ test('packed npm consumers never run pnpm through npm_execpath', () => {
   assert.doesNotMatch(smoke, /process\.env\.npm_execpath/)
   assert.match(smoke, /'npm\.cmd' : 'npm'/)
 })
+
+test('Vercel uses the Next.js integration without a static-output override', () => {
+  const config = JSON.parse(read('docs/vercel.json'))
+  assert.equal(config.framework, 'nextjs')
+  assert.equal(Object.hasOwn(config, 'outputDirectory'), false)
+  assert.equal(config.buildCommand, 'cd .. && pnpm run docs:build')
+  assert.ok(
+    config.headers.some(
+      ({ source, headers }) =>
+        source === '/markdown/:path*' &&
+        headers.some(
+          ({ key, value }) =>
+            key === 'Content-Type' && value === 'text/markdown; charset=utf-8',
+        ),
+    ),
+  )
+})

@@ -22,7 +22,25 @@ pnpm run docs:build
 
 The build includes TypeScript validation and `docs:check`: rendered canonical/social metadata, single page headings, heading anchors, internal links, Markdown exports, shared footer assets, and capture-route isolation. CI runs the same checks.
 
-For a Vercel project with Root Directory `docs`, select Node 24, enable access to files outside that directory, and use the committed `vercel.json`. Other static hosts can install/build at the repository root using Node 24 and publish `docs/out`. Use clean URLs (`/docs/app-router` serves `/docs/app-router.html`), preserve the generated Next.js navigation payload files, and serve Markdown files with `text/markdown; charset=utf-8` and `X-Content-Type-Options: nosniff`.
+For Vercel, configure:
+
+- Root Directory: `docs`.
+- Framework Preset: Next.js (also declared in `vercel.json`).
+- Node.js Version: 24.x.
+- Include source files outside the Root Directory: enabled.
+- Output Directory: leave the override disabled. Do not set it to `out` or
+  `.next`; let the Next.js integration choose its output.
+- `ENABLE_EXPERIMENTAL_COREPACK=1` to use the pinned pnpm version.
+
+The committed `vercel.json` supplies the install/build commands and Markdown
+headers. Vercel needs the Next.js build manifests in `docs/.next` even though
+the site also generates `docs/out` as a static export.
+
+Other static hosts can install/build at the repository root using Node 24 and
+publish `docs/out`. Use clean URLs (`/docs/app-router` serves
+`/docs/app-router.html`), preserve the generated Next.js navigation payload
+files, and serve Markdown files with `text/markdown; charset=utf-8` and
+`X-Content-Type-Options: nosniff`.
 
 Canonical URLs, sitemap, and social metadata use `https://next-meta.dev`. Configure the production domain in the host before launch. Preview hosts should disable indexing at the hosting layer; do not change the production canonical origin.
 

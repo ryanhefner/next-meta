@@ -1,7 +1,7 @@
 {
+  "framework": "nextjs",
   "installCommand": "cd .. && corepack enable && pnpm install --frozen-lockfile --ignore-scripts",
   "buildCommand": "cd .. && pnpm run docs:build",
-  "outputDirectory": "out",
   "cleanUrls": true,
   "headers": [
     {
