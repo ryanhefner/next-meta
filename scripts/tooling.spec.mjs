@@ -76,3 +76,11 @@ test('publishing uses GitHub OIDC and manual dispatch remains dry-run only', () 
   assert.match(publish, /npm publish /)
   assert.doesNotMatch(publish, /--dry-run/)
 })
+
+test('lint ignores local yalc snapshots without ignoring library source', async () => {
+  const { ESLint } = await import('eslint')
+  const eslint = new ESLint()
+  assert.equal(await eslint.isPathIgnored('.yalc/example/index.js'), true)
+  assert.equal(await eslint.isPathIgnored('docs/.yalc/example/index.js'), true)
+  assert.equal(await eslint.isPathIgnored('src/app.ts'), false)
+})

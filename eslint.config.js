@@ -110,6 +110,7 @@ export default [
       'dist/**',
       'types/**',
       '**/node_modules/**',
+      '**/.yalc/**',
       'coverage/**',
       'docs/.next/**',
       'docs/out/**',
