@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: read
+  # npm trusted publisher: ryanhefner/next-meta, publish.yml, no environment.
+  # Configure this relationship on npm; no stored npm token is required.
   id-token: write
 
 concurrency:

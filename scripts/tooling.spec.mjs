@@ -59,3 +59,20 @@ test('Vercel uses the Next.js integration without a static-output override', () 
     ),
   )
 })
+
+test('publishing uses GitHub OIDC and manual dispatch remains dry-run only', () => {
+  const workflow = read('.github/workflows/publish.yml')
+  assert.match(workflow, /id-token: write/)
+  assert.match(workflow, /runs-on: ubuntu-latest/)
+  assert.doesNotMatch(workflow, /^\s*environment:/m)
+  assert.doesNotMatch(workflow, /NODE_AUTH_TOKEN|NPM_TOKEN/)
+  const dryRun = workflow
+    .split('- name: Dry-run package publish')[1]
+    .split('- name: Publish package')[0]
+  assert.match(dryRun, /if: github.event_name == 'workflow_dispatch'/)
+  assert.match(dryRun, /npm publish .*--dry-run/)
+  const publish = workflow.split('- name: Publish package')[1]
+  assert.match(publish, /if: github.event_name == 'release'/)
+  assert.match(publish, /npm publish /)
+  assert.doesNotMatch(publish, /--dry-run/)
+})
