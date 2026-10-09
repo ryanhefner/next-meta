@@ -10,6 +10,12 @@ import { test } from 'node:test'
 const read = (file) =>
   readFileSync(new URL('../' + file, import.meta.url), 'utf8')
 
+test('release version matches the docs header and changelog', () => {
+  const { version } = JSON.parse(read('package.json'))
+  assert.ok(read('docs/components/docs/Navbar.tsx').includes(`v${version}`))
+  assert.ok(read('CHANGELOG.md').includes(`## ${version} - `))
+})
+
 test('development and deployment use pinned Node 24 and pnpm', () => {
   const manifest = JSON.parse(read('package.json'))
   assert.match(read('.nvmrc').trim(), /^24\.\d+\.\d+$/)

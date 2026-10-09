@@ -2,6 +2,37 @@
 
 All notable changes to `next-meta` are documented in this file.
 
+## 0.5.0 - 2026-10-09
+
+### Added
+
+- Added the dependency-free `next-meta/core` entry point for shared metadata
+  normalization, composition, URL resolution, and resolved snapshots.
+- Added the server-safe `next-meta/app` adapter with native Next.js Metadata and
+  Viewport output, explicit parent/default inheritance, and native overrides.
+- Added the focused `next-meta/pages` entry point while preserving the existing
+  root API and shared provider context.
+- Added selective provider defaults and explicit `prepend`, `append`, and
+  `replace` policies for repeatable metadata, with URL-based media deduplication.
+- Added the documentation site at <https://next-meta.dev>, including router
+  guides, API references, search, social images, sitemap, and LLM documentation.
+- Added packed-consumer checks for ESM/CommonJS exports, declarations, App Router
+  output, and Pages Router rendering across Next.js 14, 15, and 16.
+
+### Fixed
+
+- Corrected single-render Pages Router metadata replacement and clearing,
+  including provider defaults, client navigation, and unmount behavior.
+- Deferred repeatable provider fields without dropping singleton defaults.
+
+### Compatibility
+
+- Existing root imports and deprecated aliases remain supported.
+- Array replacement remains the default; explicit empty arrays clear inherited
+  values. Boolean composition options remain compatible with earlier releases.
+- The App Router adapter targets Next.js 14 and newer; Pages Router components
+  continue to support Next.js 10 and newer.
+
 ## 0.4.0 - 2026-07-29
 
 ### Added
