@@ -36,9 +36,14 @@ const framework = diagnostics.filter((diagnostic) => {
     ) &&
       [2304, 2552].includes(diagnostic.code) &&
       /URLPattern(Input|Options)/.test(message)) ||
-    (filename.endsWith('/next/dist/server/image-optimizer.d.ts') &&
+    // Next 16.4 moved this declaration into image-optimizer/transform.d.ts.
+    ([
+      '/next/dist/server/image-optimizer.d.ts',
+      '/next/dist/server/image-optimizer/transform.d.ts',
+    ].some((suffix) => filename.endsWith(suffix)) &&
       diagnostic.code === 2694 &&
-      message.includes('SharpConstructor')) ||
+      message.includes('sharp') &&
+      message.endsWith("has no exported member 'SharpConstructor'.")) ||
     (filename.endsWith('/next/dist/compiled/@vercel/og/types.d.ts') &&
       diagnostic.code === 2307 &&
       message.includes('/satori')) ||
