@@ -14,7 +14,10 @@ export default defineConfig({
     coverage: {
       reporter: ['clover', 'html', 'json', 'lcov'],
     },
-    include: ['./src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: [
+      './src/**/*.{test,spec}.?(c|m)[jt]s?(x)',
+      './docs/lib/mobile-navigation.test.tsx',
+    ],
     environment: 'jsdom',
   },
 })

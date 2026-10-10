@@ -1,6 +1,9 @@
 {
   "name": "next-meta",
-  "version": "0.4.0",
+  "workspaces": [
+    "docs"
+  ],
+  "version": "0.5.0",
   "description": "A composable React component for managing meta tags, Open Graph, and X/Twitter cards in Next.js applications.",
   "repository": {
     "type": "git",
@@ -28,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/ryanhefner/next-meta/issues"
   },
-  "homepage": "https://github.com/ryanhefner/next-meta#readme",
+  "homepage": "https://next-meta.dev",
   "funding": [
     {
       "type": "github",
@@ -69,6 +72,21 @@
       "import": "./dist/esm/index.mjs",
       "require": "./dist/cjs/index.cjs",
       "default": "./dist/esm/index.mjs"
+    },
+    "./core": {
+      "types": "./types/core/index.d.ts",
+      "import": "./dist/esm/core.mjs",
+      "require": "./dist/cjs/core.cjs"
+    },
+    "./app": {
+      "types": "./types/app.d.ts",
+      "import": "./dist/esm/app.mjs",
+      "require": "./dist/cjs/app.cjs"
+    },
+    "./pages": {
+      "types": "./types/pages.d.ts",
+      "import": "./dist/esm/pages.mjs",
+      "require": "./dist/cjs/pages.cjs"
     }
   },
   "publishConfig": {
@@ -82,21 +100,30 @@
   "jsnext:main": "dist/esm/index.mjs",
   "types": "types",
   "scripts": {
+    "docs:dev": "pnpm run build && pnpm --filter next-meta-docs dev",
+    "docs:build": "pnpm run build && pnpm --filter next-meta-docs build && pnpm run docs:check",
+    "docs:check": "node scripts/docs-check.mjs",
+    "docs:typecheck": "pnpm --filter next-meta-docs typecheck",
     "clean": "rimraf dist types",
-    "prebuild": "npm run clean",
-    "build": "rollup -c --bundleConfigAsCjs && npm run types",
+    "prebuild": "pnpm run clean",
+    "build": "rollup -c --bundleConfigAsCjs && pnpm run types",
     "watch": "rollup -c --bundleConfigAsCjs --watch",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run verify && npm run build",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run release:check",
     "lint": "eslint .",
-    "prettier": "prettier -c \"*.md\" package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\" \"docs/{app,components,lib}/**/*.{ts,tsx}\" \"docs/content/*.md\" docs/DEPLOYMENT.md docs/package.json docs/tsconfig.json docs/next.config.mjs docs/vercel.json",
     "push-release": "git push origin main && git push --tags",
-    "test": "npm run test:security && vitest run",
+    "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "test:security": "snyk test --all-projects --dev --strict-out-of-sync=false",
+    "security:audit": "pnpm audit --audit-level=high",
     "test:types": "tsc --project tsconfig.type-tests.json",
+    "test:integration": "node scripts/pages-head-check.mjs && node scripts/pages-navigation-check.mjs",
+    "release:smoke": "node scripts/release-smoke.mjs",
+    "release:check": "pnpm run verify && pnpm run test:ci && pnpm run build && pnpm run test:integration && pnpm run release:smoke",
     "types": "tsc",
-    "verify": "npm run lint && npm run prettier && npm run test:types && vitest run"
+    "verify": "pnpm run security:audit && pnpm run lint && pnpm run prettier && pnpm run test:tooling && pnpm run test:types && vitest run",
+    "test:tooling": "node --test scripts/tooling.spec.mjs"
   },
   "peerDependencies": {
     "next": ">=10.0.0",
@@ -109,6 +136,7 @@
     }
   },
   "devDependencies": {
+    "@chakra-docs/source-filesystem": "0.3.0",
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
@@ -118,10 +146,12 @@
     "@rollup/plugin-terser": "^1.0.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.13.6",
     "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.3.0",
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.32.0",
@@ -129,6 +159,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^27.4.0",
+    "next": "16.3.8",
     "prettier": "^3.9.5",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -137,11 +168,7 @@
     "snyk": "^1.1306.1",
     "typescript": "^5.9.3",
     "vite": "^8.1.5",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
-  "overrides": {
-    "brace-expansion@^1.1.7": "1.1.18",
-    "brace-expansion@^5.0.5": "5.0.8"
-  },
-  "packageManager": "npm@11.17.0"
+  "packageManager": "pnpm@11.25.0"
 }

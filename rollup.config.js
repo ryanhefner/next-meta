@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+
 import babel from '@rollup/plugin-babel'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
@@ -5,6 +8,12 @@ import terser from '@rollup/plugin-terser'
 import pkg from './package.json'
 
 const input = 'src/index.ts'
+const inputs = {
+  index: input,
+  core: 'src/core/index.ts',
+  app: 'src/app.ts',
+  pages: 'src/pages.ts',
+}
 const peerDependencies = Object.keys(pkg.peerDependencies)
 const external = (id) =>
   peerDependencies.some(
@@ -27,6 +36,19 @@ const defaultOutputOptions = {
 }
 
 const defaultPlugins = [
+  {
+    name: 'typescript-js-specifiers',
+    resolveId(source, importer) {
+      if (!importer || !source.startsWith('.') || !source.endsWith('.js'))
+        return null
+      const filename = path.resolve(path.dirname(importer), source.slice(0, -3))
+      return (
+        ['.ts', '.tsx']
+          .map((extension) => filename + extension)
+          .find(existsSync) ?? null
+      )
+    },
+  },
   resolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   }),
@@ -73,12 +95,14 @@ export default [
   },
   // Main package - ES
   {
-    input,
+    input: inputs,
     external,
     output: [
       {
         ...defaultOutputOptions,
-        file: 'dist/esm/index.mjs',
+        dir: 'dist/esm',
+        entryFileNames: '[name].mjs',
+        chunkFileNames: 'chunks/[name]-[hash].mjs',
         format: 'esm',
       },
     ],
@@ -86,12 +110,14 @@ export default [
   },
   // Main package - CJS
   {
-    input,
+    input: inputs,
     external,
     output: [
       {
         ...defaultOutputOptions,
-        file: 'dist/cjs/index.cjs',
+        dir: 'dist/cjs',
+        entryFileNames: '[name].cjs',
+        chunkFileNames: 'chunks/[name]-[hash].cjs',
         format: 'cjs',
         exports: 'auto',
       },

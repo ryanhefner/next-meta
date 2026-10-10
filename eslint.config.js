@@ -106,11 +106,20 @@ const sharedRules = {
 
 export default [
   {
-    ignores: ['dist/**', 'types/**', 'node_modules/**', 'coverage/**'],
+    ignores: [
+      'dist/**',
+      'types/**',
+      '**/node_modules/**',
+      '**/.yalc/**',
+      'coverage/**',
+      'docs/.next/**',
+      'docs/out/**',
+      'docs/next-env.d.ts',
+    ],
   },
   // TypeScript files
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx,mts,cts}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -125,7 +134,7 @@ export default [
   },
   // JavaScript files
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,mjs}'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 'latest',

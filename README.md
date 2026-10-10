@@ -8,10 +8,12 @@
 ![Known Vulnerabilities](https://snyk.io/test/github/ryanhefner/next-meta/badge.svg)
 ![Twitter Follow](https://img.shields.io/twitter/follow/ryanhefner)
 
-A composable React component for managing meta tags, Open Graph, and Twitter cards in Next.js applications.
+A composable metadata layer for Next.js: native metadata objects for App Router,
+Head components for Pages Router, and a dependency-free shared core.
 
-**NOTE:** This package is for use with Next.js' Pages Router. Some App Router
-helpers are in the works and will live here in the future as well.
+[Documentation](https://next-meta.dev) · [Getting started](https://next-meta.dev/docs/getting-started) · [API reference](https://next-meta.dev/docs/reference)
+
+The documentation site lives in the private `docs` workspace. Run `pnpm run docs:dev` for local development or `pnpm run docs:build` to verify the static export. See [deployment guidance](docs/DEPLOYMENT.md) for `next-meta.dev`, Springbar, and social-image capture routes.
 
 ## Why next-meta?
 
@@ -39,7 +41,171 @@ Via [Yarn](https://yarn.pm/next-meta)
 yarn add next-meta
 ```
 
-## How to use
+## App Router (Next.js 14+)
+
+Use the server-safe `next-meta/app` entry point. It does not import React or
+`next/head` at runtime. Next.js owns rendering and streaming the returned metadata.
+
+```tsx
+// app/layout.tsx
+import { defineMeta, toMetadata, toViewport } from 'next-meta/app'
+
+export const siteMeta = defineMeta({
+  baseUrl: 'https://example.com',
+  title: { default: 'Example', template: '%s | Example' },
+  description: 'Example documentation',
+  images: ['/social/default.png'],
+  twitter: { card: 'summary_large_image', site: '@example' },
+})
+
+export const metadata = toMetadata(siteMeta)
+export const viewport = toViewport({
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+})
+```
+
+```tsx
+// app/docs/[slug]/page.tsx (Next.js 15+ asynchronous params)
+import type { Metadata, ResolvingMetadata } from 'next'
+import { toMetadata } from 'next-meta/app'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { slug } = await params
+  return toMetadata(
+    {
+      title: slug,
+      canonical: `/docs/${slug}`,
+      url: `/docs/${slug}`,
+      images: [{ url: `/social/${slug}.png`, alt: slug }],
+      composeMeta: { images: true },
+    },
+    { parent: await parent },
+  )
+}
+```
+
+`parent` explicitly supplies the parent's base URL, description, site name,
+locale and images. It does not copy the parent's already-resolved title; Next
+applies layout title templates. For other shared values, pass `defaults` with a
+reusable configuration. A page title is not automatically suffixed with
+`siteName` in App Router; declare a native layout title template instead.
+
+Arrays replace inherited values by default. `composeMeta` appends defaults after
+page values and deduplicates media by URL. An explicit empty array clears an
+inherited array. Both router adapters use the same core normalization, merge,
+URL resolution and Twitter fallback pipeline. Both accept image URL shorthand;
+App Router additionally accepts native title objects.
+
+`toMetadata(config, { native: { robots: { index: false }, icons: '/icon.png' } })`
+accepts any native Next.js metadata. Native top-level fields replace mapped
+fields last, including the entire `openGraph` or `twitter` object when supplied.
+The adapter maps common social metadata, article/book/profile, music and video
+types, Twitter summary/app/player cards, and Pinterest verification. Twitter
+players must provide a player URL, stream URL and positive dimensions. Legacy
+extensions such as `payment.link`, product/location tags, arbitrary
+`additionalMetaTags`, and per-platform Twitter app names/country are Pages-only;
+use native fields where Next supports equivalents. Unsupported Open Graph
+types throw unless `native.openGraph` replaces them.
+
+Native file conventions (`opengraph-image`, `twitter-image`, icons, robots,
+sitemap and manifest) remain Next.js-owned. File-based metadata can override
+configured metadata. next-meta does not generate these files or render JSON-LD;
+use a focused structured-data library alongside it.
+
+## Shared core and focused imports
+
+```ts
+import {
+  defineMeta,
+  normalizeMeta,
+  mergeMeta,
+  resolveMeta,
+} from 'next-meta/core'
+
+const defaults = defineMeta({
+  baseUrl: 'https://example.com',
+  siteName: 'Example',
+})
+const page = mergeMeta(defaults, { title: 'Guide', canonical: '/guide' })
+const resolved = resolveMeta(page)
+// resolved.canonical === 'https://example.com/guide'
+// resolved.documentTitle === 'Guide | Example'
+```
+
+`MetaConfig` and `ResolvedMeta` are router-neutral, serializable metadata models.
+The core supports string titles and image URL strings or descriptors.
+`AppMetaConfig` adds native title objects. `normalizeMeta` handles deprecated
+aliases; `mergeMeta` safely combines configurations without mutating inputs;
+`resolveMeta(config, { defaults })` additionally resolves URLs and fallbacks.
+Structured validation and expanded parent policies are reserved for later work.
+
+| Import            | Use                                              | Runtime dependencies      |
+| ----------------- | ------------------------------------------------ | ------------------------- |
+| `next-meta/core`  | Shared config, build scripts, resolved snapshots | None                      |
+| `next-meta/app`   | Native Metadata / Viewport on Next.js 14+        | None (Next types only)    |
+| `next-meta/pages` | Pages Router components on Next.js 10+           | React, React DOM, Next.js |
+| `next-meta`       | Existing root API, unchanged                     | React, React DOM, Next.js |
+
+Next.js 14, 15 and 16 are exercised by the packed-consumer integration matrix.
+Keep Next.js updated to a patched release independently of this library.
+
+## Release checks
+
+Use Node from `.nvmrc` and the pnpm version in `packageManager`. Run
+`pnpm run release:check` before publishing: it checks the advisory budget, lint,
+formatting, types, unit coverage, builds, real Next Head behavior and a clean
+packed consumer. The packed consumer verifies server-only imports without React
+or Next installed, ESM/CommonJS exports, root/pages context identity, strict
+declarations and static/dynamic App Router plus Pages Router production HTML.
+Set `NEXT_VERSION=15 pnpm run release:smoke` to exercise another Next major.
+Failed smoke artifacts are retained in the printed temporary directory for
+diagnosis. CI tests Next 14/15/16; publishing runs the complete default check.
+
+The version bump and changelog remain explicit release preparation steps.
+Publish uses the package version to select `next` for prereleases and `latest`
+for stable releases; a release tag must match that version. A manually dispatched
+publish workflow validates and dry-runs only.
+
+### GitHub Actions publishing setup
+
+Publishing uses [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/)
+with GitHub OIDC, not a stored npm token. In the `next-meta` package settings on
+npm, configure a GitHub Actions trusted publisher with:
+
+- Organization or user: `ryanhefner`.
+- Repository: `next-meta`.
+- Workflow filename: `publish.yml` (not its full path).
+- Environment name: leave blank; the publish job does not use a GitHub environment.
+- Allow direct publishing with `npm publish`.
+
+No `NODE_AUTH_TOKEN` or `NPM_TOKEN` secret is required. The workflow grants
+`id-token: write` and runs on a GitHub-hosted runner with Node 24; npm trusted
+publishing requires npm 11.5.1 or newer. Configuring this relationship requires
+an authenticated npm account with write access to the package. A successful
+manual dry run validates the artifact, but does not prove npm publishing
+authorization.
+
+After merging the prepared release and passing CI, publish a GitHub Release
+tagged `v0.5.0` from the commit containing `package.json` version `0.5.0`.
+That release event publishes the package with the `latest` dist-tag; manually
+dispatching the workflow does not publish. Deploy the docs separately using
+the [Vercel setup](docs/DEPLOYMENT.md#production-build).
+
+Strict NodeNext declaration checks allow only existing Next.js-internal missing
+Satori/emoji/Sharp/URLPattern declarations, by exact file and diagnostic.
+No consumer or next-meta declaration errors are suppressed.
+The dependency-free shared-core fixture also has a cold compilation budget of
+200,000 type instantiations, checked independently of Next.js and React types.
+
+## Pages Router
 
 ### Basic Setup
 
@@ -84,6 +250,7 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
         <link rel="icon" type="image/png" href="/favicon.ico" />
       </Head>
       <MetaProvider
+        skipRepeatableDefaultsRender
         baseUrl={BASE_URL}
         canonical={metaUrl}
         description={DEFAULT_DESCRIPTION}
@@ -342,11 +509,27 @@ custom `children` such as alternate feed links.
 
 Provides default `PageMetaProps` to descendant `PageMeta` components.
 
-| Prop                           | Description                                                        |
-| ------------------------------ | ------------------------------------------------------------------ |
-| All `PageMetaProps`            | Default metadata inherited by descendant `PageMeta` components.    |
-| `skipDefaultsRender?: boolean` | Provide defaults without immediately rendering a separate tag set. |
-| `children?: ReactNode`         | Application or page content that receives the defaults.            |
+Use `<MetaProvider skipRepeatableDefaultsRender>` when pages render `PageMeta`.
+The provider still emits singleton defaults (title, description, canonical,
+etc.), and pages overwrite those named tags normally. The composable
+`images`, `audio`, `videos`, `localeAlternates` and `additionalMetaTags` arrays
+are deferred to the page renderer, along with repeatable author, tag,
+restriction, see-also and nested article/book/music fields. Their singleton
+siblings (for example article publication dates) continue rendering through
+the provider. All defaults remain in context:
+`<PageMeta />` inherits them, a supplied array replaces them, and an empty array
+clears them. Every page must render `PageMeta` to receive deferred arrays.
+
+This prevents stale provider-array entries without skipping singleton defaults.
+`skipDefaultsRender` is still available when you prefer one renderer for all
+tags. Both flags default to false for compatibility with provider-only rendering.
+
+| Prop                                     | Description                                                        |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| All `PageMetaProps`                      | Default metadata inherited by descendant `PageMeta` components.    |
+| `skipDefaultsRender?: boolean`           | Provide defaults without immediately rendering a separate tag set. |
+| `skipRepeatableDefaultsRender?: boolean` | Render singleton defaults; defer composable arrays to pages.       |
+| `children?: ReactNode`                   | Application or page content that receives the defaults.            |
 
 ### `SiteMeta` (deprecated)
 
@@ -415,7 +598,7 @@ page-specific tags first and then append matching provider defaults, opt in with
 
 ```tsx
 <MetaProvider
-  skipDefaultsRender
+  skipRepeatableDefaultsRender
   composeMeta={{ images: true }}
   images={[{ url: '/default-og.png', alt: 'Default share image' }]}
 >
@@ -439,9 +622,29 @@ Supported composition fields are `images`, `audio`, `videos`,
 empty array, such as `images={[]}`, clears inherited values even when
 composition is enabled.
 
-When composing page-specific repeatable tags, `skipDefaultsRender` keeps the
-provider defaults from rendering separately before the composed `PageMeta`
-output.
+Use `skipRepeatableDefaultsRender` to prevent provider arrays from rendering
+separately from the final page arrays. Singleton defaults still render.
+
+Explicit `prepend`, `append` and `replace` policies work across the five
+composable arrays:
+
+```tsx
+<PageMeta composeMeta={{ images: 'append', audio: 'replace' }} images={['/page.png']} />
+// Images: provider values first, followed by page values.
+
+<PageMeta images={{ items: ['/page.png'], mode: 'prepend' }} />
+// Images: page values first, followed by provider values.
+
+<PageMeta images={{ items: ['/page.png'], mode: 'replace' }} />
+// Images: exactly the supplied list, even if the defaults had more entries.
+```
+
+Images accept URL strings and descriptors. The inline image policy takes
+precedence over `composeMeta.images`. `true` retains its existing meaning
+(`prepend`); `false` means `replace`. Media deduplication keeps the first value
+for each URL. Empty arrays clear inherited values in every mode. Null/undefined
+tags are not deletion markers; selective provider deferral makes the final
+rendered list authoritative.
 
 ### Media Properties
 

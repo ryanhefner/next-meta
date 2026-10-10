@@ -1,10 +1,17 @@
 # Modules
 node_modules
+**/.yalc
+**/yalc.lock
 
 # Build / Test files
 coverage
 dist
 types
+docs/.next
+docs/out
+docs/next-env.d.ts
+docs/*.tsbuildinfo
+.env*.local
 
 # Misc
 .DS_Store
