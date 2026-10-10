@@ -112,6 +112,87 @@ describe('router-neutral core', () => {
     ).toEqual([{ url: '/page.png' }])
   })
 
+  test('disables inherited composition across every repeatable field with composeMeta false', () => {
+    const defaults = {
+      composeMeta: true,
+      additionalMetaTags: [{ name: 'default', content: 'Default' }],
+      audio: [{ url: '/default.mp3' }],
+      images: ['/default.png'],
+      localeAlternates: ['en_US'],
+      videos: [{ url: '/default.mp4' }],
+    }
+    expect(
+      mergeMeta(defaults, {
+        composeMeta: false,
+        additionalMetaTags: [{ name: 'page', content: 'Page' }],
+        audio: [{ url: '/page.mp3' }],
+        images: ['/page.png'],
+        localeAlternates: ['fr_CA'],
+        videos: [{ url: '/page.mp4' }],
+      }),
+    ).toMatchObject({
+      additionalMetaTags: [{ name: 'page', content: 'Page' }],
+      audio: [{ url: '/page.mp3' }],
+      images: [{ url: '/page.png' }],
+      localeAlternates: ['fr_CA'],
+      videos: [{ url: '/page.mp4' }],
+    })
+    expect(defaults.images).toEqual(['/default.png'])
+    expect(defaults.localeAlternates).toEqual(['en_US'])
+  })
+
+  test('appends repeatable values when no inherited arrays exist', () => {
+    expect(
+      mergeMeta({
+        composeMeta: {
+          additionalMetaTags: 'append',
+          audio: 'append',
+          images: 'append',
+          localeAlternates: 'append',
+          videos: 'append',
+        },
+        additionalMetaTags: [{ name: 'page', content: 'Page' }],
+        audio: [{ url: '/audio.mp3' }],
+        images: ['/image.png'],
+        localeAlternates: ['en_US'],
+        videos: [{ url: '/video.mp4' }],
+      }),
+    ).toMatchObject({
+      additionalMetaTags: [{ name: 'page', content: 'Page' }],
+      audio: [{ url: '/audio.mp3' }],
+      images: [{ url: '/image.png' }],
+      localeAlternates: ['en_US'],
+      videos: [{ url: '/video.mp4' }],
+    })
+  })
+
+  test('resolves metadata without defaults or configuration', () => {
+    expect(resolveMeta()).toMatchObject({
+      siteNameDelimiter: '|',
+      canonical: undefined,
+      url: undefined,
+      documentTitle: undefined,
+      images: undefined,
+      twitter: { title: undefined, description: undefined, image: undefined },
+    })
+    expect(
+      resolveMeta({
+        baseUrl: 'https://example.com',
+        title: 'Standalone',
+        canonical: '/guide',
+        images: ['/image.png'],
+      }),
+    ).toMatchObject({
+      documentTitle: 'Standalone',
+      canonical: 'https://example.com/guide',
+      images: [{ url: 'https://example.com/image.png' }],
+      twitter: {
+        title: 'Standalone',
+        image: { url: 'https://example.com/image.png' },
+      },
+    })
+  })
+
   test('rejects prototype-pollution keys during nested merges', () => {
     const unsafe = JSON.parse(
       '{"twitter":{"__proto__":{"polluted":true},"constructor":{"polluted":true},"site":"@safe"}}',
