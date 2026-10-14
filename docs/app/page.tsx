@@ -1,3 +1,4 @@
+import { StructuredData } from '@/components/docs/StructuredData'
 import { Welcome } from '@/components/docs/Welcome'
 import { getDocsManifest } from '@/lib/docs'
 import { pageMetadata, SITE_DESCRIPTION } from '@/lib/site'
@@ -9,5 +10,12 @@ export const metadata = pageMetadata({
 })
 
 export default async function Home() {
-  return <Welcome nav={(await getDocsManifest()).nav} />
+  return (
+    <>
+      <StructuredData
+        page={{ route: '/', title: 'next-meta', description: SITE_DESCRIPTION }}
+      />
+      <Welcome nav={(await getDocsManifest()).nav} />
+    </>
+  )
 }

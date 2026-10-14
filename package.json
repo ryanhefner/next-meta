@@ -102,7 +102,7 @@
   "scripts": {
     "docs:dev": "pnpm run build && pnpm --filter next-meta-docs dev",
     "docs:build": "pnpm run build && pnpm --filter next-meta-docs build && pnpm run docs:check",
-    "docs:check": "node scripts/docs-check.mjs",
+    "docs:check": "node scripts/docs-check.mjs && node --test scripts/site-structured-data.test.mjs",
     "docs:typecheck": "pnpm --filter next-meta-docs typecheck",
     "clean": "rimraf dist types",
     "prebuild": "pnpm run clean",

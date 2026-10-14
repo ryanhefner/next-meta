@@ -165,6 +165,9 @@ importers:
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0)
+      react-structured:
+        specifier: 0.1.1
+        version: 0.1.1(react@19.3.0)(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^24.13.6
@@ -3469,6 +3472,11 @@ packages:
       '@types/react': '>=18'
       react: '>=18'
 
+  react-structured@0.1.1:
+    resolution: {integrity: sha512-RUbm1+NoTDYu1YJxCkLufM/zucn3jXl0SvDZUYQfIiiQ6GMln9q1o7GRaTkJljO4lLubuw6jmrqx8FKc4Zshig==}
+    peerDependencies:
+      react: '>=16.14'
+
   react@19.3.0:
     resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
     engines: {node: '>=0.10.0'}
@@ -3577,6 +3585,15 @@ packages:
 
   scheduler@0.28.0:
     resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
+
+  schema-dts-lib@1.0.0:
+    resolution: {integrity: sha512-9MEO5vpQH9JdBioUupqluzxSYxPLjhmqRUudk15adUl/ypnRsM2/M1kN3AmVJQeG7nZqcL68H8JlGqQQT6vy9A==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      typescript: '>=4.9.5'
+
+  schema-dts@2.0.0:
+    resolution: {integrity: sha512-t7NoCy3Rn5GHGx6p7s1qIYK/AeIb8ZxJNR9WUNFkwMv2CiiGZBmqqYWc2FlZVm5ZbiHMY4OvBWhj7QtyrFO2Jw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -8385,6 +8402,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  react-structured@0.1.1(react@19.3.0)(typescript@5.9.3):
+    dependencies:
+      react: 19.3.0
+      schema-dts: 2.0.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
   react@19.3.0: {}
 
   reflect.getprototypeof@1.0.10:
@@ -8592,6 +8616,16 @@ snapshots:
       xmlchars: 2.2.0
 
   scheduler@0.28.0: {}
+
+  schema-dts-lib@1.0.0(typescript@5.9.3):
+    dependencies:
+      typescript: 5.9.3
+
+  schema-dts@2.0.0(typescript@5.9.3):
+    dependencies:
+      schema-dts-lib: 1.0.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
 
   semver@6.3.1: {}
 
