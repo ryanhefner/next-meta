@@ -166,8 +166,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.3.0)(react@19.3.0)(supports-color@7.2.0)
       react-structured:
-        specifier: 0.1.1
-        version: 0.1.1(react@19.3.0)(typescript@5.9.3)
+        specifier: 0.2.0
+        version: 0.2.0(react@19.3.0)(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^24.13.6
@@ -3472,8 +3472,8 @@ packages:
       '@types/react': '>=18'
       react: '>=18'
 
-  react-structured@0.1.1:
-    resolution: {integrity: sha512-RUbm1+NoTDYu1YJxCkLufM/zucn3jXl0SvDZUYQfIiiQ6GMln9q1o7GRaTkJljO4lLubuw6jmrqx8FKc4Zshig==}
+  react-structured@0.2.0:
+    resolution: {integrity: sha512-yZV+6krfbh3uo0g8q7UvWjpbOlgu80gkNd+1xEtx+9jW8SnYFwBglBOcr5sTmTShIQ05NriD37RBhSOmqA5+1A==}
     peerDependencies:
       react: '>=16.14'
 
@@ -8402,7 +8402,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-structured@0.1.1(react@19.3.0)(typescript@5.9.3):
+  react-structured@0.2.0(react@19.3.0)(typescript@5.9.3):
     dependencies:
       react: 19.3.0
       schema-dts: 2.0.0(typescript@5.9.3)
