@@ -3,7 +3,7 @@
   "workspaces": [
     "docs"
   ],
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Composable Next.js metadata: native App Router metadata, Pages Router head components, and a dependency-free shared core.",
   "repository": {
     "type": "git",

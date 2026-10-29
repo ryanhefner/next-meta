@@ -36,7 +36,7 @@ export function Navbar({ records }: { records: readonly DocsSearchRecord[] }) {
               next-meta
             </SiteLink>
             <Box as="span" css={styles.version}>
-              v0.5.0
+              v0.5.1
             </Box>
           </Flex>
           <Flex align="center" gap={2} minW={0}>
