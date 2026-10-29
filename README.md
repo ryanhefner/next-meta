@@ -39,6 +39,8 @@ The existing `next-meta` root API remains supported for Pages Router consumers.
 The `/app`, `/pages`, and `/core` entry points require next-meta 0.5.0 or newer.
 Neither `/core` nor `/app` imports React, `next/head`, or Next.js at runtime.
 The App Router adapter uses Next.js types when compiling your application.
+The package still declares React and React DOM peers for its Pages Router API;
+package managers may install those peers even if you import only the core.
 
 ## App Router quick start
 
