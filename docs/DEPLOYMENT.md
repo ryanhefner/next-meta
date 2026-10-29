@@ -52,6 +52,12 @@ are generated from the docs manifest into `docs/out` at build time and exclude
 draft and hidden content. `docs:check` verifies the exported files and their
 links. Rebuild and deploy the site to update them; no npm publish is needed.
 
+After building, `pnpm run docs:smoke` serves the exported production files on a
+temporary loopback port and checks rendered HTML, metadata, JSON-LD, crawler
+files, Markdown downloads, HEAD responses, and real 404s. CI runs this HTTP
+check separately from `docs:build`, so Vercel builds do not need to start a test
+server. This validates the export's hosting contract, not Vercel account settings.
+
 ## Analytics
 
 Set `NEXT_PUBLIC_FATHOM_SITE_ID` and optionally

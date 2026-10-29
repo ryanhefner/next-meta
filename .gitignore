@@ -11,6 +11,7 @@ docs/.next
 docs/out
 docs/next-env.d.ts
 docs/*.tsbuildinfo
+.readme-check-cache
 .env*.local
 
 # Misc

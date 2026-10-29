@@ -44,6 +44,7 @@ export function DocsPage({
     >
       <DocsMobileControls nav={nav} page={page} />
       <DocsArticle
+        slotProps={{ as: 'main' }}
         page={page}
         breadcrumbs={
           <Flex align="center" justify="space-between" flexWrap="wrap" gap={3}>

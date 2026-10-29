@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import test from 'node:test'
+
 import { JSDOM } from 'jsdom'
 
 const output = path.resolve(import.meta.dirname, '..', 'docs/out')
