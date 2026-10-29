@@ -20,6 +20,9 @@ minimumReleaseAgeExclude:
   - '@next/*'
   - source-map-js@1.2.2
   - sharp@0.35.5
+  # Reviewed patches for GHSA-587h-7wmj-h5pm and GHSA-mrhx-c7xc-m3w5.
+  - vite@8.3.4
+  - zod@4.6.7
   # Native binaries and patched libvips shipped with this Sharp security release.
   - '@img/sharp-darwin-arm64@0.35.5'
   - '@img/sharp-darwin-x64@0.35.5'
