@@ -4,28 +4,32 @@
     "docs"
   ],
   "version": "0.5.0",
-  "description": "A composable React component for managing meta tags, Open Graph, and X/Twitter cards in Next.js applications.",
+  "description": "Composable Next.js metadata: native App Router metadata, Pages Router head components, and a dependency-free shared core.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ryanhefner/next-meta.git"
   },
   "author": "Ryan Hefner <hi@ryanhefner.com> (https://www.ryanhefner.com)",
+  "contributors": [
+    {
+      "name": "Commune Software",
+      "url": "https://commune.software"
+    }
+  ],
   "license": "MIT",
   "keywords": [
     "next",
     "nextjs",
-    "next-js",
-    "nextjs-meta",
-    "nextjs-open-graph",
-    "meta",
+    "next-meta",
+    "app-router",
+    "pages-router",
     "metadata",
     "seo",
     "open-graph",
     "opengraph",
     "twitter-cards",
-    "social-media",
     "react",
-    "react-component"
+    "typescript"
   ],
   "type": "module",
   "bugs": {
@@ -111,7 +115,7 @@
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run release:check",
     "lint": "eslint .",
-    "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\" \"docs/{app,components,lib}/**/*.{ts,tsx}\" \"docs/content/*.md\" docs/DEPLOYMENT.md docs/package.json docs/tsconfig.json docs/next.config.mjs docs/vercel.json",
+    "prettier": "prettier -c README.md CHANGELOG.md package.json rollup.config.js eslint.config.js tsconfig.json tsconfig.type-tests.json vite.config.ts \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx,mts,mjs}\" \"scripts/**/*.mjs\" \"docs/{app,components,lib}/**/*.{ts,tsx}\" \"docs/content/*.md\" docs/DEPLOYMENT.md docs/RELEASING.md docs/package.json docs/tsconfig.json docs/next.config.mjs docs/vercel.json",
     "push-release": "git push origin main && git push --tags",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
@@ -136,12 +140,12 @@
     }
   },
   "devDependencies": {
-    "@chakra-docs/source-filesystem": "0.3.0",
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
     "@rollup/plugin-babel": "^7.1.0",
+    "@chakra-docs/source-filesystem": "0.3.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@testing-library/dom": "^10.4.0",
