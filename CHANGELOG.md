@@ -2,6 +2,27 @@
 
 All notable changes to `next-meta` are documented in this file.
 
+## 0.5.1 - 2026-10-29
+
+### Documentation
+
+- Replace the README with complete App Router, Pages Router, and framework-neutral
+  examples, clearer integration choices, and direct documentation and support links.
+- Improve npm discovery metadata and clarify the core entry point's runtime
+  independence versus the package's React peer requirements.
+
+### Maintenance
+
+- Update the documentation site and test tooling to Next.js 16.4.2 and patch
+  vulnerable Vite and Zod development dependencies.
+- Verify the actual README examples, production HTTP responses, metadata,
+  crawler files, and static-hosting behavior in automated checks.
+- Restore a single main landmark on the home and documentation pages.
+
+### Compatibility
+
+- No public API or peer dependency changes; existing imports remain supported.
+
 ## 0.5.0 - 2026-10-09
 
 ### Added

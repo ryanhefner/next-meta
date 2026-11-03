@@ -26,6 +26,7 @@ jobs:
       - run: pnpm run test:integration
       - run: pnpm --filter next-meta-docs build
       - run: pnpm run docs:check
+      - run: pnpm run docs:smoke
 
   packed-consumer:
     runs-on: ubuntu-latest

@@ -28,7 +28,7 @@ export function Welcome({ nav }: { nav: DocsNavItem[] }) {
       mobileToc={false}
     >
       <DocsMobileControls nav={nav} />
-      <DocsArticle>
+      <DocsArticle slotProps={{ as: 'main' }}>
         <Stack gap={6}>
           <Heading as="h1" size="4xl">
             Metadata, composed.
